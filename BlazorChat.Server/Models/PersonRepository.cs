@@ -57,8 +57,8 @@ namespace BlazorChat.Server.Models
             if (name != null)
             {
                 return _appDbContext.People
-                    .Where(p => p.FirstName.Contains(name, StringComparison.CurrentCultureIgnoreCase) ||
-                        p.LastName.Contains(name, StringComparison.CurrentCultureIgnoreCase))
+                    .Where(p => p.FirstName.ToLower().Contains(name.ToLower()) ||
+                        p.LastName.ToLower().Contains(name.ToLower()))
                     .OrderBy(p => p.PersonId)
                     .Include(p => p.Addresses)
                     .GetPaged(page, pageSize);

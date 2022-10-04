@@ -42,9 +42,9 @@ namespace BlazorChat.Server.Models
             if (name != null)
             {
                 return _appDbContext.Users
-                    .Where(u => u.FirstName.Contains(name, StringComparison.CurrentCultureIgnoreCase) ||
-                        u.LastName.Contains(name, StringComparison.CurrentCultureIgnoreCase) ||
-                        u.Username.Contains(name, StringComparison.CurrentCultureIgnoreCase))
+                    .Where(u => EF.Functions.Like(u.FirstName.ToLower(), name.ToLower()) ||
+                        EF.Functions.Like(u.LastName.ToLower(), name.ToLower()) ||
+                        EF.Functions.Like(u.Username.ToLower(), name.ToLower()))
                     .OrderBy(u => u.Username)
                     .GetPaged(page, pageSize);
             }

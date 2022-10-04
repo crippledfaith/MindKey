@@ -55,7 +55,7 @@ namespace BlazorChat.Server.Models
             if (name != null)
             {
                 return _appDbContext.Uploads
-                    .Where(u => u.FileName.Contains(name, StringComparison.CurrentCultureIgnoreCase))
+                    .Where(u => EF.Functions.Like(u.FileName.ToLower(), name.ToLower()))
                     .OrderBy(u => u.UploadTimestamp)
                     .GetPaged(page, pageSize);
             }
