@@ -1,0 +1,10 @@
+@page "/user/logout"
+@using MindKey.Client.Services
+@inject IUserService UserService
+
+@code {
+    protected override async void OnInitialized()
+    {
+        await UserService.Logout();
+    }
+}
