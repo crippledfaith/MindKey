@@ -61,6 +61,7 @@ namespace MindKey.Server.Models
                         p.LastName.ToLower().Contains(name.ToLower()))
                     .OrderBy(p => p.PersonId)
                     .Include(p => p.Addresses)
+                    .Include(p => p.User)
                     .GetPaged(page, pageSize);
             }
             else
@@ -68,6 +69,7 @@ namespace MindKey.Server.Models
                 return _appDbContext.People
                     .OrderBy(p => p.PersonId)
                     .Include(p => p.Addresses)
+                    .Include(p => p.User)
                     .GetPaged(page, pageSize);
             }
         }

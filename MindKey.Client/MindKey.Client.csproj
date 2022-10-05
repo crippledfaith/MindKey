@@ -5,6 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
+	<PropertyGroup Condition=" '$(RunConfiguration)' == 'MindKey' " />
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" Version="11.2.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview3.20168.3" />
