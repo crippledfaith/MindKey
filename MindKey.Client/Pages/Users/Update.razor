@@ -6,24 +6,30 @@
 @inject IUserService UserService
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
+<div class="pagetitle">
+    <h1>Users</h1>
+</div>
 
-<h1>Edit User</h1>
-<br/>
 
-<Form ButtonText="Update User" user="@user" loading="@loading"
-            OnValidSubmit="@UpdateUser" />
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title">Users <span>| Update</span></h5>
+        <Form ButtonText="Update User" user="@user" loading="@loading"
+              OnValidSubmit="@UpdateUser" />
+    </div>
+</div>
 
 @code {
     bool loading = false;
-    
+
     [Parameter]
     public string Id { get; set; }
 
     User user = new User();
-    
+
     protected async override Task OnParametersSetAsync()
     {
-       user = await UserService.GetUser(int.Parse(Id));
+        user = await UserService.GetUser(int.Parse(Id));
     }
 
     async Task UpdateUser()
@@ -33,12 +39,14 @@
         {
             await UserService.UpdateUser(user);
             AlertService.Success("User updated successfully", keepAfterRouteChange: true);
-            if (PageHistoryState.CanGoBack()){
+            if (PageHistoryState.CanGoBack())
+            {
                 navManager.NavigateTo(PageHistoryState.GetGoBackPage());
             }
-            else{
+            else
+            {
                 navManager.NavigateTo("/user/1");
-            } 
+            }
         }
         catch (Exception ex)
         {

@@ -4,38 +4,46 @@
 @inject IUserService UserService
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
+<div class="pagetitle">
+    <h1>Users</h1>
+</div>
 
-<h1>View User</h1>
-<br/>
 
-<table class="table col-md-6">
-    <tbody>
-        <tr>
-            <th scope="row">Id</th>
-            <td>@user.Id</td>
-        </tr>
-        <tr>
-            <th scope="row">First Name</th>
-            <td>@user.FirstName</td>
-        </tr>
-        <tr>
-            <th scope="row">Last Name</th>
-            <td>@user.LastName</td>
-        </tr>
-        <tr>
-            <th scope="row">User Name</th>
-            <td>@user.Username</td>
-        </tr>
-    </tbody>
-</table>
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title">Users <span>| View</span></h5>
+        <table class="table col-md-6">
+            <tbody>
+                <tr>
+                    <th scope="row">Id</th>
+                    <td>@user.Id</td>
+                </tr>
+                <tr>
+                    <th scope="row">First Name</th>
+                    <td>@user.FirstName</td>
+                </tr>
+                <tr>
+                    <th scope="row">Last Name</th>
+                    <td>@user.LastName</td>
+                </tr>
+                <tr>
+                    <th scope="row">User Name</th>
+                    <td>@user.Username</td>
+                </tr>
+            </tbody>
+        </table>
 
-<div class="form-group">
-    @if (PageHistoryState.CanGoBack()){
-        <NavLink href="@PageHistoryState.GetGoBackPage()" class="btn btn-link">Back</NavLink>
-    }
-    else{
-        <NavLink href="/user/1" class="btn btn-link">Back</NavLink>
-    }
+        <div class="form-group">
+            @if (PageHistoryState.CanGoBack())
+            {
+                <NavLink href="@PageHistoryState.GetGoBackPage()" class="btn btn-link">Back</NavLink>
+            }
+            else
+            {
+                <NavLink href="/user/1" class="btn btn-link">Back</NavLink>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
@@ -43,9 +51,9 @@
     public string Id { get; set; }
 
     User user = new User();
-    
+
     protected async override Task OnParametersSetAsync()
     {
-       user = await UserService.GetUser(int.Parse(Id));
+        user = await UserService.GetUser(int.Parse(Id));
     }
 }

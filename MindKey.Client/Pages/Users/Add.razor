@@ -7,15 +7,23 @@
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
 
-<h1>Create User</h1>
-<br/>
+<div class="pagetitle">
+    <h1>User</h1>
+</div>
 
-<Form ButtonText="Create User" user="@user" loading="@loading"
-            OnValidSubmit="@CreateUser" />
+
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title">User <span>| Add</span></h5>
+
+        <Form ButtonText="Create User" user="@user" loading="@loading"
+              OnValidSubmit="@CreateUser" />
+    </div>
+</div>
 
 @code {
     bool loading = false;
-    
+
     User user = new User();
 
     async Task CreateUser()
@@ -25,12 +33,14 @@
         {
             await UserService.AddUser(user);
             AlertService.Success("User added successfully", keepAfterRouteChange: true);
-            if (PageHistoryState.CanGoBack()){
+            if (PageHistoryState.CanGoBack())
+            {
                 navManager.NavigateTo(PageHistoryState.GetGoBackPage());
             }
-            else{
+            else
+            {
                 navManager.NavigateTo("/user/1");
-            } 
+            }
         }
         catch (Exception ex)
         {

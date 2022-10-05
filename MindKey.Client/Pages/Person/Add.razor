@@ -7,27 +7,33 @@
 @inject IPersonService PersonService
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
+<div class="pagetitle">
+    <h1>Data Entry</h1>
+</div>
 
-<h1>Create Person</h1>
-<br/>
 
-<Form ButtonText="Create Person" person="@person" loading="@loading"
-            OnValidSubmit="@CreatePerson" />
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title">People <span>| Add New</span></h5>
 
+        <Form ButtonText="Create Person" person="@person" loading="@loading"
+              OnValidSubmit="@CreatePerson" />
+    </div>
+</div>
 @code {
     bool loading = false;
-    
+
     Person person = new Person
-    {
-        FirstName = "",
-        LastName = "",
-        Gender = Gender.Other,
-        PhoneNumber = "",
-        Addresses = new List<Address>
         {
-            new Address {Street="", City="", State="", ZipCode=""}   
+            FirstName = "",
+            LastName = "",
+            Gender = Gender.Other,
+            PhoneNumber = "",
+            Addresses = new List<Address>
+        {
+            new Address {Street="", City="", State="", ZipCode=""}
         }
-    };
+        };
     async Task CreatePerson()
     {
         loading = true;
@@ -35,12 +41,14 @@
         {
             await PersonService.AddPerson(person);
             AlertService.Success("Person added successfully", keepAfterRouteChange: true);
-            if (PageHistoryState.CanGoBack()){
+            if (PageHistoryState.CanGoBack())
+            {
                 navManager.NavigateTo(PageHistoryState.GetGoBackPage());
             }
-            else{
+            else
+            {
                 navManager.NavigateTo("/person/1");
-            } 
+            }
         }
         catch (Exception ex)
         {

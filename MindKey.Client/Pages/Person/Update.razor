@@ -6,34 +6,40 @@
 @inject IPersonService PersonService
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
+<div class="pagetitle">
+    <h1>Data Entry</h1>
+</div>
 
-<h1>Edit Person</h1>
-<br/>
 
-<Form ButtonText="Update Person" person="@person" loading="@loading"
-            OnValidSubmit="@UpdatePerson" />
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title">People <span>| Update</span></h5>
+        <Form ButtonText="Update Person" person="@person" loading="@loading"
+              OnValidSubmit="@UpdatePerson" />
+    </div>
+</div>
 
 @code {
     bool loading = false;
-    
+
     [Parameter]
     public string Id { get; set; }
 
     Person person = new Person
-    {
-        FirstName = "",
-        LastName = "",
-        Gender = Gender.Other,
-        PhoneNumber = "",
-        Addresses = new List<Address>
         {
-            new Address {Street="", City="", State="", ZipCode=""}   
+            FirstName = "",
+            LastName = "",
+            Gender = Gender.Other,
+            PhoneNumber = "",
+            Addresses = new List<Address>
+        {
+            new Address {Street="", City="", State="", ZipCode=""}
         }
-    };
-    
+        };
+
     protected async override Task OnParametersSetAsync()
     {
-       person = await PersonService.GetPerson(int.Parse(Id));
+        person = await PersonService.GetPerson(int.Parse(Id));
     }
 
     async Task UpdatePerson()
@@ -43,12 +49,14 @@
         {
             await PersonService.UpdatePerson(person);
             AlertService.Success("Person updated successfully", keepAfterRouteChange: true);
-            if (PageHistoryState.CanGoBack()){
+            if (PageHistoryState.CanGoBack())
+            {
                 navManager.NavigateTo(PageHistoryState.GetGoBackPage());
             }
-            else{
+            else
+            {
                 navManager.NavigateTo("/person/1");
-            } 
+            }
         }
         catch (Exception ex)
         {

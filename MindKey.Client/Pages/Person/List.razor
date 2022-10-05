@@ -5,101 +5,107 @@
 @inject IUserService UserService
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
 @inject PageHistoryState PageHistoryState
+<div class="pagetitle">
+    <h1>Data Entry</h1>
+</div>
 
-<h1>People</h1>
-<br/>
 
-<div class="row mb-3">
-    <div class="col-md-7">
-        @if(LoggedIn)
-        { 
-            <NavLink href="/person/createperson" class="btn btn-sm btn-success mb-2">Add Person</NavLink>
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title">Person <span>| List</span></h5>
+        <div class="row mb-3">
+            <div class="col-md-7">
+                @if (LoggedIn)
+                {
+                    <NavLink href="/person/createperson" class="btn btn-sm btn-success mb-2">Add Person</NavLink>
+                }
+            </div>
+            <div class="input-group col-md-5 text-md-right">
+                <input name="PersonSearchInput" type="text" class="form-control" placeholder="Person Name" @bind="this.SearchTerm" @onkeyup="SearchBoxKeyPress" />
+                <div class="input-group-btn">
+                    <button name="PersonSearchButton" class="btn btn-default" @onclick="SearchClick">
+                        <i class="oi oi-magnifying-glass" title="search" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="input-group-btn">
+                    <button name="PersonSearchClear" class="btn btn-default" @onclick="ClearSearch">
+                        <i class="oi oi-x" title="clear" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (people == null)
+        {
+            <p><em>Loading...</em></p>
         }
-    </div>
-    <div class="input-group col-md-5 text-md-right">
-        <input name="PersonSearchInput" type="text" class="form-control" placeholder="Person Name" @bind="this.SearchTerm" @onkeyup="SearchBoxKeyPress" />
-        <div class="input-group-btn">
-            <button name="PersonSearchButton" class="btn btn-default" @onclick="SearchClick">
-                <i class="oi oi-magnifying-glass" title="search" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="input-group-btn">
-            <button name="PersonSearchClear" class="btn btn-default" @onclick="ClearSearch">
-                <i class="oi oi-x" title="clear" aria-hidden="true"></i>
-            </button>
-        </div>
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:25%">First Name</th>
+                        <th style="width:25%">Last Name</th>
+                        <th style="width:15%">Gender</th>
+                        <th style="width:30%">Phone Number</th>
+                        <th style="width:5%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var person in people.Results)
+                    {
+                        <tr>
+                            <td>@person.FirstName</td>
+                            <td>@person.LastName</td>
+                            <td>@person.Gender</td>
+                            <td>@person.PhoneNumber</td>
+                            <td style="white-space: nowrap">
+                                <NavLink href="@($"/person/viewperson/{person.PersonId}")" class="oi oi-eye text-primary mr-3 nounderline"></NavLink>
+                                @if (LoggedIn)
+                                {
+                                    <NavLink href="@($"/person/updateperson/{person.PersonId}")" class="oi oi-pencil text-warning mr-2 nounderline"></NavLink>
+
+                                    @if (person.IsDeleting)
+                                    {
+                                        <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
+                                            <span class="spinner-border spinner-border-sm"></span>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
+                                            <span></span>
+                                        </button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <Pager Result=@people PageChanged=PagerPageChanged />
+        }
     </div>
 </div>
 
-@if (people == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th style="width:25%">First Name</th>
-                <th style="width:25%">Last Name</th>
-                <th style="width:15%">Gender</th>
-                <th style="width:30%">Phone Number</th>
-                <th style="width:5%"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var person in people.Results)
-            {
-                <tr>
-                    <td>@person.FirstName</td>
-                    <td>@person.LastName</td>
-                    <td>@person.Gender</td>
-                    <td>@person.PhoneNumber</td>
-                    <td style="white-space: nowrap">
-                        <NavLink href="@($"/person/viewperson/{person.PersonId}")" class="oi oi-eye text-primary mr-3 nounderline"></NavLink>
-                        @if (LoggedIn)
-                        {
-                            <NavLink href="@($"/person/updateperson/{person.PersonId}")" class="oi oi-pencil text-warning mr-2 nounderline"></NavLink>
-                            
-                                @if (person.IsDeleting) 
-                                {
-                                    <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
-                                        <span class="spinner-border spinner-border-sm"></span>
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
-                                        <span></span>
-                                    </button>
-                                }
-                        }
-                    </td>
-                </tr> 
-            }
-        </tbody>
-    </table>
-    <Pager Result=@people PageChanged=PagerPageChanged />
-}
-
 @code {
     [Parameter]
-    public string Page { get; set;} = "1";
+    public string Page { get; set; } = "1";
     [Parameter]
     public string SearchTerm { get; set; } = string.Empty;
     protected PagedResult<Person> people;
-    
+
     public bool LoggedIn
     {
-        get {return UserService.User != null;}
+        get { return UserService.User != null; }
     }
-    
+
     protected override void OnInitialized()
     {
         PageHistoryState.AddPageToHistory(UriHelper.Uri);
         base.OnInitialized();
     }
-    
+
     protected override async Task OnParametersSetAsync()
     {
         people = await PersonService.GetPeople(null, Page);
