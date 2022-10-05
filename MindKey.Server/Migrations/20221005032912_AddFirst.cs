@@ -1,31 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace MindKey.Server.Migrations
 {
-    public partial class InitialEntities : Migration
+    public partial class AddFirst : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "People",
-                columns: table => new
-                {
-                    PersonId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    Gender = table.Column<int>(type: "integer", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    IsDeleting = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_People", x => x.PersonId);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Uploads",
                 columns: table => new
@@ -62,6 +46,30 @@ namespace MindKey.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "People",
+                columns: table => new
+                {
+                    PersonId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    IsDeleting = table.Column<bool>(type: "boolean", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_People", x => x.PersonId);
+                    table.ForeignKey(
+                        name: "FK_People_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Addresses",
                 columns: table => new
                 {
@@ -87,6 +95,11 @@ namespace MindKey.Server.Migrations
                 name: "IX_Addresses_PersonId",
                 table: "Addresses",
                 column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_People_UserId",
+                table: "People",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -98,10 +111,10 @@ namespace MindKey.Server.Migrations
                 name: "Uploads");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "People");
 
             migrationBuilder.DropTable(
-                name: "People");
+                name: "Users");
         }
     }
 }

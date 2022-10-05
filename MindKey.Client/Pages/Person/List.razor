@@ -60,10 +60,10 @@
                             <td>@person.Gender</td>
                             <td>@person.PhoneNumber</td>
                             <td style="white-space: nowrap">
-                                <NavLink href="@($"/person/viewperson/{person.PersonId}")" class="oi oi-eye text-primary mr-3 nounderline"></NavLink>
+                                <NavLink href="@($"/person/viewperson/{person.PersonId}")" class=" btn oi oi-eye text-primary mr-3 nounderline"></NavLink>
                                 @if (LoggedIn)
                                 {
-                                    <NavLink href="@($"/person/updateperson/{person.PersonId}")" class="oi oi-pencil text-warning mr-2 nounderline"></NavLink>
+                                    <NavLink href="@($"/person/updateperson/{person.PersonId}")" class=" btn oi oi-pencil text-warning mr-2 nounderline"></NavLink>
 
                                     @if (person.IsDeleting)
                                     {

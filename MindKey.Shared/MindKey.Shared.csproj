@@ -5,7 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<ItemGroup>
-		<SupportedPlatform Include="browser"/>
-		<PackageReference Include="FluentValidation" Version="11.2.2"/>
+		<SupportedPlatform Include="browser" />
+		<PackageReference Include="FluentValidation" Version="11.2.2" />
 	</ItemGroup>
 </Project>

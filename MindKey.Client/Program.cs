@@ -13,6 +13,7 @@ builder.Services.AddScoped<IAlertService, AlertService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHttpService, HttpService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddSingleton<EventService>();
 builder.Services.AddScoped(x =>
 {
     var apiUrl = new Uri("http://localhost:5001");

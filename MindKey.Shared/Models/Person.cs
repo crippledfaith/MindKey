@@ -8,6 +8,7 @@ namespace MindKey.Shared.Models
         public Gender Gender { get; set; }
         public string PhoneNumber { get; set; } = default!;
         public bool IsDeleting { get; set; } = default!;
+        public User User { get; set; } = default!;
         public List<Address> Addresses { get; set; } = default!;
     }
 }

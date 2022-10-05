@@ -15,6 +15,8 @@ namespace MindKey.Server.Models
 
         public async Task<Upload> AddUpload(Upload upload)
         {
+            upload.UploadTimestamp = DateTime.UtcNow;
+            upload.ProcessedTimestamp = DateTime.UtcNow;
             var result = await _appDbContext.Uploads.AddAsync(upload);
             await _appDbContext.SaveChangesAsync();
             return result.Entity;
