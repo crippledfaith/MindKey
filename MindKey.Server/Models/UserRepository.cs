@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using MindKey.Server.Authorization;
 using MindKey.Server.Helpers;
 using MindKey.Shared.Data;
 using MindKey.Shared.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace MindKey.Server.Models
 {
@@ -89,25 +89,22 @@ namespace MindKey.Server.Models
         public async Task<User?> UpdateUser(User user)
         {
             var result = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-
-            // cannot update admin
-            if (result.Username == "admin")
-                throw new AppException("Admin may not be updated");
-
-            // validate unique
-            if (user.Username != result.Username && _appDbContext.Users.Any(u => u.Username == user.Username))
-                throw new AppException("Username '" + user.Username + "' is already taken");
-
-            // hash password if entered
-            if (!string.IsNullOrEmpty(user.Password) && user.Password != result.Password)
-            {
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
-                user.Password = "**********";
-            }
-
             if (result != null)
-            {
-                // Update existing user
+            {        // validate unique
+                if (user.Username != result.Username && _appDbContext.Users.Any(u => u.Username == user.Username))
+                    throw new AppException("Username '" + user.Username + "' is already taken");
+
+                // hash password if entered
+                if (!string.IsNullOrEmpty(user.Password) && user.Password != result.Password)
+                {
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                    user.Password = "**********";
+                }
+                else
+                {
+                    user.PasswordHash = result.PasswordHash;
+                }
+
                 _appDbContext.Entry(result).CurrentValues.SetValues(user);
                 await _appDbContext.SaveChangesAsync();
             }
@@ -121,13 +118,12 @@ namespace MindKey.Server.Models
         public async Task<User?> DeleteUser(int Id)
         {
             var result = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == Id);
-
-            // cannot delete admin
-            if (result.Username == "admin")
-                throw new AppException("Admin may not be deleted");
-
             if (result != null)
             {
+                // cannot delete admin
+                if (result.Username == "admin")
+                    throw new AppException("Admin may not be deleted");
+
                 _appDbContext.Users.Remove(result);
                 await _appDbContext.SaveChangesAsync();
             }

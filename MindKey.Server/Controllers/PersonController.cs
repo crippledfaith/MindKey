@@ -11,10 +11,12 @@ namespace MindKey.Server.Controllers
     public class PersonController : ControllerBase
     {
         private readonly IPersonRepository _personRepository;
+        private readonly IUserRepository _userRepository;
 
-        public PersonController(IPersonRepository personRepository)
+        public PersonController(IPersonRepository personRepository, IUserRepository userRepository)
         {
             _personRepository = personRepository;
+            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -52,6 +54,9 @@ namespace MindKey.Server.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdatePerson(Person person)
         {
+            person.User.FirstName = person.FirstName;
+            person.User.LastName = person.LastName;
+            await _userRepository.UpdateUser(person.User);
             return Ok(await _personRepository.UpdatePerson(person));
         }
 

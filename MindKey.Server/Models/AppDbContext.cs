@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MindKey.Shared.Models;
+using MindKey.Shared.Models.MindKey;
 
 namespace MindKey.Server.Models
 {
@@ -14,5 +15,7 @@ namespace MindKey.Server.Models
         public DbSet<Address> Addresses => Set<Address>();
         public DbSet<Upload> Uploads => Set<Upload>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Idea> Ideas => Set<Idea>();
+        public DbSet<IdeaUserComment> IdeaUserComments => Set<IdeaUserComment>();
     }
 }
