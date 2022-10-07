@@ -34,11 +34,16 @@ namespace MindKey.Server.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetPerson(int id)
+        public async Task<ActionResult> GetPerson(long id)
         {
             return Ok(await _personRepository.GetPerson(id));
         }
-
+        [AllowAnonymous]
+        [HttpGet("byUser/{id}")]
+        public async Task<ActionResult> GetPersonByUser(long id)
+        {
+            return Ok(await _personRepository.GetPersonByUser(id));
+        }
         /// <summary>
         /// Creates a person with child addresses.
         /// </summary>
@@ -64,7 +69,7 @@ namespace MindKey.Server.Controllers
         /// Deletes a person with a specific Id.
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeletePerson(int id)
+        public async Task<ActionResult> DeletePerson(long id)
         {
             return Ok(await _personRepository.DeletePerson(id));
         }

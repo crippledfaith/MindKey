@@ -2,9 +2,11 @@
 {
     public class IdeaUserComment
     {
-        public long IdeaUserCommentKey { get; set; }
-        public string Comment { get; set; } = default!;
-        public Person Person { get; set; } = default!;
+        public long Id { get; set; }
+        public Idea Idea { get; set; } = default!;
+        public User User { get; set; } = default!;
+        public string Title { get; set; } = default!;
+        public string Description { get; set; } = default!;
         public ArgumentType Argument { get; set; } = default!;
 
     }

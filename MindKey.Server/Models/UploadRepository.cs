@@ -22,7 +22,7 @@ namespace MindKey.Server.Models
             return result.Entity;
         }
 
-        public async Task<Upload?> DeleteUpload(int Id)
+        public async Task<Upload?> DeleteUpload(long Id)
         {
             var result = await _appDbContext.Uploads.FirstOrDefaultAsync(u => u.Id == Id);
             if (result != null)
@@ -37,7 +37,7 @@ namespace MindKey.Server.Models
             return result;
         }
 
-        public async Task<Upload?> GetUpload(int Id)
+        public async Task<Upload?> GetUpload(long Id)
         {
             var result = await _appDbContext.Uploads.FirstOrDefaultAsync(u => u.Id == Id);
             if (result != null)

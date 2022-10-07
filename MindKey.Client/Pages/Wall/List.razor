@@ -1,0 +1,45 @@
+﻿@page "/wall/{Page}"
+@using MindKey.Client.Components
+@using MindKey.Shared.Models.MindKey
+@using System.Text
+@inject IIdeaService IdeaService
+@inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
+@inject PageHistoryState PageHistoryState
+
+@if (Ideas == null)
+{
+    <div class="card info-card">
+        <div class="card-body">
+            <p><em>Loading...</em></p>
+        </div>
+    </div>
+}
+else
+{
+    <Pager Result=@Ideas PageChanged=PagerPageChanged />
+    @foreach (var idea in Ideas.Results)
+    {
+        <IdeaComponent Idea="@idea" />
+    }
+    <Pager Result=@Ideas PageChanged=PagerPageChanged />
+
+}
+
+@code {
+    [Parameter]
+    public string Page { get; set; } = "1";
+    public PagedResult<Idea> Ideas { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var results = (await IdeaService.GetIdeas(Page,null));
+        Ideas = results;
+        PageHistoryState.AddPageToHistory(UriHelper.Uri);
+    }
+
+    protected void PagerPageChanged(int page)
+    {
+        UriHelper.NavigateTo("/wall/" + page);
+        PageHistoryState.AddPageToHistory(UriHelper.Uri);
+    }
+}

@@ -1,0 +1,44 @@
+﻿@using MindKey.Shared.Models.MindKey
+@inject NavigationManager navManager
+
+<div class="card info-card">
+    <div class="card-body">
+        <h5 class="card-title" @onclick="OpenCard">@Idea.Title</h5>
+        <h6 class="card-subtitle mb-2 text-muted" @onclick="()=>{ShowHideText(true);}">@Description</h6>
+        <span class="badge border-primary border-1 text-primary">Author: @Idea.Person.FirstName @Idea.Person.LastName</span>
+        <span class="badge border-secondary border-1 text-secondary">Date: @Idea.PostDateTime.ToShortDateString() </span>
+        <hr />
+        <AgreeDisagreeComponent Idea="@Idea" />
+        <hr />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Idea Idea { get; set; } = null;
+    public bool IsShowAll { get; set; }
+    public string Description { get; set; }
+    protected override void OnParametersSet()
+    {
+        ShowHideText(false);
+        base.OnParametersSetAsync();
+    }
+    public void OpenCard()
+    {
+        navManager.NavigateTo($"/idea/{Idea.Id}");
+    }
+    public void ShowHideText(bool reload = true)
+    {
+        if (!IsShowAll)
+        {
+            Description = $"{Idea.Description.Substring(0, 500)}...";
+        }
+        else
+        {
+            Description = $"{Idea.Description}";
+        }
+        IsShowAll = !IsShowAll;
+        if (reload)
+            StateHasChanged();
+    }
+}

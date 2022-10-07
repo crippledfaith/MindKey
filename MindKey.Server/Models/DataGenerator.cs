@@ -1,6 +1,9 @@
 using Bogus;
 using Microsoft.EntityFrameworkCore;
 using MindKey.Shared.Models;
+using MindKey.Shared.Models.MindKey;
+using System.Text;
+using Person = MindKey.Shared.Models.Person;
 
 namespace MindKey.Server.Models
 {
@@ -8,6 +11,8 @@ namespace MindKey.Server.Models
     {
         public static void Initialize(IDbContextFactory<AppDbContext> appDbContextFactory)
         {
+            List<Idea> ideas = new List<Idea>();
+            List<Person> people = new List<Person>();
             Randomizer.Seed = new Random(32321);
             var appDbContext = appDbContextFactory.CreateDbContext();
             if (!appDbContext.Users.Any())
@@ -54,16 +59,66 @@ namespace MindKey.Server.Models
                     .RuleFor(p => p.PhoneNumber, f => f.Phone.PhoneNumber())
                     .RuleFor(p => p.Addresses, f => testAddresses.Generate(2).ToList());
 
-                var people = testPeople.Generate(appDbContext.Users.Count());
+                var xpeople = testPeople.Generate(appDbContext.Users.Count());
                 int x = 0;
-                foreach (Shared.Models.Person p in people)
+                foreach (Shared.Models.Person p in xpeople)
                 {
                     p.User = appDbContext.Users.Skip(x++).First();
                     appDbContext.People.Add(p);
+                    people.Add(p);
                 }
                 appDbContext.SaveChanges();
             }
+            if (!appDbContext.Users.Any())
+            {
+                var testUsers = new Faker<User>()
+                    .RuleFor(u => u.FirstName, u => u.Name.FirstName())
+                    .RuleFor(u => u.LastName, u => u.Name.LastName())
+                    .RuleFor(u => u.Username, u => u.Internet.UserName())
+                    .RuleFor(u => u.Password, u => u.Internet.Password());
+                var users = testUsers.Generate(4);
 
+                User customUser = new User()
+                {
+                    FirstName = "Terry",
+                    LastName = "Smith",
+                    Username = "admin",
+                    Password = "admin"
+                };
+
+                users.Add(customUser);
+
+                foreach (User u in users)
+                {
+                    u.PasswordHash = BCrypt.Net.BCrypt.HashPassword(u.Password);
+                    u.Password = "**********";
+                    appDbContext.Users.Add(u);
+                }
+                appDbContext.SaveChanges();
+            }
+            if (appDbContext.People.Any() && !appDbContext.Ideas.Any())
+            {
+                people = appDbContext.People.ToList();
+                for (int i = 0; i < 100; i++)
+                {
+                    var idea = new Idea
+                    {
+                        Id = random.NextInt64(),
+                        Argument = ArgumentType.For,
+                        Description = LoremIpsum(100, 200, 1, 2, 2),
+                        Title = LoremIpsum(5, 20, 1, 1, 1),
+                        Person = people[random.Next(people.Count)],
+                        PostDateTime = DateTime.UtcNow,
+                        ForCount = random.Next(1000, 100000),
+                        AgainstCount = random.Next(1000, 100000),
+                        NetrulCount = random.Next(1000, 100000)
+                    };
+                    ideas.Add(idea);
+                    appDbContext.Ideas.Add(idea);
+                }
+                appDbContext.SaveChanges();
+
+            }
             if (!appDbContext.Uploads.Any())
             {
                 string jsonRecord = @"[{""FirstName"": ""Tim"",""LastName"": ""Bucktooth"",""Gender"": 1,""PhoneNumber"": ""717-211-3211"",
@@ -84,6 +139,39 @@ namespace MindKey.Server.Models
             }
 
 
+        }
+        private static Random random = new Random();
+
+        static string LoremIpsum(int minWords, int maxWords,
+          int minSentences, int maxSentences,
+          int numParagraphs)
+        {
+
+            var words = new[]{"lorem", "ipsum", "dolor", "sit", "amet", "consectetuer",
+        "adipiscing", "elit", "sed", "diam", "nonummy", "nibh", "euismod",
+        "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat"};
+
+            var rand = new Random();
+            int numSentences = rand.Next(maxSentences - minSentences)
+                + minSentences + 1;
+            int numWords = rand.Next(maxWords - minWords) + minWords + 1;
+
+            StringBuilder result = new StringBuilder();
+
+            for (int p = 0; p < numParagraphs; p++)
+            {
+                for (int s = 0; s < numSentences; s++)
+                {
+                    for (int w = 0; w < numWords; w++)
+                    {
+                        if (w > 0) { result.Append(" "); }
+                        result.Append(words[rand.Next(words.Length)]);
+                    }
+                    result.Append(". ");
+                }
+            }
+
+            return result.ToString();
         }
     }
 }

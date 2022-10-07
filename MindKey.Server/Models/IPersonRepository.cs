@@ -6,9 +6,10 @@ namespace MindKey.Server.Models
     public interface IPersonRepository
     {
         PagedResult<Person> GetPeople(string? name, int page);
-        Task<Person?> GetPerson(int personId);
+        Task<Person?> GetPerson(long personId);
+        Task<Person?> GetPersonByUser(long userid);
         Task<Person> AddPerson(Person person);
         Task<Person?> UpdatePerson(Person person);
-        Task<Person?> DeletePerson(int personId);
+        Task<Person?> DeletePerson(long personId);
     }
 }

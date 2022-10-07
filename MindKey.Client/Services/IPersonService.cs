@@ -6,9 +6,10 @@ namespace MindKey.Client.Services
     public interface IPersonService
     {
         Task<PagedResult<Person>> GetPeople(string name, string page);
-        Task<Person> GetPerson(int id);
+        Task<Person> GetPerson(long id);
+        Task<Person> GetPersonByUser(long id);
 
-        Task DeletePerson(int id);
+        Task DeletePerson(long id);
 
         Task AddPerson(Person person);
 

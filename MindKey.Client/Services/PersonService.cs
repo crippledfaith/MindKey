@@ -18,12 +18,15 @@ namespace MindKey.Client.Services
             return await _httpService.Get<PagedResult<Person>>("api/person" + "?page=" + page + "&name=" + name);
         }
 
-        public async Task<Person> GetPerson(int id)
+        public async Task<Person> GetPerson(long id)
         {
             return await _httpService.Get<Person>($"api/person/{id}");
         }
-
-        public async Task DeletePerson(int id)
+        public async Task<Person> GetPersonByUser(long id)
+        {
+            return await _httpService.Get<Person>($"api/person/ByUser/{id}");
+        }
+        public async Task DeletePerson(long id)
         {
             await _httpService.Delete($"api/person/{id}");
         }

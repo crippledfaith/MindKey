@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Components;
 using MindKey.Client.Shared;
 using MindKey.Shared.Data;
 using MindKey.Shared.Models;
-using Microsoft.AspNetCore.Components;
 
 namespace MindKey.Client.Services
 {
@@ -39,17 +39,17 @@ namespace MindKey.Client.Services
             _navigationManager.NavigateTo("/user/login");
         }
 
-        public async Task<PagedResult<User>> GetUsers(string name, string page)
+        public async Task<PagedResult<User>> GetIdeas(string name, string page)
         {
             return await _httpService.Get<PagedResult<User>>("api/user" + "?page=" + page + "&name=" + name);
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(long id)
         {
             return await _httpService.Get<User>($"api/user/{id}");
         }
 
-        public async Task DeleteUser(int id)
+        public async Task DeleteIdea(long id)
         {
             await _httpService.Delete($"api/user/{id}");
             // auto logout if the user deleted their own record
@@ -57,7 +57,7 @@ namespace MindKey.Client.Services
                 await Logout();
         }
 
-        public async Task AddUser(User user)
+        public async Task AddIdea(User user)
         {
             await _httpService.Post($"api/user", user);
         }

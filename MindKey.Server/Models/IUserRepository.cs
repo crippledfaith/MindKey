@@ -8,9 +8,9 @@ namespace MindKey.Server.Models
     {
         AuthenticateResponse Authenticate(AuthenticateRequest request);
         PagedResult<User> GetUsers(string? name, int page);
-        Task<User?> GetUser(int Id);
+        Task<User?> GetUser(long Id);
         Task<User> AddUser(User user);
         Task<User?> UpdateUser(User user);
-        Task<User?> DeleteUser(int id);
+        Task<User?> DeleteUser(long id);
     }
 }

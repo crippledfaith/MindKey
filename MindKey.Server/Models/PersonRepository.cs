@@ -20,7 +20,7 @@ namespace MindKey.Server.Models
             return result.Entity;
         }
 
-        public async Task<Person?> DeletePerson(int personId)
+        public async Task<Person?> DeletePerson(long personId)
         {
             var result = await _appDbContext.People.FirstOrDefaultAsync(p => p.PersonId == personId);
             if (result != null)
@@ -35,7 +35,7 @@ namespace MindKey.Server.Models
             return result;
         }
 
-        public async Task<Person?> GetPerson(int personId)
+        public async Task<Person?> GetPerson(long personId)
         {
             var result = await _appDbContext.People
                 .Include(p => p.Addresses)
@@ -49,7 +49,20 @@ namespace MindKey.Server.Models
                 throw new KeyNotFoundException("Person not found");
             }
         }
-
+        public async Task<Person?> GetPersonByUser(long userid)
+        {
+            var result = await _appDbContext.People
+              .Include(p => p.Addresses)
+              .FirstOrDefaultAsync(p => p.User.Id == userid);
+            if (result != null)
+            {
+                return result;
+            }
+            else
+            {
+                throw new KeyNotFoundException("Person not found");
+            }
+        }
         public PagedResult<Person> GetPeople(string? name, int page)
         {
             int pageSize = 10;

@@ -6,9 +6,9 @@ namespace MindKey.Client.Services
     public interface IUploadService
     {
         Task<PagedResult<Upload>> GetUploads(string name, string page);
-        Task<Upload> GetUpload(int id);
+        Task<Upload> GetUpload(long id);
 
-        Task DeleteUpload(int id);
+        Task DeleteUpload(long id);
 
         Task AddUpload(Upload upload);
 

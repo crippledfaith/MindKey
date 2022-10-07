@@ -18,12 +18,12 @@ namespace MindKey.Client.Services
             return await _httpService.Get<PagedResult<Upload>>("api/upload" + "?page=" + page + "&name=" + name);
         }
 
-        public async Task<Upload> GetUpload(int id)
+        public async Task<Upload> GetUpload(long id)
         {
             return await _httpService.Get<Upload>($"api/upload/{id}");
         }
 
-        public async Task DeleteUpload(int id)
+        public async Task DeleteUpload(long id)
         {
             await _httpService.Delete($"api/upload/{id}");
         }

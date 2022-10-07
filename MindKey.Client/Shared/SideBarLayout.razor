@@ -1,10 +1,17 @@
-﻿<h3>SideBarLayout</h3>
+﻿@inject IUserService UserService
+@inject EventService EventService
+
 <!-- ======= Sidebar ======= -->
 <aside id="sidebar" class="sidebar">
 
     <ul class="sidebar-nav" id="sidebar-nav">
         <li class="nav-heading">Home</li>
-        <NavLink href="/" Match="NavLinkMatch.All" class="nav-item nav-link">Home</NavLink>
+        <NavLink href="/wall/1" Match="NavLinkMatch.All" class="nav-item nav-link">Home</NavLink>
+        @if (UserService.User != null)
+        {
+            <NavLink href="/makepost/" class="nav-item nav-link">New Post</NavLink>
+            <NavLink href="/mywall/1" class="nav-item nav-link">My Posts</NavLink>
+        }
         <li class="nav-heading">Managment</li>
         <NavLink href="/person/1" class="nav-item nav-link">Data Entry</NavLink>
         <NavLink href="/upload/1" class="nav-item nav-link">File Management</NavLink>
@@ -16,5 +23,13 @@
 </aside>
 <!-- End Sidebar-->
 @code {
-
+    protected override void OnInitialized()
+    {
+        EventService.LoginAndOutEvent += LoginAndOut;
+        base.OnInitialized();
+    }
+    public void LoginAndOut(bool isLoggedIn)
+    {
+        StateHasChanged();
+    }
 }

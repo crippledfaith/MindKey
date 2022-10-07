@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindKey.Server.Models;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MindKey.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221006004959_intToLong")]
+    partial class intToLong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,6 @@ namespace MindKey.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("AgainstCount")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Argument")
                         .HasColumnType("integer");
 
@@ -74,17 +73,8 @@ namespace MindKey.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("ForCount")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("NetrulCount")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("PersonId")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime>("PostDateTime")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -108,25 +98,16 @@ namespace MindKey.Server.Migrations
                     b.Property<int>("Argument")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("IdeaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("UserId")
+                    b.Property<long>("PersonId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdeaId");
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("PersonId");
 
                     b.ToTable("IdeaUserComments");
                 });
@@ -252,21 +233,13 @@ namespace MindKey.Server.Migrations
 
             modelBuilder.Entity("MindKey.Shared.Models.MindKey.IdeaUserComment", b =>
                 {
-                    b.HasOne("MindKey.Shared.Models.MindKey.Idea", "Idea")
+                    b.HasOne("MindKey.Shared.Models.Person", "Person")
                         .WithMany()
-                        .HasForeignKey("IdeaId")
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MindKey.Shared.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Idea");
-
-                    b.Navigation("User");
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("MindKey.Shared.Models.Person", b =>

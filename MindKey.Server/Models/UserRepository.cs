@@ -57,7 +57,7 @@ namespace MindKey.Server.Models
             }
         }
 
-        public async Task<User?> GetUser(int Id)
+        public async Task<User?> GetUser(long Id)
         {
             var result = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == Id);
             if (result != null)
@@ -115,7 +115,7 @@ namespace MindKey.Server.Models
             return result;
         }
 
-        public async Task<User?> DeleteUser(int Id)
+        public async Task<User?> DeleteUser(long Id)
         {
             var result = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == Id);
             if (result != null)
