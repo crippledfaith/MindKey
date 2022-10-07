@@ -29,6 +29,13 @@ namespace MindKey.Server.Controllers
             return Ok(_ideaRepository.GetIdeas(page, userId));
         }
 
+        [AllowAnonymous]
+        [HttpGet("others")]
+        public ActionResult GetIdeasOfOthers([FromQuery] int page, long? userId)
+        {
+            return Ok(_ideaRepository.GetIdeasOfOthers(page, userId));
+        }
+
         /// <summary>
         /// Gets a specific person by Id.
         /// </summary>

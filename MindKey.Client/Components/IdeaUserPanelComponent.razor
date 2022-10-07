@@ -1,0 +1,27 @@
+﻿@inject IUserService UserService
+@using MindKey.Shared.Models.MindKey
+
+<span class="badge border-primary border-1 text-primary">Author: @Idea.Person.FirstName @Idea.Person.LastName</span>
+<span class="badge border-secondary border-1 text-secondary">Date: @Idea.PostDateTime.ToShortDateString() </span>
+@if (UserService.User != null)
+{
+    <span class="badge border-primary border-1 text-primary" @onclick="()=>Edit()"><i class="oi oi-pencil">Edit</i></span>
+    <span class="badge border-secondary border-1 text-secondary" @onclick="()=>Delete()"><i class=" oi oi-delete">Delete</i>
+
+</span>
+}
+
+
+@code {
+    [Parameter]
+    public Idea Idea { get; set; } = null;
+    public void Edit()
+    {
+        
+    }
+    public void Delete()
+    {
+
+    }
+
+}

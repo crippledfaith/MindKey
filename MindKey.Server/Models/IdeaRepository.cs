@@ -67,6 +67,26 @@ namespace MindKey.Server.Models
             }
         }
 
+        public PagedResult<Idea>? GetIdeasOfOthers(int page, long? userId)
+        {
+            int pageSize = 10;
+            if (userId == null)
+            {
+                return _appDbContext.Ideas
+                    .Include("Person")
+                    .OrderBy(p => p.PostDateTime)
+                    .GetPaged(page, pageSize);
+            }
+            else
+            {
+                return _appDbContext.Ideas
+                    .Include("Person")
+                    .Where(p => p.Person.PersonId != userId)
+                    .OrderBy(p => p.PostDateTime)
+                    .GetPaged(page, pageSize);
+            }
+        }
+
         public async Task<Idea?> UpdateIdea(Idea idea)
         {
             var result = await _appDbContext.Ideas.FirstOrDefaultAsync(p => p.Id == idea.Id);

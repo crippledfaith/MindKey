@@ -5,8 +5,7 @@
     <div class="card-body">
         <h5 class="card-title" @onclick="OpenCard">@Idea.Title</h5>
         <h6 class="card-subtitle mb-2 text-muted" @onclick="()=>{ShowHideText(true);}">@Description</h6>
-        <span class="badge border-primary border-1 text-primary">Author: @Idea.Person.FirstName @Idea.Person.LastName</span>
-        <span class="badge border-secondary border-1 text-secondary">Date: @Idea.PostDateTime.ToShortDateString() </span>
+
         <hr />
         <AgreeDisagreeComponent Idea="@Idea" />
         <hr />

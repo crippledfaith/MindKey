@@ -5,6 +5,7 @@
 @inject IIdeaService IdeaService
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
 @inject PageHistoryState PageHistoryState
+@inject IUserService UserService
 
 @if (Ideas == null)
 {
@@ -32,7 +33,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var results = (await IdeaService.GetIdeas(Page,null));
+        var results = (await IdeaService.GetIdeasOfOthers(Page,UserService.User?.Id));
         Ideas = results;
         PageHistoryState.AddPageToHistory(UriHelper.Uri);
     }
