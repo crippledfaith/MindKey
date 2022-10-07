@@ -1,11 +1,12 @@
 ﻿@using MindKey.Shared.Models.MindKey
+
 @inject NavigationManager navManager
 
 <div class="card info-card">
     <div class="card-body">
         <h5 class="card-title" @onclick="OpenCard">@Idea.Title</h5>
         <h6 class="card-subtitle mb-2 text-muted" @onclick="()=>{ShowHideText(true);}">@Description</h6>
-
+        <IdeaUserPanelComponent Idea="@Idea" />
         <hr />
         <AgreeDisagreeComponent Idea="@Idea" />
         <hr />

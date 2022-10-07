@@ -3,12 +3,10 @@
 
 <span class="badge border-primary border-1 text-primary">Author: @Idea.Person.FirstName @Idea.Person.LastName</span>
 <span class="badge border-secondary border-1 text-secondary">Date: @Idea.PostDateTime.ToShortDateString() </span>
-@if (UserService.User != null)
+@if (UserService.User != null && UserService.User.Id==Idea.Person.PersonId)
 {
-    <span class="badge border-primary border-1 text-primary" @onclick="()=>Edit()"><i class="oi oi-pencil">Edit</i></span>
-    <span class="badge border-secondary border-1 text-secondary" @onclick="()=>Delete()"><i class=" oi oi-delete">Delete</i>
-
-</span>
+    <button type="button" class="btn btn-light btn-sm" @onclick="()=>Edit()"><i class="oi oi-pencil"> Edit</i></button>
+    <button type="button" class="btn btn-light btn-sm" @onclick="()=>Delete()"><i class=" oi oi-trash"> Delete</i></button>
 }
 
 
