@@ -1,3 +1,5 @@
+using MindKey.Shared;
+
 namespace MindKey.Server.Authorization;
 public class AuthenticateResponse
 {
@@ -6,4 +8,5 @@ public class AuthenticateResponse
     public string LastName { get; set; }
     public string Username { get; set; }
     public string Token { get; set; } = default!;
+    public UserType? UserType { get; set; } = default!;
 }

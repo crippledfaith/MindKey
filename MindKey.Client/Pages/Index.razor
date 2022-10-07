@@ -1,4 +1,20 @@
 ﻿@page "/"
+@page "/admin"
 @using MindKey.Client.Pages.Wall
+@inject NavigationManager NavigationManager
 
-<List />
+<List Permission="@Permission" />
+
+@code {
+    public string Permission { get; set; }
+
+    protected override void OnParametersSet()
+    {
+       
+        base.OnParametersSet();
+    }
+    public bool IsUrlLocal(string url)
+    {
+        return url.Contains("https://localhost:5001/");
+    }
+}

@@ -35,6 +35,12 @@
             content = JSON.parse(quillContent);
             return quillControl.__quill.setContents(content, 'api');
         },
-
+        setQuillContent: function (quillControl, quillContent) {
+            return quillControl.__quill.root.innerHTML = quillContent;
+        },
+        disableQuillEditor: function (quillControl) {
+            return quillControl.__quill.root.innerHTML = "";
+            quillControl.__quill.enable(false);
+        }
     };
 })();

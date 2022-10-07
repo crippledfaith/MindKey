@@ -13,6 +13,9 @@ namespace MindKey.Server.Models
         }
         public async Task<Idea?> AddIdea(Idea idea)
         {
+            idea.Id = new Random().NextInt64();
+            idea.Person = await _appDbContext.People.FirstOrDefaultAsync(q => q.PersonId == idea.Person.PersonId);
+            idea.Person.User = await _appDbContext.Users.FirstOrDefaultAsync(q => q.Id == idea.Person.User.Id);
             var result = await _appDbContext.Ideas.AddAsync(idea);
             await _appDbContext.SaveChangesAsync();
             return result.Entity;
@@ -36,7 +39,10 @@ namespace MindKey.Server.Models
         public async Task<Idea?> GetIdea(long id)
         {
 
-            var result = await _appDbContext.Ideas.Include("Person").FirstOrDefaultAsync(p => p.Id == id);
+            var result = await _appDbContext.Ideas
+                 .Include(q => q.Person)
+                 .Include(q => q.Person.Addresses)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (result != null)
             {
                 return result;
@@ -53,16 +59,18 @@ namespace MindKey.Server.Models
             if (userId == null)
             {
                 return _appDbContext.Ideas
-                    .Include("Person")
-                    .OrderBy(p => p.PostDateTime)
+                    .Include(q => q.Person)
+                    .Include(q => q.Person.Addresses)
+                    .OrderByDescending(p => p.PostDateTime)
                     .GetPaged(page, pageSize);
             }
             else
             {
                 return _appDbContext.Ideas
-                    .Include("Person")
+                    .Include(q => q.Person)
+                    .Include(q => q.Person.Addresses)
                     .Where(p => p.Person.PersonId == userId)
-                    .OrderBy(p => p.PostDateTime)
+                    .OrderByDescending(p => p.PostDateTime)
                     .GetPaged(page, pageSize);
             }
         }

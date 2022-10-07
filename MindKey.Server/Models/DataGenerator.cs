@@ -26,10 +26,11 @@ namespace MindKey.Server.Models
 
                 User customUser = new User()
                 {
-                    FirstName = "Terry",
-                    LastName = "Smith",
+                    FirstName = "Taufiq",
+                    LastName = "Rahman",
                     Username = "admin",
-                    Password = "admin"
+                    Password = "admin",
+                    UserType = Shared.UserType.Admin,
                 };
 
                 users.Add(customUser);
@@ -64,35 +65,10 @@ namespace MindKey.Server.Models
                 foreach (Shared.Models.Person p in xpeople)
                 {
                     p.User = appDbContext.Users.Skip(x++).First();
+                    p.FirstName = p.User.FirstName;
+                    p.LastName = p.User.LastName;
                     appDbContext.People.Add(p);
                     people.Add(p);
-                }
-                appDbContext.SaveChanges();
-            }
-            if (!appDbContext.Users.Any())
-            {
-                var testUsers = new Faker<User>()
-                    .RuleFor(u => u.FirstName, u => u.Name.FirstName())
-                    .RuleFor(u => u.LastName, u => u.Name.LastName())
-                    .RuleFor(u => u.Username, u => u.Internet.UserName())
-                    .RuleFor(u => u.Password, u => u.Internet.Password());
-                var users = testUsers.Generate(4);
-
-                User customUser = new User()
-                {
-                    FirstName = "Terry",
-                    LastName = "Smith",
-                    Username = "admin",
-                    Password = "admin"
-                };
-
-                users.Add(customUser);
-
-                foreach (User u in users)
-                {
-                    u.PasswordHash = BCrypt.Net.BCrypt.HashPassword(u.Password);
-                    u.Password = "**********";
-                    appDbContext.Users.Add(u);
                 }
                 appDbContext.SaveChanges();
             }

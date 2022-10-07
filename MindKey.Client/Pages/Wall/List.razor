@@ -29,6 +29,8 @@ else
 @code {
     [Parameter]
     public string Page { get; set; } = "1";
+    [Parameter]
+    public string Permission { get; set; } = "1";
     public PagedResult<Idea> Ideas { get; set; }
 
     protected override async Task OnParametersSetAsync()

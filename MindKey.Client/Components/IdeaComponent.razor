@@ -1,11 +1,17 @@
 ﻿@using MindKey.Shared.Models.MindKey
 
 @inject NavigationManager navManager
+@inject EventService EventService
+@inject IIdeaService IdeaService
+@inject IJSRuntime JSRuntime
 
 <div class="card info-card">
     <div class="card-body">
         <h5 class="card-title" @onclick="OpenCard">@Idea.Title</h5>
-        <h6 class="card-subtitle mb-2 text-muted" @onclick="()=>{ShowHideText(true);}">@Description</h6>
+        <div id="toolbar" style="visibility:hidden">
+        </div>
+        <div @ref="@divEditorElement" />
+        <div></div>
         <IdeaUserPanelComponent Idea="@Idea" />
         <hr />
         <AgreeDisagreeComponent Idea="@Idea" />
@@ -18,10 +24,44 @@
     public Idea Idea { get; set; } = null;
     public bool IsShowAll { get; set; }
     public string Description { get; set; }
-    protected override void OnParametersSet()
+    private ElementReference divEditorElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeAsync<string>(
+                "QuillFunctions.createQuill", divEditorElement);
+            await JSRuntime.InvokeAsync<object>(
+                "QuillFunctions.disableQuillEditor", divEditorElement);
+            await SetContent(Idea.Description);
+        }
+    }
+ 
+    protected override void OnInitialized()
+    {
+        EventService.EditIdeaEvent += EditIdea;
+        EventService.DeleteIdeaEvent += DeleteIdea;
+        base.OnInitialized();
+    }
+    protected override async Task OnParametersSetAsync()
     {
         ShowHideText(false);
-        base.OnParametersSetAsync();
+
+        //await base.OnParametersSetAsync();
+    }
+    async Task SetContent(string content)
+    {
+        var QuillDelta = await JSRuntime.InvokeAsync<object>(
+            "QuillFunctions.setQuillContent", divEditorElement, content);
+    }
+    public void EditIdea(Idea idea)
+    {
+        navManager.NavigateTo($"/makepost/{idea.Id}");
+    }
+    public void DeleteIdea(Idea idea)
+    {
+
     }
     public void OpenCard()
     {

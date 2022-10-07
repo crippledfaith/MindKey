@@ -46,7 +46,7 @@ namespace MindKey.Client.Services
 
         public async Task UpdateIdea(Idea idea)
         {
-            await _httpService.Put($"api/user", idea);
+            await _httpService.Put($"api/idea", idea);
 
         }
     }

@@ -32,6 +32,7 @@ namespace MindKey.Server.Models
             response.FirstName = _user.FirstName;
             response.Username = _user.Username;
             response.Token = _jwtUtils.GenerateToken(_user);
+            response.UserType = _user.UserType;
             return response;
         }
 

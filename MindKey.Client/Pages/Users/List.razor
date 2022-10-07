@@ -110,7 +110,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        users = await UserService.GetIdeas(null, Page);
+        users = await UserService.GetUsers(null, Page);
         PageHistoryState.AddPageToHistory(UriHelper.Uri);
     }
 
@@ -126,17 +126,17 @@
     {
         if (string.IsNullOrEmpty(SearchTerm))
         {
-            users = await UserService.GetIdeas(null, Page);
+            users = await UserService.GetUsers(null, Page);
             return;
         }
-        users = await UserService.GetIdeas(SearchTerm, Page);
+        users = await UserService.GetUsers(SearchTerm, Page);
         StateHasChanged();
     }
 
     protected async Task ClearSearch()
     {
         SearchTerm = string.Empty;
-        users = await UserService.GetIdeas(SearchTerm, Page);
+        users = await UserService.GetUsers(SearchTerm, Page);
         PageHistoryState.AddPageToHistory(UriHelper.Uri);
         StateHasChanged();
     }
@@ -151,8 +151,8 @@
     {
         var user = _user;
         user.IsDeleting = true;
-        await UserService.DeleteIdea(user.Id);
-        users = await UserService.GetIdeas(null, Page);
+        await UserService.DeleteUser(user.Id);
+        users = await UserService.GetUsers(null, Page);
         StateHasChanged();
     }
 }

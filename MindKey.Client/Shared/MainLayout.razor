@@ -1,6 +1,7 @@
 @using MindKey.Client.Services
 
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 @inherits LayoutComponentBase
 
 <HeaderLayout></HeaderLayout>
@@ -17,8 +18,12 @@
     {
         if (firstRender)
         {
-            await JS.InvokeAsync<IJSObjectReference>("import",
-                "/assets/js/main.js");
+            await JS.InvokeAsync<IJSObjectReference>("import","/assets/js/main.js");
         }
+    }
+    protected override Task OnInitializedAsync()
+    {
+        //var url= NavigationManager.Uri;
+        return base.OnInitializedAsync();
     }
 }

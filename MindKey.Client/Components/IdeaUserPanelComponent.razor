@@ -1,4 +1,6 @@
 ﻿@inject IUserService UserService
+@inject EventService EventService
+
 @using MindKey.Shared.Models.MindKey
 
 <span class="badge border-primary border-1 text-primary">Author: @Idea.Person.FirstName @Idea.Person.LastName</span>
@@ -13,13 +15,14 @@
 @code {
     [Parameter]
     public Idea Idea { get; set; } = null;
+
     public void Edit()
     {
-        
+        EventService.EditIdea(Idea);
     }
     public void Delete()
     {
-
+        EventService.DeleteIdea(Idea);
     }
 
 }

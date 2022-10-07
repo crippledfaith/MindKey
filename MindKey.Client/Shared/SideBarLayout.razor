@@ -11,12 +11,16 @@
         {
             <NavLink href="/makepost/" class="nav-item nav-link">New Post</NavLink>
             <NavLink href="/mywall/1" class="nav-item nav-link">My Posts</NavLink>
+            if (UserService.User.UserType == MindKey.Shared.UserType.Admin)
+            {
+                <li class="nav-heading">Managment</li>
+                <NavLink href="/person/1" class="nav-item nav-link">Data Entry</NavLink>
+                <NavLink href="/upload/1" class="nav-item nav-link">File Management</NavLink>
+                <NavLink href="/user/1" class="nav-item nav-link">Users</NavLink>
+                <NavLink href="/swagger/index.html" class="nav-item nav-link" target="_blank">API</NavLink>
+            }
         }
-        <li class="nav-heading">Managment</li>
-        <NavLink href="/person/1" class="nav-item nav-link">Data Entry</NavLink>
-        <NavLink href="/upload/1" class="nav-item nav-link">File Management</NavLink>
-        <NavLink href="/user/1" class="nav-item nav-link">Users</NavLink>
-        <NavLink href="/swagger/index.html" class="nav-item nav-link" target="_blank">API</NavLink>
+
         <!-- End Profile Page Nav -->
     </ul>
 

@@ -1,19 +1,25 @@
-﻿@page "/makepost/"
+﻿@page "/makepost"
+@page "/makepost/{IdeaId}"
+@using MindKey.Shared.Models.MindKey
 @inject IJSRuntime JSRuntime
+@inject IIdeaService IdeaService
+@inject IPersonService PersonService
+@inject IUserService UserService
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">State Your Opinion</h5>
         <div class="row g-3">
- 
+
             <div class="col-12">
                 <label for="inputCity" class="form-label">Opinion</label>
-                <input type="text" class="form-control" placeholder="State Your Opinion">
+                <input type="text" class="form-control" @bind="Title" placeholder="State Your Opinion">
             </div>
 
         </div>
+        <label for="inputCity" class="form-label">Description</label>
+
         @if (EditorEnabled)
         {
-            <label for="inputCity" class="form-label">Description</label>
             <div id="toolbar">
                 <span class="ql-formats">
                     <select class="ql-font">
@@ -57,18 +63,66 @@
         <div @ref="@divEditorElement" />
         <hr />
         <div class="text-center">
-            <button type="button" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-primary">Publish</button>
+            <button type="button" class="btn btn-primary" @onclick="()=>Save()">Save</button>
+            <button type="button" class="btn btn-primary" @onclick="()=>Publish()">Publish</button>
             <button type="reset" class="btn btn-secondary">Reset</button>
         </div>
     </div>
 </div>
 @code {
+    [Parameter]
+    public string IdeaId { get; set; } = null;
+    public Idea Idea { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
     private string strSavedContent = "";
     private ElementReference divEditorElement;
     private string EditorContent;
     private string EditorHTMLContent;
     private bool EditorEnabled = true;
+    public async void Save()
+    {
+        if (Idea == null)
+        {
+            Idea = new Idea();
+            Idea.Person = await PersonService.GetPersonByUser(UserService.User.Id);
+            Idea.PostDateTime = DateTime.UtcNow;
+        }
+        Idea.Title = Title;
+        Idea.Description = await GetHTML();
+        Idea.PostDateTime = DateTime.UtcNow;
+        if (Idea.Id != 0)
+        {
+            await IdeaService.UpdateIdea(Idea);
+        }
+        else
+        {
+            await IdeaService.AddIdea(Idea);
+        }
+    }
+    public void Publish()
+    {
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(IdeaId))
+        {
+            Idea = await IdeaService.GetIdea(long.Parse(IdeaId));
+            Title = Idea.Title;
+            Description = Idea.Description;
+            await SetContent(Description);
+        }
+        else
+        {
+            Idea = null;
+            Title = "";
+            Description = "";
+            await SetContent(Description);
+        }
+
+
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -83,11 +137,12 @@
         EditorContent = await JSRuntime.InvokeAsync<string>(
             "QuillFunctions.getQuillText", divEditorElement);
     }
-    async Task GetHTML()
+    async Task<string> GetHTML()
     {
         EditorContent = "";
         EditorHTMLContent = await JSRuntime.InvokeAsync<string>(
             "QuillFunctions.getQuillHTML", divEditorElement);
+        return EditorHTMLContent;
     }
     async Task GetEditorContent()
     {
@@ -104,5 +159,10 @@
     {
         var QuillDelta = await JSRuntime.InvokeAsync<object>(
             "QuillFunctions.loadQuillContent", divEditorElement, strSavedContent);
+    }
+    async Task SetContent(string content)
+    {
+        var QuillDelta = await JSRuntime.InvokeAsync<object>(
+            "QuillFunctions.setQuillContent", divEditorElement, content);
     }
 }

@@ -93,19 +93,26 @@ namespace MindKey.Client.Shared
 
         private async Task sendRequest(HttpRequestMessage request)
         {
-            await addJwtHeader(request);
-
-            // send request
-            using var response = await _httpClient.SendAsync(request);
-
-            // auto logout on 401 response
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            try
             {
-                _navigationManager.NavigateTo("user/logout");
-                return;
+                await addJwtHeader(request);
+
+                // send request
+                using var response = await _httpClient.SendAsync(request);
+
+                // auto logout on 401 response
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _navigationManager.NavigateTo("user/logout");
+                    return;
+                }
+
+                await handleErrors(response);
+            }
+            catch (Exception)
+            {
             }
 
-            await handleErrors(response);
         }
 
         private async Task<T> sendRequest<T>(HttpRequestMessage request)
@@ -144,6 +151,7 @@ namespace MindKey.Client.Shared
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
+                var erreor = await response.Content.ReadAsStringAsync();
                 var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                 throw new Exception(error["message"]);
             }
