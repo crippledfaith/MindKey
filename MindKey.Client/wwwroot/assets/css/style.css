@@ -1290,3 +1290,6 @@ h6 {
 .ql-container.ql-snow {
     border: none !important;
 }
+.card-title {
+    font-size: 2em !important
+}

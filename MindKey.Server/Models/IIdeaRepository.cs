@@ -10,6 +10,8 @@ namespace MindKey.Server.Models
         Task<Idea?> GetIdea(long id);
         PagedResult<Idea>? GetIdeas(int page, long? userId);
         PagedResult<Idea>? GetIdeasOfOthers(int page, long? userId);
+        Task<bool?> SetArgument(IdeaUserComment ideaUserComment);
         Task<Idea?> UpdateIdea(Idea idea);
+        Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment);
     }
 }

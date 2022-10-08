@@ -10,6 +10,9 @@ namespace MindKey.Client.Services
         Task<Idea> GetIdea(long id);
         Task<PagedResult<Idea>> GetIdeas(string page, long? userId);
         Task<PagedResult<Idea>> GetIdeasOfOthers(string page, long? userId);
+        Task<bool> SetAurgument(IdeaUserComment ideaUserComment);
         Task UpdateIdea(Idea idea);
+
+        Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment);
     }
 }

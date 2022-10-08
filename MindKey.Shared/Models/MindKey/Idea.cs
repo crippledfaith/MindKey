@@ -5,6 +5,7 @@
         public long Id { get; set; }
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
+        public string DescriptionShort { get; set; } = default!;
         public Person Person { get; set; } = default!;
         public ArgumentType Argument { get; set; } = default!;
         public DateTime PostDateTime { get; set; } = default!;

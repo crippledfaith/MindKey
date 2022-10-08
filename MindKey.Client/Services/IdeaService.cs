@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components;
 using MindKey.Client.Shared;
 using MindKey.Shared.Data;
 using MindKey.Shared.Models.MindKey;
@@ -7,17 +6,14 @@ namespace MindKey.Client.Services
 {
     public class IdeaService : IIdeaService
     {
-        private IHttpService _httpService;
-        private ILocalStorageService _localStorageService;
-        private NavigationManager _navigationManager;
-        private string _userKey = "user";
+        private readonly IHttpService _httpService;
+        private readonly IUserService _userService;
 
 
-        public IdeaService(IHttpService httpService, ILocalStorageService localStorageService, NavigationManager navigationManager)
+        public IdeaService(IHttpService httpService, IUserService userService)
         {
             _httpService = httpService;
-            _localStorageService = localStorageService;
-            _navigationManager = navigationManager;
+            _userService = userService;
         }
 
 
@@ -47,7 +43,16 @@ namespace MindKey.Client.Services
         public async Task UpdateIdea(Idea idea)
         {
             await _httpService.Put($"api/idea", idea);
+        }
 
+        public async Task<bool> SetAurgument(IdeaUserComment ideaUserComment)
+        {
+            return await _httpService.Post<bool>($"api/idea/SetArgument", ideaUserComment);
+        }
+
+        public async Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment)
+        {
+            return await _httpService.Post<IdeaUserComment?>($"api/idea/GetSetAgument", ideaUserComment);
         }
     }
 }

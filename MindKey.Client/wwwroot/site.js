@@ -14,7 +14,7 @@
                 modules: {
                     toolbar: '#toolbar'
                 },
-                placeholder: 'Compose an epic...',
+                placeholder: '',
                 readOnly: false,
                 theme: 'snow'
             };
@@ -39,8 +39,8 @@
             return quillControl.__quill.root.innerHTML = quillContent;
         },
         disableQuillEditor: function (quillControl) {
-            return quillControl.__quill.root.innerHTML = "";
             quillControl.__quill.enable(false);
+            return quillControl.__quill.root.innerHTML = "";
         }
     };
 })();

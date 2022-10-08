@@ -7,11 +7,11 @@
 
 <div class="card info-card">
     <div class="card-body">
-        <h5 class="card-title" @onclick="OpenCard">@Idea.Title</h5>
-        <div id="toolbar" style="visibility:hidden">
-        </div>
-        <div @ref="@divEditorElement" />
-        <div></div>
+        <h5 class="card-title">@Idea.Title</h5>
+        <div id="toolbar" style="visibility:hidden"> </div>
+        <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Idea.DescriptionShort" />
+        <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCard()">@ShowMoreText</span>
+        <hr />
         <IdeaUserPanelComponent Idea="@Idea" />
         <hr />
         <AgreeDisagreeComponent Idea="@Idea" />
@@ -22,39 +22,33 @@
 @code {
     [Parameter]
     public Idea Idea { get; set; } = null;
-    public bool IsShowAll { get; set; }
+    public bool IsShowAll { get; set; } = false;
     public string Description { get; set; }
     private ElementReference divEditorElement;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public QuillComponent Quill { get; set; }
+    public string ShowMoreText { get; set; } = "Show More...";
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeAsync<string>(
-                "QuillFunctions.createQuill", divEditorElement);
-            await JSRuntime.InvokeAsync<object>(
-                "QuillFunctions.disableQuillEditor", divEditorElement);
-            await SetContent(Idea.Description);
+            IsShowAll = true;
         }
+        base.OnAfterRender(firstRender);
     }
- 
+
     protected override void OnInitialized()
     {
         EventService.EditIdeaEvent += EditIdea;
         EventService.DeleteIdeaEvent += DeleteIdea;
+        EventService.HideAllStoriesEvent += HideAllStories;
         base.OnInitialized();
     }
     protected override async Task OnParametersSetAsync()
     {
-        ShowHideText(false);
-
+        //ShowHideText(false);
         //await base.OnParametersSetAsync();
     }
-    async Task SetContent(string content)
-    {
-        var QuillDelta = await JSRuntime.InvokeAsync<object>(
-            "QuillFunctions.setQuillContent", divEditorElement, content);
-    }
+    
     public void EditIdea(Idea idea)
     {
         navManager.NavigateTo($"/makepost/{idea.Id}");
@@ -63,22 +57,31 @@
     {
 
     }
-    public void OpenCard()
+    public void HideAllStories(Idea idea)
     {
-        navManager.NavigateTo($"/idea/{Idea.Id}");
-    }
-    public void ShowHideText(bool reload = true)
-    {
-        if (!IsShowAll)
+        if (idea.Id != Idea.Id)
         {
-            Description = $"{Idea.Description.Substring(0, 500)}...";
+            IsShowAll = false;
+            OpenCard();
+        }
+    }
+    public async void OpenCard(bool render = true)
+    {
+        if (IsShowAll)
+        {
+            ShowMoreText = "Hide...";
+            EventService.HideAllStories(Idea);
+            await Quill.SetContent(Idea.Description);
         }
         else
         {
-            Description = $"{Idea.Description}";
+            ShowMoreText = "Show More...";
+            await Quill.SetContent(Idea.DescriptionShort);
         }
         IsShowAll = !IsShowAll;
-        if (reload)
+        if (render)
             StateHasChanged();
+
     }
+
 }

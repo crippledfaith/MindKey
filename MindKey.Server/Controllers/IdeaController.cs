@@ -54,6 +54,23 @@ namespace MindKey.Server.Controllers
         {
             return Ok(await _ideaRepository.AddIdea(idea));
         }
+        /// <summary>
+        /// Creates a person with child addresses.
+        /// </summary>
+        [HttpPost("SetArgument")]
+        public async Task<ActionResult> SetArgument(IdeaUserComment ideaUserComment)
+        {
+            return Ok(await _ideaRepository.SetArgument(ideaUserComment));
+        }
+        /// <summary>
+        /// Creates a person with child addresses.
+        /// </summary>
+        [HttpPost("GetSetAgument")]
+        public async Task<ActionResult> GetSetAgument(IdeaUserComment ideaUserComment)
+        {
+            var result = await _ideaRepository.GetSetAgument(ideaUserComment);
+            return Ok(result ?? new IdeaUserComment());
+        }
 
         /// <summary>
         /// Updates a person with a specific Id.
