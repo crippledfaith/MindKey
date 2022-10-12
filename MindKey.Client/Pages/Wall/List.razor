@@ -7,32 +7,32 @@
 @inject PageHistoryState PageHistoryState
 @inject IUserService UserService
 
-@if (Ideas == null)
+<Pager Result=@Ideas PageChanged=PagerPageChanged />
+@foreach (var idea in Ideas.Results)
 {
-    <div class="card info-card">
-        <div class="card-body">
-            <p><em>Loading...</em></p>
-        </div>
-    </div>
+    <IdeaComponent Idea="@idea" />
 }
-else
-{
-    <Pager Result=@Ideas PageChanged=PagerPageChanged />
-    @foreach (var idea in Ideas.Results)
-    {
-        <IdeaComponent Idea="@idea" />
-    }
-    <Pager Result=@Ideas PageChanged=PagerPageChanged />
-
-}
+<Pager Result=@Ideas PageChanged=PagerPageChanged />
 
 @code {
     [Parameter]
     public string Page { get; set; } = "1";
     [Parameter]
     public string Permission { get; set; } = "1";
+    public PagedResult<Idea> EmptyIdeas { get; set; }
     public PagedResult<Idea> Ideas { get; set; }
-
+    protected override void OnInitialized()
+    {
+        EmptyIdeas= new PagedResult<Idea>()
+            {
+                CurrentPage = 0,
+                PageCount = 0,
+                PageSize = 10,
+                Results = new List<Idea> { new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(),new Idea() }
+            };
+        Ideas = EmptyIdeas;
+        base.OnInitialized();
+    }
     protected override async Task OnParametersSetAsync()
     {
         var results = (await IdeaService.GetIdeasOfOthers(Page,UserService.User?.Id));
@@ -42,6 +42,9 @@ else
 
     protected void PagerPageChanged(int page)
     {
+        Ideas.Results = EmptyIdeas.Results;
+        Ideas.CurrentPage = page;
+        StateHasChanged();
         UriHelper.NavigateTo("/wall/" + page);
         PageHistoryState.AddPageToHistory(UriHelper.Uri);
     }

@@ -4,20 +4,36 @@
 @inject EventService EventService
 @inject IIdeaService IdeaService
 @inject IJSRuntime JSRuntime
-
-<div class="card info-card">
-    <div class="card-body">
-        <h5 class="card-title">@Idea.Title</h5>
-        <div id="toolbar" style="visibility:hidden"> </div>
-        <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Idea.DescriptionShort" />
-        <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCard()">@ShowMoreText</span>
-        <hr />
-        <IdeaUserPanelComponent Idea="@Idea" />
-        <hr />
-        <AgreeDisagreeComponent Idea="@Idea" />
-        <hr />
+@if (Idea==null || Idea.Id == 0)
+{
+        <div class="card info-card">
+        <div class="card-body">
+            <h5 class="card-title">Loading..</h5>
+            <div id="toolbar" style="visibility:collapse"> </div>
+            <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..." />
+            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCard()">@ShowMoreText</span>
+            <br />
+            <IdeaUserPanelComponent Idea="@null" />
+            <AgreeDisagreeComponent Idea="@null" />
+            <CommentComponent Idea="@null" />
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="card info-card">
+        <div class="card-body">
+            <h5 class="card-title">@Idea.Title</h5>
+            <div id="toolbar" style="visibility:collapse"> </div>
+            <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Idea.DescriptionShort" />
+            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCard()">@ShowMoreText</span>
+            <br />
+            <IdeaUserPanelComponent Idea="@Idea" />
+            <AgreeDisagreeComponent Idea="@Idea" />
+            <CommentComponent Idea="@Idea" />
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]

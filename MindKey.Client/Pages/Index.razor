@@ -2,15 +2,24 @@
 @page "/admin"
 @using MindKey.Client.Pages.Wall
 @inject NavigationManager NavigationManager
+@inject EventService EventService
 
 <List Permission="@Permission" />
 
 @code {
     public string Permission { get; set; }
-
+    protected override void OnInitialized()
+    {
+        EventService.LoginAndOutEvent += LoginAndOut;
+        base.OnInitialized();
+    }
+    public void LoginAndOut(bool isLoggeding)
+    {
+        NavigationManager.NavigateTo("/wall/1");
+    }
     protected override void OnParametersSet()
     {
-       
+
         base.OnParametersSet();
     }
     public bool IsUrlLocal(string url)

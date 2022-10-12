@@ -89,5 +89,11 @@ namespace MindKey.Server.Controllers
         {
             return Ok(await _ideaRepository.DeleteIdea(id));
         }
+        [AllowAnonymous]
+        [HttpGet("GetComments")]
+        public ActionResult GetComments([FromQuery] int page, int pageSize, long? userId)
+        {
+            return Ok(_ideaRepository.GetComments(page, pageSize, userId));
+        }
     }
 }

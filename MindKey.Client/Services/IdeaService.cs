@@ -54,5 +54,10 @@ namespace MindKey.Client.Services
         {
             return await _httpService.Post<IdeaUserComment?>($"api/idea/GetSetAgument", ideaUserComment);
         }
+
+        public async Task<PagedResult<IdeaUserComment>> GetComments(Idea idea, string page)
+        {
+            return await _httpService.Get<PagedResult<IdeaUserComment>>($"api/idea/GetComments?page={page}&pagesize=5&ideaId={idea.Id}");
+        }
     }
 }

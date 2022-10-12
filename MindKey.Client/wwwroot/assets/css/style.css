@@ -238,8 +238,13 @@ h6 {
     border: none;
     border-radius: 5px;
     box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
-}
 
+
+}
+.card h5 {
+    padding-bottom: .5em !important;
+    margin-bottom: 0em !important;
+}
 .card-header,
 .card-footer {
     border-color: #ebeef4;
@@ -1287,9 +1292,15 @@ h6 {
         font-size: 13px;
         color: #012970;
     }
+
 .ql-container.ql-snow {
     border: none !important;
 }
+
 .card-title {
-    font-size: 2em !important
+    font-size: 1.4em !important
+}
+.ql-editor{
+    padding-left : 1.4em;
+    padding-right :2em;
 }

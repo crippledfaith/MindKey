@@ -6,31 +6,32 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
 @inject PageHistoryState PageHistoryState
 @inject IUserService UserService
-@if (Ideas == null)
-{
-        <div class="card info-card">
-            <div class="card-body">
-                <p><em>Loading...</em></p>
-            </div>
-        </div>
-}
-else
-{
-        <Pager Result=@Ideas PageChanged=PagerPageChanged />
-    @foreach (var idea in Ideas.Results)
-    {
-                <IdeaComponent Idea="@idea" />
-    }
-        <Pager Result=@Ideas PageChanged=PagerPageChanged />
 
+<Pager Result=@Ideas PageChanged=PagerPageChanged />
+@foreach (var idea in Ideas.Results)
+{
+    <IdeaComponent Idea="@idea" />
 }
+<Pager Result=@Ideas PageChanged=PagerPageChanged />
+
+
 
 @code {
     [Parameter]
     public string Page { get; set; } = "1";
+    public PagedResult<Idea> EmptyIdeas { get; set; }
     public PagedResult<Idea> Ideas { get; set; }
     protected override void OnInitialized()
     {
+        EmptyIdeas = new PagedResult<Idea>()
+            {
+                CurrentPage = 0,
+                PageCount = 0,
+                PageSize = 10,
+                Results = new List<Idea> { new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea() }
+            };
+        Ideas = EmptyIdeas;
+
         if (UserService.User == null)
         {
             UriHelper.NavigateTo("/wall/1");
@@ -46,6 +47,9 @@ else
 
     protected void PagerPageChanged(int page)
     {
+        Ideas.Results = EmptyIdeas.Results;
+        Ideas.CurrentPage = page;
+        StateHasChanged();
         UriHelper.NavigateTo("/mywall/" + page);
         PageHistoryState.AddPageToHistory(UriHelper.Uri);
     }

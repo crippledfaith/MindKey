@@ -7,6 +7,7 @@
         public User User { get; set; } = default!;
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
+        public DateTime PostDateTime { get; set; } = default!;
         public ArgumentType Argument { get; set; } = default!;
 
     }

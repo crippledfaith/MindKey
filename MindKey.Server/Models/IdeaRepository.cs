@@ -36,6 +36,16 @@ namespace MindKey.Server.Models
             return result;
         }
 
+        public PagedResult<IdeaUserComment> GetComments(int page, int pageSize, long? userId)
+        {
+            return _appDbContext.IdeaUserComments
+                 .Include(q => q.User)
+                 .Include(q => q.Idea.Person)
+                 .Include(q => q.Idea.Person.User)
+                 .OrderByDescending(p => p.PostDateTime)
+                 .GetPaged(page, pageSize);
+        }
+
         public async Task<Idea?> GetIdea(long id)
         {
 
