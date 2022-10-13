@@ -5,13 +5,22 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <a href="/" class="logo d-flex align-items-center">
-            <img src="/assets/img/logo.png" alt="">
+            @if (!Loading)
+            {
+                <img src="/assets/img/logo.png" alt="">
+            }
+            else
+            {
+                <div style="margin:10px" class="spinner-border text-primary" role="status"> <span class="visually-hidden">Loading...</span></div>
+            }
             <span class="d-none d-lg-block">MindKey</span>
         </a>
+
         <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
     <nav class="header-nav ms-auto">
+
         <ul class="d-flex align-items-center">
 
 
@@ -172,12 +181,12 @@
     </nav><!-- End Icons Navigation -->
 
 </header><!-- End Header -->
-
-
 @code {
+    public bool Loading { get; set; } = true;
     protected override Task OnInitializedAsync()
     {
         eventService.LoginAndOutEvent += LoginAndOut;
+        eventService.LoadingStatusChanagedEvent += LoadingStatusChanaged;
         return base.OnInitializedAsync();
     }
     public bool LoggedIn
@@ -186,6 +195,11 @@
     }
     public void LoginAndOut(bool isLoggedin)
     {
+        StateHasChanged();
+    }
+    public void LoadingStatusChanaged(bool isLoading)
+    {
+        Loading = isLoading;
         StateHasChanged();
     }
 

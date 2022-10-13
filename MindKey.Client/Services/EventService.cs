@@ -6,16 +6,32 @@ namespace MindKey.Client.Services
     public delegate void EditIdeaEventHandler(Idea idea);
     public delegate void DeleteIdeaEventHandler(Idea idea);
     public delegate void HideAllStoriesEventHandler(Idea idea);
-
+    public delegate void LoadingStatusChanagedEventHandler(bool loading);
+    public delegate void ShowMessageEventHandler(string message, MessageType type);
+    public enum MessageType
+    {
+        Error = 0
+    }
     public class EventService
     {
+        public static int LoadingCount = 0;
+        public static bool Loading = false;
+
+        public ILogger<EventService> Logger { get; }
+
         public event LoginAndOutEventHandler LoginAndOutEvent;
         public event EditIdeaEventHandler EditIdeaEvent;
         public event DeleteIdeaEventHandler DeleteIdeaEvent;
         public event HideAllStoriesEventHandler HideAllStoriesEvent;
-
+        public event LoadingStatusChanagedEventHandler LoadingStatusChanagedEvent;
+        public event ShowMessageEventHandler ShowMessageEvent;
+        public EventService(ILogger<EventService> logger)
+        {
+            Logger = logger;
+        }
         public void ChangeLoginStatus(bool isLoggedIn)
         {
+            ResetLoader();
             LoginAndOutEvent?.Invoke(isLoggedIn);
         }
         public void EditIdea(Idea idea)
@@ -29,6 +45,51 @@ namespace MindKey.Client.Services
         public void HideAllStories(Idea idea)
         {
             HideAllStoriesEvent?.Invoke(idea);
+        }
+        public void ResetLoader()
+        {
+            Loading = false;
+            LoadingCount = 0;
+            LoadingStatusChanagedEvent?.Invoke(false);
+        }
+        public void ChangeLoadingStatus(bool loading, string location)
+        {
+            if (!Loading && loading)
+            {
+                LoadingCount = 1;
+                Loading = true;
+
+            }
+            else if (Loading && loading)
+            {
+                LoadingCount++;
+                Loading = true;
+                //if (LoadingCount > 0)
+                //{
+                //    LoadingStatusChanagedEvent?.Invoke(true);
+                //}
+            }
+            else if (Loading && !loading)
+            {
+                LoadingCount--;
+                if (LoadingCount == 0)
+                {
+                    Loading = false;
+                }
+                else if (LoadingCount < 0)
+                {
+                    Loading = false;
+                    LoadingCount = 0;
+                }
+            }
+
+            LoadingStatusChanagedEvent?.Invoke(Loading);
+            Logger.LogInformation($"{loading} - Loading: {Loading} Count: {LoadingCount} - {location}");
+
+        }
+        public void ShowMessage(string message, MessageType type)
+        {
+            ShowMessageEvent?.Invoke(message, type);
         }
     }
 }

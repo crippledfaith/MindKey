@@ -6,6 +6,8 @@
 @inject Microsoft.AspNetCore.Components.NavigationManager UriHelper
 @inject PageHistoryState PageHistoryState
 @inject IUserService UserService
+@inject EventService EventService
+
 
 <Pager Result=@Ideas PageChanged=PagerPageChanged />
 @foreach (var idea in Ideas.Results)
@@ -23,25 +25,42 @@
     public PagedResult<Idea> Ideas { get; set; }
     protected override void OnInitialized()
     {
-        EmptyIdeas= new PagedResult<Idea>()
+        //EventService.ChangeLoadingStatus(true, "List-OnInitialized()");
+
+        EmptyIdeas = new PagedResult<Idea>()
             {
                 CurrentPage = 0,
                 PageCount = 0,
                 PageSize = 10,
-                Results = new List<Idea> { new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(),new Idea() }
+                Results = new List<Idea> { new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea() }
             };
         Ideas = EmptyIdeas;
+
         base.OnInitialized();
     }
     protected override async Task OnParametersSetAsync()
     {
-        var results = (await IdeaService.GetIdeasOfOthers(Page,UserService.User?.Id));
-        Ideas = results;
-        PageHistoryState.AddPageToHistory(UriHelper.Uri);
+        try
+        {
+            EventService.ChangeLoadingStatus(true, "List-OnParametersSetAsync()");
+            //StateHasChanged();
+            var results = (await IdeaService.GetIdeasOfOthers(Page, UserService.User?.Id));
+            Ideas = results;
+            PageHistoryState.AddPageToHistory(UriHelper.Uri);
+            EventService.ChangeLoadingStatus(false, "List-OnParametersSetAsync()");
+        }
+        catch (Exception)
+        {
+            EventService.ChangeLoadingStatus(false, "List-OnParametersSetAsync()");
+            EventService.ShowMessage("No Internet Connection", MessageType.Error);
+        }
+        await base.OnParametersSetAsync();
+
     }
 
     protected void PagerPageChanged(int page)
     {
+        EventService.ResetLoader();
         Ideas.Results = EmptyIdeas.Results;
         Ideas.CurrentPage = page;
         StateHasChanged();

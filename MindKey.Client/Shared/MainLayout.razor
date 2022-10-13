@@ -5,8 +5,12 @@
 @inherits LayoutComponentBase
 
 <HeaderLayout></HeaderLayout>
+
 <SideBarLayout></SideBarLayout>
+
 <main id="main" class="main">
+    <NotificationLayout />
+
     @Body
 </main>
 <FooterLayout></FooterLayout>
@@ -18,7 +22,7 @@
     {
         if (firstRender)
         {
-            await JS.InvokeAsync<IJSObjectReference>("import","/assets/js/main.js");
+            await JS.InvokeAsync<IJSObjectReference>("import", "/assets/js/main.js");
         }
     }
     protected override Task OnInitializedAsync()

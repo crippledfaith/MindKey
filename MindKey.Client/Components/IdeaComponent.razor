@@ -4,9 +4,9 @@
 @inject EventService EventService
 @inject IIdeaService IdeaService
 @inject IJSRuntime JSRuntime
-@if (Idea==null || Idea.Id == 0)
+@if (Idea == null || Idea.Id == 0)
 {
-        <div class="card info-card">
+    <div class="card info-card">
         <div class="card-body">
             <h5 class="card-title">Loading..</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
@@ -49,22 +49,30 @@ else
         {
             IsShowAll = true;
         }
+
+        //EventService.ChangeLoadingStatus(false, "IdeaComponent-OnAfterRender()");
         base.OnAfterRender(firstRender);
     }
 
     protected override void OnInitialized()
     {
+
         EventService.EditIdeaEvent += EditIdea;
         EventService.DeleteIdeaEvent += DeleteIdea;
         EventService.HideAllStoriesEvent += HideAllStories;
+        //EventService.ChangeLoadingStatus(true, "IdeaComponent-OnInitialized()");
         base.OnInitialized();
     }
     protected override async Task OnParametersSetAsync()
     {
+        //if (Idea.Id != 0)
+        //EventService.ChangeLoadingStatus(true);
+        //EventService.ChangeLoadingStatus(false);
+
         //ShowHideText(false);
-        //await base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
     }
-    
+
     public void EditIdea(Idea idea)
     {
         navManager.NavigateTo($"/makepost/{idea.Id}");

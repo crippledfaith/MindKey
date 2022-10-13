@@ -1,5 +1,6 @@
 ﻿@inject IUserService UserService
 @inject IIdeaService IdeaService
+@inject EventService EventService
 
 @using MindKey.Shared.Models.MindKey
 <hr />
@@ -7,7 +8,7 @@
 
     @if (IdeaUserCommentPaged == null || Idea == null)
     {
-
+        <span class="badge border-secondary border-1 text-secondary">Loading Comments...</span>
     }
     else
     {
@@ -67,13 +68,25 @@
     public Idea Idea { get; set; } = null;
     public PagedResult<IdeaUserComment> IdeaUserCommentPaged { get; set; }
     public string accordionHeaderId { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        //EventService.ChangeLoadingStatus(false);
+        base.OnAfterRender(firstRender);
+    }
     protected override async Task OnParametersSetAsync()
     {
+        EventService.ChangeLoadingStatus(true, "CommentComponent-OnParametersSetAsync()");
         if (Idea != null)
         {
             IdeaUserCommentPaged = await IdeaService.GetComments(Idea, "1");
             accordionHeaderId = Idea.Id.ToString();
         }
+        EventService.ChangeLoadingStatus(false, "CommentComponent-OnParametersSetAsync()");
         await base.OnParametersSetAsync();
+
     }
 }

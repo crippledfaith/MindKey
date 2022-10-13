@@ -1,0 +1,30 @@
+﻿@inject EventService EventService
+@inject IJSRuntime JSRuntime
+
+<div class="alert alert-danger alert-dismissible fade show @HideAlert" role="alert"> <i class="bi bi-exclamation-octagon me-1"></i> @Message <button type="button" class="btn-close" @onclick="Close" aria-label="Close"></button></div>
+
+
+
+@code {
+    public string Message { get; set; }
+    public MessageType CurrentMessageType { get; set; }
+    private string HideAlert { get; set; } = "d-none";
+
+    protected override void OnInitialized()
+    {
+        EventService.ShowMessageEvent += ShowMessage;
+        base.OnInitialized();
+    }
+    public async void ShowMessage(string message, MessageType type)
+    {
+        Message = message;
+        CurrentMessageType = type;
+        HideAlert = "";
+        //await JSRuntime.InvokeAsync<string>("$('.alert').alert()");
+        StateHasChanged();
+    }
+    public void Close()
+    {
+        HideAlert = "d-none";
+    }
+}

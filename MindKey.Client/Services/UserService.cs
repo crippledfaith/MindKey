@@ -29,6 +29,7 @@ namespace MindKey.Client.Services
             User = await _localStorageService.GetItem<User>(_userKey);
             User = await GetUser(User.Id);
             _eventService.ChangeLoginStatus(User != null);
+
         }
 
         public async Task Login(Login model)

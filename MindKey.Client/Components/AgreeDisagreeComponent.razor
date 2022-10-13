@@ -1,6 +1,7 @@
 ﻿@using MindKey.Shared.Models.MindKey
 @inject IUserService UserService
 @inject IIdeaService IdeaService
+@inject EventService EventService
 
 <div class="progress" style="height: 10px;"><div class="progress-bar" role="progressbar" style="width: @Width%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div></div>
 <br />
@@ -19,7 +20,7 @@
     <button class="btn btn-primary" disabled>
         <i class="oi oi-loop-square" title="Nutral" aria-hidden="true"></i>
     </button>
-    
+
     <span class="badge border-secondary border-1 text-secondary">0</span>
 
 }
@@ -92,7 +93,14 @@ else
     public IdeaUserComment? IdeaUserComment { get; set; } = null;
     public decimal Width { get; set; } = 0;
     public bool disable { get; set; } = true;
-
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
     public async Task Agree()
     {
         await UpdateVote(ArgumentType.For);
@@ -150,12 +158,17 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        if (Idea?.Person == null)
+        {
+            return;
+        }
+        EventService.ChangeLoadingStatus(true, "AgreeDisagreeComponent-OnParametersSetAsync()");
         if (Idea.AgainstCount == 0)
         {
             Idea.AgainstCount = 1;
         }
         Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
-        if (UserService.User != null)
+        if (UserService.User != null && Idea?.Person != null)
             disable = (Idea.Person.PersonId == UserService.User.Id);
         //Idea = await IdeaService.GetIdea(Idea.Id);
         var ideaUserComment = new IdeaUserComment
@@ -168,6 +181,7 @@ else
             };
         ideaUserComment.User.Password = "***";
         IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+        EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
         await base.OnParametersSetAsync();
     }
 }

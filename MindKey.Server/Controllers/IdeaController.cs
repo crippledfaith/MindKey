@@ -65,6 +65,7 @@ namespace MindKey.Server.Controllers
         /// <summary>
         /// Creates a person with child addresses.
         /// </summary>
+        [AllowAnonymous]
         [HttpPost("GetSetAgument")]
         public async Task<ActionResult> GetSetAgument(IdeaUserComment ideaUserComment)
         {
