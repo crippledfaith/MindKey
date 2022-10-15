@@ -63,7 +63,7 @@ namespace MindKey.Client.Services
                 await Logout();
         }
 
-        public async Task AddIdea(User user)
+        public async Task AddUser(User user)
         {
             await _httpService.Post($"api/user", user);
         }

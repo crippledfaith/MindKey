@@ -10,7 +10,10 @@ namespace MindKey.Client.Services
     public delegate void ShowMessageEventHandler(string message, MessageType type);
     public enum MessageType
     {
-        Error = 0
+        Error = 0,
+        Info = 1,
+        Warning = 2,
+        Success = 3,
     }
     public class EventService
     {

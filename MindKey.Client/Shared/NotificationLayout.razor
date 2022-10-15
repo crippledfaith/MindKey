@@ -1,30 +1,57 @@
 ﻿@inject EventService EventService
 @inject IJSRuntime JSRuntime
 
-<div class="alert alert-danger alert-dismissible fade show @HideAlert" role="alert"> <i class="bi bi-exclamation-octagon me-1"></i> @Message <button type="button" class="btn-close" @onclick="Close" aria-label="Close"></button></div>
+<div class="alert @ClassAlert alert-dismissible fade show @HideAlert" role="alert"> <i class="bi bi-exclamation-octagon me-1"></i> @Message <button type="button" class="btn-close" @onclick="Close" aria-label="Close"></button></div>
 
 
 
 @code {
     public string Message { get; set; }
     public MessageType CurrentMessageType { get; set; }
-    private string HideAlert { get; set; } = "d-none";
-
+    private static string HideAlert { get; set; } = "d-none";
+    private string ClassAlert { get; set; } = "d-none";
+    private Timer Timer { get; set; } 
     protected override void OnInitialized()
     {
+        Timer =new Timer(TimeTick, null, Timeout.Infinite, Timeout.Infinite);
+        Timer.Change(Timeout.Infinite, Timeout.Infinite);
         EventService.ShowMessageEvent += ShowMessage;
         base.OnInitialized();
+    }
+    public void TimeTick(Object? e)
+    {
+        Close();
+        Timer.Change(Timeout.Infinite, Timeout.Infinite);
     }
     public async void ShowMessage(string message, MessageType type)
     {
         Message = message;
         CurrentMessageType = type;
+        Timer.Change(5000,5000);
         HideAlert = "";
+        switch (type)
+        {
+            case MessageType.Error:
+                ClassAlert = "alert-danger";
+                break;
+            case MessageType.Success:
+                ClassAlert = "alert-success";
+                break;
+            case MessageType.Info:
+                ClassAlert = "alert-info";
+                break;
+            case MessageType.Warning:
+                ClassAlert = "alert-warning";
+                break;
+            default:
+                break;
+        }
         //await JSRuntime.InvokeAsync<string>("$('.alert').alert()");
         StateHasChanged();
     }
     public void Close()
     {
         HideAlert = "d-none";
+        StateHasChanged();
     }
 }

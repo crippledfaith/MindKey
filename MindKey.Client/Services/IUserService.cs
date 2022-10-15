@@ -14,7 +14,7 @@ namespace MindKey.Client.Services
         Task<PagedResult<User>> GetUsers(string name, string page);
         Task<User> GetUser(long id);
         Task DeleteUser(long id);
-        Task AddIdea(User user);
+        Task AddUser(User user);
         Task UpdateUser(User user);
     }
 }

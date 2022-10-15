@@ -47,6 +47,7 @@ namespace MindKey.Server.Controllers
         /// <summary>
         /// Creates a person with child addresses.
         /// </summary>
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult> AddPerson(Person person)
         {

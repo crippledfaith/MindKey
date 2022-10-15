@@ -9,7 +9,7 @@ using System.Text;
 public interface IJwtUtils
 {
     public string GenerateToken(User user);
-    public int? ValidateToken(string token);
+    public long? ValidateToken(string token);
 }
 
 public class JwtUtils : IJwtUtils
@@ -36,7 +36,7 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public int? ValidateToken(string token)
+    public long? ValidateToken(string token)
     {
         if (token == null)
             return null;
@@ -56,7 +56,7 @@ public class JwtUtils : IJwtUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+            var userId = long.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
             // return user id from JWT token if validation successful
             return userId;

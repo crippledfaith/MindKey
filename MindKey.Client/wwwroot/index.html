@@ -17,15 +17,18 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
     <!-- Vendor CSS Files -->
-    <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/vendor/bootstrap/css/bootstrap-dark.css" rel="stylesheet">
     <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
     <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
     <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="/css/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet" />
     <script src="https://kit.fontawesome.com/d9383b1f5d.js" crossorigin="anonymous"></script>
-    <script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <!--<link href="css/app.css" rel="stylesheet" />-->
+    <!--<script src="/site.js"></script>-->
     <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
     <!-- Theme included stylesheets -->
@@ -34,11 +37,9 @@
 
     <!-- Core build with no theme, formatting, non-essential modules -->
     <link href="//cdn.quilljs.com/1.3.6/quill.core.css" rel="stylesheet">
-    <script src="//cdn.quilljs.com/1.3.6/quill.core.js"></script>
-    <!-- Template Main CSS File -->
-    <link href="/assets/css/style.css" rel="stylesheet">
-    <!--<link href="css/app.css" rel="stylesheet" />-->
     <!--<link href="Blazorcrud.Client.styles.css" rel="stylesheet" />-->
+    <script src="//cdn.quilljs.com/1.3.6/quill.core.js"></script>
+
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.0
     * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -52,7 +53,11 @@
         <div style="position: absolute; top:30vh; width: 100%; text-align: center">
             <img src="/assets/img/logo.png" alt="">
             <h1>MindKey</h1>
-            <p><i class="fas fa-spin fa-spinner"></i> The application is loading...</p>
+            <p>
+                <div class="spinner-border text-primary" role="status"></div>
+                <span>The application is loading...</span>
+
+            </p>
         </div>
         <div id="blazor-error-ui">
             An unhandled error has occurred.
@@ -76,7 +81,6 @@
 
     <script src="/_framework/blazor.webassembly.js"></script>
     <!-- Site.js custom JS file-->
-    <!--<script src="/site.js"></script>-->
 
 
 </body>

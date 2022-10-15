@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MindKey.Server.Authorization;
 using MindKey.Server.Models;
 using MindKey.Shared.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace MindKey.Server.Controllers
 {
@@ -34,7 +34,6 @@ namespace MindKey.Server.Controllers
         /// <summary>
         /// Returns a list of paginated users with a default page size of 5.
         /// </summary>
-        [AllowAnonymous]
         [HttpGet]
         public ActionResult GetUsers([FromQuery] string? name, int page)
         {
@@ -44,7 +43,6 @@ namespace MindKey.Server.Controllers
         /// <summary>
         /// Gets a specific user by Id.
         /// </summary>
-        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult> GetUser(int id)
         {
@@ -54,6 +52,7 @@ namespace MindKey.Server.Controllers
         /// <summary>
         /// Creates a user and hashes password.
         /// </summary>
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult> AddUser(User user)
         {

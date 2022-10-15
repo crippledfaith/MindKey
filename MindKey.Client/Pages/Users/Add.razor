@@ -31,7 +31,7 @@
         loading = true;
         try
         {
-            await UserService.AddIdea(user);
+            await UserService.AddUser(user);
             AlertService.Success("User added successfully", keepAfterRouteChange: true);
             if (PageHistoryState.CanGoBack())
             {
