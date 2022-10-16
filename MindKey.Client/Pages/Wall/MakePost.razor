@@ -18,8 +18,8 @@
 
         </div>
         <label for="inputCity" class="form-label">Description</label>
-        <QuillComponent @ref="Quill"/>
-       
+        <QuillComponent @ref="Quill" />
+
         <hr />
         <div class="text-center">
             <button type="button" class="btn btn-primary" @onclick="()=>Save()">Save</button>
@@ -39,25 +39,41 @@
     private bool EditorEnabled = true;
     public async void Save()
     {
-        if (Idea == null)
+        try
         {
-            Idea = new Idea();
-            Idea.Person = await PersonService.GetPersonByUser(UserService.User.Id);
+            if (Idea == null)
+            {
+                Idea = new Idea();
+                Idea.Person = await PersonService.GetPersonByUser(UserService.User.Id);
+                Idea.PostDateTime = DateTime.UtcNow;
+            }
+            Idea.Title = Title;
+            Idea.Description = await Quill.GetHTML();
+            var text = await Quill.GetText();
+            if (text.Length > 500)
+            {
+                Idea.DescriptionShort = text.Substring(0, 500) + "...";
+            }
+            else
+            {
+                Idea.DescriptionShort = text + "...";
+            }
             Idea.PostDateTime = DateTime.UtcNow;
+            if (Idea.Id != 0)
+            {
+                await IdeaService.UpdateIdea(Idea);
+            }
+            else
+            {
+                await IdeaService.AddIdea(Idea);
+            }
+            EventService.ShowMessage("Opinion Saved.", MessageType.Success);
         }
-        Idea.Title = Title;
-        Idea.Description = await Quill.GetHTML();
-        Idea.DescriptionShort = (await Quill.GetText()).Substring(0, 500) + "...";
-        Idea.PostDateTime = DateTime.UtcNow;
-        if (Idea.Id != 0)
+        catch (Exception ex)
         {
-            await IdeaService.UpdateIdea(Idea);
+            EventService.ShowMessage(ex.Message, MessageType.Error);
         }
-        else
-        {
-            await IdeaService.AddIdea(Idea);
-        }
-        EventService.ShowMessage("Opinion Saved.", MessageType.Success);
+
 
     }
     public void Publish()
@@ -66,21 +82,29 @@
     }
     protected override async Task OnParametersSetAsync()
     {
-        if (!string.IsNullOrEmpty(IdeaId))
+        try
         {
-            Idea = await IdeaService.GetIdea(long.Parse(IdeaId));
-            Title = Idea.Title;
-            Description = Idea.Description;
-            await Quill.SetContent(Description);
+            if (!string.IsNullOrEmpty(IdeaId))
+            {
+                Idea = await IdeaService.GetIdea(long.Parse(IdeaId));
+                Title = Idea.Title;
+                Description = Idea.Description;
+            }
+            else
+            {
+                Idea = null;
+                Title = "";
+                Description = "";
+            }
+            if (Quill != null)
+            {
+                await Quill.SetContent(Description);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Idea = null;
-            Title = "";
-            Description = "";
-            await Quill.SetContent(Description);
+            EventService.ShowMessage(ex.Message, MessageType.Error);
         }
-
     }
-    
+
 }

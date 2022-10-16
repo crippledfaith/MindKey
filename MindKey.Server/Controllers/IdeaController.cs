@@ -92,9 +92,9 @@ namespace MindKey.Server.Controllers
         }
         [AllowAnonymous]
         [HttpGet("GetComments")]
-        public ActionResult GetComments([FromQuery] int page, int pageSize, long? userId)
+        public ActionResult GetComments([FromQuery] int page, int pageSize, long? ideaId)
         {
-            return Ok(_ideaRepository.GetComments(page, pageSize, userId));
+            return Ok(_ideaRepository.GetComments(page, pageSize, ideaId));
         }
     }
 }

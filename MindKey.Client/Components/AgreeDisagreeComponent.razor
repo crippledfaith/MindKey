@@ -121,27 +121,37 @@ else
     }
     private async Task UpdateVote(ArgumentType type)
     {
-        var idea = await IdeaService.GetIdea(Idea.Id);
-        var ideaUserComment = new IdeaUserComment
-            {
-                Argument = type,
-                Idea = idea,
-                User = UserService.User ?? new User(),
-                Title = "Test Title",
-                Description = "Test Description",
-            };
-        ideaUserComment.User.Password = "***";
+        try
+        {
+            Idea.Argument = type;
+            StateHasChanged();
+            var idea = await IdeaService.GetIdea(Idea.Id);
+            var ideaUserComment = new IdeaUserComment
+                {
+                    Argument = type,
+                    Idea = idea,
+                    User = UserService.User ?? new User(),
+                    Title = "Test Title",
+                    Description = "Test Description",
+                };
+            ideaUserComment.User.Password = "***";
 
-        if (await IdeaService.SetAurgument(ideaUserComment))
-        {
-            IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+            if (await IdeaService.SetAurgument(ideaUserComment))
+            {
+                IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+            }
+            Idea = await IdeaService.GetIdea(Idea.Id);
+            if (Idea.AgainstCount == 0)
+            {
+                Idea.AgainstCount = 1;
+            }
+            Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
         }
-        Idea = await IdeaService.GetIdea(Idea.Id);
-        if (Idea.AgainstCount == 0)
+        catch (Exception ex)
         {
-            Idea.AgainstCount = 1;
+            EventService.ShowMessage(ex.Message, MessageType.Error);
         }
-        Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+
     }
 
     public string ToKiloFormat(long num)
@@ -158,30 +168,37 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Idea?.Person == null)
+        try
         {
-            return;
-        }
-        EventService.ChangeLoadingStatus(true, "AgreeDisagreeComponent-OnParametersSetAsync()");
-        if (Idea.AgainstCount == 0)
-        {
-            Idea.AgainstCount = 1;
-        }
-        Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
-        if (UserService.User != null && Idea?.Person != null)
-            disable = (Idea.Person.PersonId == UserService.User.Id);
-        //Idea = await IdeaService.GetIdea(Idea.Id);
-        var ideaUserComment = new IdeaUserComment
+            if (Idea?.Person == null)
             {
-                Argument = ArgumentType.Nutral,
-                Idea = Idea,
-                User = UserService.User ?? new User(),
-                Title = "Test Title",
-                Description = "Test Description",
-            };
-        ideaUserComment.User.Password = "***";
-        IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
-        EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
-        await base.OnParametersSetAsync();
+                return;
+            }
+            EventService.ChangeLoadingStatus(true, "AgreeDisagreeComponent-OnParametersSetAsync()");
+            if (Idea.AgainstCount == 0)
+            {
+                Idea.AgainstCount = 1;
+            }
+            Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+            if (UserService.User != null && Idea?.Person != null)
+                disable = (Idea.Person.PersonId == UserService.User.Id);
+            //Idea = await IdeaService.GetIdea(Idea.Id);
+            var ideaUserComment = new IdeaUserComment
+                {
+                    Argument = ArgumentType.Nutral,
+                    Idea = Idea,
+                    User = UserService.User ?? new User(),
+                    Title = "Test Title",
+                    Description = "Test Description",
+                };
+            ideaUserComment.User.Password = "***";
+            IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+            EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
+            await base.OnParametersSetAsync();
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
     }
 }

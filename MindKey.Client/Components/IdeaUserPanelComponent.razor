@@ -14,8 +14,8 @@ else
 }
 @if (Idea != null && UserService != null && Idea.Person != null && UserService.User != null && UserService.User.Id == Idea.Person.PersonId)
 {
-    <button type="button" class="btn btn-light btn-sm" @onclick="()=>Edit()"><i class="oi oi-pencil"> Edit</i></button>
-    <button type="button" class="btn btn-light btn-sm" @onclick="()=>Delete()"><i class=" oi oi-trash"> Delete</i></button>
+    <button type="button" class="btn btn-link btn-sm" @onclick="()=>Edit()"><i class="oi oi-pencil"> Edit</i></button>
+    <button type="button" class="btn btn-link btn-sm" @onclick="()=>Delete()"><i class=" oi oi-trash"> Delete</i></button>
 }
 
 

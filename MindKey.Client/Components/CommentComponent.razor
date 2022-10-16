@@ -79,13 +79,21 @@
     }
     protected override async Task OnParametersSetAsync()
     {
-        EventService.ChangeLoadingStatus(true, "CommentComponent-OnParametersSetAsync()");
-        if (Idea != null)
+        try
         {
-            IdeaUserCommentPaged = await IdeaService.GetComments(Idea, "1");
-            accordionHeaderId = Idea.Id.ToString();
+            EventService.ChangeLoadingStatus(true, "CommentComponent-OnParametersSetAsync()");
+            if (Idea != null)
+            {
+                IdeaUserCommentPaged = await IdeaService.GetComments(Idea, "1");
+                accordionHeaderId = Idea.Id.ToString();
+            }
+            EventService.ChangeLoadingStatus(false, "CommentComponent-OnParametersSetAsync()");
         }
-        EventService.ChangeLoadingStatus(false, "CommentComponent-OnParametersSetAsync()");
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
+
         await base.OnParametersSetAsync();
 
     }

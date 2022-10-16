@@ -36,9 +36,10 @@ namespace MindKey.Server.Models
             return result;
         }
 
-        public PagedResult<IdeaUserComment> GetComments(int page, int pageSize, long? userId)
+        public PagedResult<IdeaUserComment> GetComments(int page, int pageSize, long? ideaId)
         {
             return _appDbContext.IdeaUserComments
+                .Where(q => q.Idea.Id == ideaId)
                  .Include(q => q.User)
                  .Include(q => q.Idea.Person)
                  .Include(q => q.Idea.Person.User)

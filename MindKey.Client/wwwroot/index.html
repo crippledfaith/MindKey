@@ -15,7 +15,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
+    <link href="manifest.json" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <!-- Vendor CSS Files -->
     <link href="/assets/vendor/bootstrap/css/bootstrap-dark.css" rel="stylesheet">
     <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -51,7 +52,7 @@
 
     <div id="app">
         <div style="position: absolute; top:30vh; width: 100%; text-align: center">
-            <img src="/assets/img/logo.png" alt="">
+            <img src="/assets/img/logo.gif" alt="">
             <h1>MindKey</h1>
             <p>
                 <div class="spinner-border text-primary" role="status"></div>
@@ -80,6 +81,7 @@
     <script src="site.js"></script>
 
     <script src="/_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
     <!-- Site.js custom JS file-->
 
 

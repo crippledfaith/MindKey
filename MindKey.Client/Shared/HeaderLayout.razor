@@ -5,14 +5,9 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <a href="/" class="logo d-flex align-items-center">
-            @if (!Loading)
-            {
-                <img src="/assets/img/logo.png" alt="">
-            }
-            else
-            {
-                <div class="spinner-border text-primary" role="status"></div>
-            }
+            <img src="/assets/img/logo.png" alt="" style="margin-left:2px !important; content-visibility: @(Loading!=true?"visible":"hidden") !important">
+            <img src="/assets/img/logo.gif" alt="" style="margin-left:-2px !important; margin-right:2px !important; content-visibility: @(Loading==true?"visible":"hidden") !important">
+
             <span class="d-none d-lg-block">MindKey</span>
         </a>
 
@@ -188,11 +183,13 @@
         eventService.LoginAndOutEvent += LoginAndOut;
         eventService.LoadingStatusChanagedEvent += LoadingStatusChanaged;
         return base.OnInitializedAsync();
+
     }
     public bool LoggedIn
     {
         get { return UserService.User != null; }
     }
+
     public void LoginAndOut(bool isLoggedin)
     {
         StateHasChanged();
