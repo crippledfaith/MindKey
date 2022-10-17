@@ -1,0 +1,17 @@
+﻿@page "/idea/{IdeaId}"
+@using MindKey.Client.Components
+@using MindKey.Shared.Models.MindKey
+@inject IIdeaService IdeaService
+
+<IdeaComponent Idea="@Idea" FullMode = "@true" />
+
+@code {
+    [Parameter]
+    public string IdeaId { get; set; }
+    public Idea Idea { get; set; }
+    protected override async Task OnParametersSetAsync()
+    {
+        Idea = await IdeaService.GetIdea(long.Parse(IdeaId));
+        await base.OnParametersSetAsync();
+    }
+}

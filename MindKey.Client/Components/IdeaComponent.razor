@@ -11,7 +11,7 @@
             <h5 class="card-title">Loading...</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..." />
-            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCard()">@ShowMoreText</span>
+            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
             <IdeaUserPanelComponent Idea="@null" />
             <AgreeDisagreeComponent Idea="@null" />
@@ -23,21 +23,24 @@ else
 {
     <div class="card info-card">
         <div class="card-body">
-            <h5 class="card-title">@Idea.Title</h5>
+            <h5 class="card-title" @onclick="()=>OpenCard()" style="Cursor:pointer">@Idea.Title</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
-            <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Idea.DescriptionShort" />
-            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCard()">@ShowMoreText</span>
+            <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Description" />
+            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
             <IdeaUserPanelComponent Idea="@Idea" />
             <AgreeDisagreeComponent Idea="@Idea" />
             <CommentComponent Idea="@Idea" />
         </div>
     </div>
+
 }
 
 @code {
     [Parameter]
     public Idea Idea { get; set; } = null;
+    [Parameter]
+    public bool FullMode { get; set; } = false;
     public bool IsShowAll { get; set; } = false;
     public string Description { get; set; }
     private ElementReference divEditorElement;
@@ -50,7 +53,6 @@ else
             IsShowAll = true;
         }
 
-        //EventService.ChangeLoadingStatus(false, "IdeaComponent-OnAfterRender()");
         base.OnAfterRender(firstRender);
     }
 
@@ -60,17 +62,20 @@ else
         EventService.EditIdeaEvent += EditIdea;
         EventService.DeleteIdeaEvent += DeleteIdea;
         EventService.HideAllStoriesEvent += HideAllStories;
-        //EventService.ChangeLoadingStatus(true, "IdeaComponent-OnInitialized()");
         base.OnInitialized();
     }
     protected override async Task OnParametersSetAsync()
     {
-        //if (Idea.Id != 0)
-        //EventService.ChangeLoadingStatus(true);
-        //EventService.ChangeLoadingStatus(false);
-
-        //ShowHideText(false);
         await base.OnParametersSetAsync();
+        if (FullMode && Idea != null)
+        {
+            Description = Idea.Description;
+            ShowMoreText = "";
+        }
+        else if(Idea !=null)
+        {
+            Description = Idea.DescriptionShort;
+        }
     }
 
     public void EditIdea(Idea idea)
@@ -86,15 +91,15 @@ else
         if (idea.Id != Idea.Id)
         {
             IsShowAll = false;
-            OpenCard();
+            OpenCardDetails();
         }
     }
-    public async void OpenCard(bool render = true)
+    public async void OpenCardDetails(bool render = true)
     {
-        if (IsShowAll)
+        if (IsShowAll || FullMode)
         {
             ShowMoreText = "Hide...";
-            EventService.HideAllStories(Idea);
+            if (!FullMode) EventService.HideAllStories(Idea);
             await Quill.SetContent(Idea.Description);
         }
         else
@@ -105,7 +110,10 @@ else
         IsShowAll = !IsShowAll;
         if (render)
             StateHasChanged();
-
+    }
+    public void OpenCard()
+    {
+        navManager.NavigateTo($"/idea/{Idea.Id}");
     }
 
 }
