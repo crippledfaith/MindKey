@@ -29,7 +29,7 @@
         }
 
     }
-    
+
 </div>
 
 @code {
@@ -43,7 +43,26 @@
     public int PageSize = 5;
     protected override void OnInitialized()
     {
+        EventService.AgreeDisagreeChangedEvent += AgreeDisagreeChanged;
         base.OnInitialized();
+
+    }
+    public async void AgreeDisagreeChanged(Idea idea)
+    {
+        try
+        {
+            if (Idea!=null && Idea.Id == idea.Id)
+            {
+                    if (ShowAll)
+                        PageSize = 10;
+                    IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
+                    accordionHeaderId = Idea.Id.ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
     }
     protected override void OnAfterRender(bool firstRender)
     {

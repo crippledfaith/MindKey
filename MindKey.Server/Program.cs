@@ -47,7 +47,6 @@ builder.Services.AddQuartzHostedService(
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 var app = builder.Build();
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -73,6 +72,7 @@ else
 {
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHttpsRedirection();
     app.UseHsts();
 }
 
@@ -83,7 +83,6 @@ app.UseSwaggerUI(c =>
     c.DefaultModelsExpandDepth(-1);
 });
 
-app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();

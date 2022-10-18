@@ -1308,3 +1308,19 @@ h6 {
     padding-left : 1.4em;
     padding-right :2em;
 }
+
+.icon-agree {
+    width: 12px;
+    height: 12px;
+    background: url(../img/Icon-Agree.svg);
+}
+.icon-disagree {
+    width: 12px;
+    height: 12px;
+    background: url(../img/Icon-Disagree.svg);
+}
+.icon-nutral {
+    width: 12px;
+    height: 12px;
+    background: url(../img/Icon-Nutral.svg);
+}

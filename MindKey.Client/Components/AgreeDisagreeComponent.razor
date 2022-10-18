@@ -146,6 +146,7 @@ else
                 Idea.AgainstCount = 1;
             }
             Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+            EventService.AgreeDisagreeChanged(Idea);
         }
         catch (Exception ex)
         {

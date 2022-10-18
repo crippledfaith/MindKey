@@ -8,6 +8,7 @@ namespace MindKey.Client.Services
     public delegate void HideAllStoriesEventHandler(Idea idea);
     public delegate void LoadingStatusChanagedEventHandler(bool loading);
     public delegate void ShowMessageEventHandler(string message, MessageType type);
+    public delegate void AgreeDisagreeChangedEventHandler(Idea idea);
     public enum MessageType
     {
         Error = 0,
@@ -28,6 +29,7 @@ namespace MindKey.Client.Services
         public event HideAllStoriesEventHandler HideAllStoriesEvent;
         public event LoadingStatusChanagedEventHandler LoadingStatusChanagedEvent;
         public event ShowMessageEventHandler ShowMessageEvent;
+        public event AgreeDisagreeChangedEventHandler AgreeDisagreeChangedEvent;
         public EventService(ILogger<EventService> logger)
         {
             Logger = logger;
@@ -93,6 +95,10 @@ namespace MindKey.Client.Services
         public void ShowMessage(string message, MessageType type)
         {
             ShowMessageEvent?.Invoke(message, type);
+        }
+        public void AgreeDisagreeChanged(Idea idea)
+        {
+            AgreeDisagreeChangedEvent?.Invoke(idea);
         }
     }
 }
