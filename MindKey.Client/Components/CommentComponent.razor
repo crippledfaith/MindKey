@@ -14,18 +14,43 @@
     {
         @foreach (var item in IdeaUserCommentPaged.Results)
         {
-            <div class="accordion-item">
-                <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
-                        @item.Title
-                    </button>
-                </h2>
-                <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
-                    <div class="accordion-body">
-                        @item.Description
+            if (FullMode && UserService.User != null && item.User.Id == UserService.User.Id)
+            {
+                <EditForm Model="@item">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
+                                <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
+                                <InputText @bind-Value="item.Title" class="inputtext-for-comments"></InputText>
+                            </button>
+                        </h2>
+                        <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
+                            <div class="accordion-body">
+                                <InputTextArea @bind-Value="item.Description"></InputTextArea>
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                </EditForm>
+            }
+            else
+            {
+                <div class="accordion-item">
+                    
+                    <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
+                            <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
+                            @item.Title
+                        </button>
+                    </h2>
+                    <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
+                        <div class="accordion-body">
+                            @item.Description
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
+
         }
 
     }
@@ -36,7 +61,7 @@
     [Parameter]
     public Idea Idea { get; set; } = null;
     [Parameter]
-    public bool ShowAll { get; set; } = false;
+    public bool FullMode { get; set; } = false;
     public PagedResult<IdeaUserComment> IdeaUserCommentPaged { get; set; }
     public string accordionHeaderId { get; set; }
     public int LoadedPage = 1;
@@ -51,12 +76,13 @@
     {
         try
         {
-            if (Idea!=null && Idea.Id == idea.Id)
+            if (Idea != null && Idea.Id == idea.Id)
             {
-                    if (ShowAll)
-                        PageSize = 10;
-                    IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
-                    accordionHeaderId = Idea.Id.ToString();
+                if (FullMode)
+                    PageSize = 10;
+                IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
+                accordionHeaderId = Idea.Id.ToString();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
@@ -76,7 +102,7 @@
             EventService.ChangeLoadingStatus(true, "CommentComponent-OnParametersSetAsync()");
             if (Idea != null)
             {
-                if (ShowAll)
+                if (FullMode)
                     PageSize = 10;
                 IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
                 accordionHeaderId = Idea.Id.ToString();

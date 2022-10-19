@@ -238,13 +238,13 @@ h6 {
     border: none;
     border-radius: 5px;
     box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
-
-
 }
-.card h5 {
-    padding-bottom: .5em !important;
-    margin-bottom: 0em !important;
-}
+
+    .card h5 {
+        padding-bottom: .5em !important;
+        margin-bottom: 0em !important;
+    }
+
 .card-header,
 .card-footer {
     border-color: #ebeef4;
@@ -389,6 +389,7 @@ h6 {
     max-height: 49px;
     margin-right: 2px;
 }
+
 .logo div {
     margin-left: 5px;
     margin-right: 11px;
@@ -1304,9 +1305,10 @@ h6 {
 .card-title {
     font-size: 1.4em !important
 }
-.ql-editor{
-    padding-left : 1.4em;
-    padding-right :2em;
+
+.ql-editor {
+    padding-left: 1.4em;
+    padding-right: 2em;
 }
 
 .icon-agree {
@@ -1314,13 +1316,20 @@ h6 {
     height: 12px;
     background: url(../img/Icon-Agree.svg);
 }
+
 .icon-disagree {
     width: 12px;
     height: 12px;
     background: url(../img/Icon-Disagree.svg);
 }
+
 .icon-nutral {
     width: 12px;
     height: 12px;
     background: url(../img/Icon-Nutral.svg);
+}
+
+.inputtext-for-comments {
+    font-size: smaller !important;
+    width: 100%
 }
