@@ -7,7 +7,7 @@ namespace MindKey.Client.Services
     public interface IUserService
     {
         User User { get; }
-
+        string IdeaId { get; set; }
         Task Initialize();
         Task Login(Login model);
         Task Logout();

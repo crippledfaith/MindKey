@@ -14,6 +14,8 @@ namespace MindKey.Client.Services
         private string _userKey = "user";
 
         public User User { get; private set; }
+        public string IdeaId { get; set; }
+
 
         public UserService(IHttpService httpService, ILocalStorageService localStorageService, NavigationManager navigationManager, EventService eventService)
         {

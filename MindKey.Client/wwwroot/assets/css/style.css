@@ -267,6 +267,14 @@ h6 {
         font-weight: 400;
     }
 
+    .card-title a {
+        color: #2494C2;
+    }
+
+        .card-title a:hover {
+            text-decoration: underline !important;
+        }
+
 .card-body {
     padding: 0 20px 20px 20px;
 }
@@ -367,7 +375,7 @@ h6 {
         }
 
         .nav-tabs-bordered .nav-link.active {
-            background-color: #fff;
+            background-color: red;
             color: #2494C2;
             border-bottom: 2px solid #2494C2;
         }
@@ -750,6 +758,18 @@ h6 {
             transform: rotate(180deg);
         }
 
+        .sidebar-nav .nav-link.active {
+            cursor:default;
+            color: #f6f9ff;
+            background: #00000052;
+        }
+
+            .sidebar-nav .nav-link.active i {
+                cursor: default;
+                color: #f6f9ff;
+                background: #00000052;
+            }
+
     .sidebar-nav .nav-content {
         padding: 5px 0 0 0;
         margin: 0;
@@ -774,13 +794,13 @@ h6 {
                 border-radius: 50%;
             }
 
-            .sidebar-nav .nav-content a:hover,
+            .sidebar-nav .nav-link a:hover,
             .sidebar-nav .nav-content a.active {
-                color: #2494C2;
+                color: red;
             }
 
                 .sidebar-nav .nav-content a.active i {
-                    background-color: #2494C2;
+                    background-color: red;
                 }
 
 /*--------------------------------------------------------------

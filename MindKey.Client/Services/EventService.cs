@@ -5,6 +5,7 @@ namespace MindKey.Client.Services
     public delegate void LoginAndOutEventHandler(bool isLoggedIn);
     public delegate void EditIdeaEventHandler(Idea idea);
     public delegate void DeleteIdeaEventHandler(Idea idea);
+    public delegate void LastIdeaUpdatedEventHandler(Idea idea);
     public delegate void HideAllStoriesEventHandler(Idea idea);
     public delegate void LoadingStatusChanagedEventHandler(bool loading);
     public delegate void ShowMessageEventHandler(string message, MessageType type);
@@ -25,6 +26,7 @@ namespace MindKey.Client.Services
 
         public event LoginAndOutEventHandler LoginAndOutEvent;
         public event EditIdeaEventHandler EditIdeaEvent;
+        public event LastIdeaUpdatedEventHandler LastIdeaUpdatedEvent;
         public event DeleteIdeaEventHandler DeleteIdeaEvent;
         public event HideAllStoriesEventHandler HideAllStoriesEvent;
         public event LoadingStatusChanagedEventHandler LoadingStatusChanagedEvent;
@@ -99,6 +101,10 @@ namespace MindKey.Client.Services
         public void AgreeDisagreeChanged(Idea idea)
         {
             AgreeDisagreeChangedEvent?.Invoke(idea);
+        }
+        public void LastIdeaUpdatedEventChanged(Idea idea)
+        {
+            LastIdeaUpdatedEvent?.Invoke(idea);
         }
     }
 }

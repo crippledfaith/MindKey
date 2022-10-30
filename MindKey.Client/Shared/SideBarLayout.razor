@@ -1,4 +1,5 @@
-﻿@inject IUserService UserService
+﻿@using MindKey.Shared.Models.MindKey;
+@inject IUserService UserService
 @inject EventService EventService
 
 <!-- ======= Sidebar ======= -->
@@ -6,18 +7,22 @@
 
     <ul class="sidebar-nav" id="sidebar-nav">
         <li class="nav-heading">Home</li>
-        <NavLink href="/wall/1" Match="NavLinkMatch.All" class="nav-item nav-link">Home</NavLink>
+        <NavLink href="/wall/" Match="NavLinkMatch.Prefix" class="nav-item nav-link"><i class="bi bi-search"></i> Explore Ideas</NavLink>
         @if (UserService.User != null)
         {
-            <NavLink href="/makepost/" class="nav-item nav-link">New Post</NavLink>
-            <NavLink href="/mywall/1" class="nav-item nav-link">My Posts</NavLink>
+            <NavLink href="/makepost/" Match="NavLinkMatch.Prefix" class="nav-item nav-link"><i class="bi bi-file-earmark-plus"></i> New Idea</NavLink>
+            <NavLink href="/mywall/" Match="NavLinkMatch.Prefix" class="nav-item nav-link"><i class="bi bi-lightbulb-fill"></i> My Ideas</NavLink>
+            if (@Idea != null)
+            {
+                <NavLink href="@LinkLastIdea" Match="NavLinkMatch.Prefix" class="nav-item nav-link"><i class="bi bi-lightbulb"></i> Last Idea</NavLink>
+            }
             if (UserService.User.UserType == MindKey.Shared.UserType.Admin)
             {
                 <li class="nav-heading">Managment</li>
-                <NavLink href="/person/1" class="nav-item nav-link">Data Entry</NavLink>
-                <NavLink href="/upload/1" class="nav-item nav-link">File Management</NavLink>
-                <NavLink href="/user/1" class="nav-item nav-link">Users</NavLink>
-                <NavLink href="/swagger/index.html" class="nav-item nav-link" target="_blank">API</NavLink>
+                <NavLink href="/person/1" Match="NavLinkMatch.Prefix" class="nav-item nav-link">Data Entry</NavLink>
+                <NavLink href="/upload/1" Match="NavLinkMatch.Prefix" class="nav-item nav-link">File Management</NavLink>
+                <NavLink href="/user/1" Match="NavLinkMatch.Prefix" class="nav-item nav-link">Users</NavLink>
+                <NavLink href="/swagger/index.html" Match="NavLinkMatch.Prefix" class="nav-item nav-link" target="_blank">API</NavLink>
             }
         }
 
@@ -27,13 +32,24 @@
 </aside>
 <!-- End Sidebar-->
 @code {
+    [Parameter]
+    public string LinkLastIdea { get; set; }
+    public Idea Idea { get; set; }
     protected override void OnInitialized()
     {
         EventService.LoginAndOutEvent += LoginAndOut;
+        EventService.LastIdeaUpdatedEvent += LastIdeaUpdated;
         base.OnInitialized();
     }
     public void LoginAndOut(bool isLoggedIn)
     {
         StateHasChanged();
+    }
+    public void LastIdeaUpdated(Idea lastIdea)
+    {
+        Idea = lastIdea;
+        LinkLastIdea = $"/idea/{Idea.Id}";
+        StateHasChanged();
+
     }
 }

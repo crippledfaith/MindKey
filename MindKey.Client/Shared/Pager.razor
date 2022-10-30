@@ -44,7 +44,7 @@
         await base.OnParametersSetAsync();
         StartIndex = Math.Max(Result.CurrentPage - 3, 1);
         FinishIndex = Math.Min(StartIndex + 6, Result.PageCount);
-        if (FinishIndex - StartIndex < 6)
+        if (FinishIndex - StartIndex < 6 && StartIndex!=1)
         {
             var end = FinishIndex-Result.CurrentPage;
             var add = 6 - end;

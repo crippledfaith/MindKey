@@ -1,4 +1,5 @@
-﻿@page "/mywall/{Page}"
+﻿@page "/mywall"
+@page "/mywall/{Page}"
 @using MindKey.Client.Components
 @using MindKey.Shared.Models.MindKey
 @using System.Text
@@ -45,6 +46,8 @@
         {
             EventService.ChangeLoadingStatus(true, "List-OnParametersSetAsync()");
             //StateHasChanged();
+            if (Page == null)
+                Page = "1";
             var results = (await IdeaService.GetIdeas(Page, UserService.User?.Id));
             Ideas = results;
             PageHistoryState.AddPageToHistory(UriHelper.Uri);
