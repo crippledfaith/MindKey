@@ -12,8 +12,8 @@
     public Idea Idea { get; set; }
     protected override async Task OnParametersSetAsync()
     {
+        EventService.LastIdeaUpdatedEventChanged(IdeaId);
         Idea = await IdeaService.GetIdea(long.Parse(IdeaId));
-        EventService.LastIdeaUpdatedEventChanged(Idea);
         await base.OnParametersSetAsync();
     }
 }

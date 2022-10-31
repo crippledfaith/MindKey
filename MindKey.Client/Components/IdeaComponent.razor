@@ -25,7 +25,7 @@ else
         <div class="card-body">
             @if (!FullMode)
             {
-                <h5 class="card-title" @onclick="()=>OpenCard()" style="Cursor:pointer"><a>@Idea.Title</a></h5>
+                <h5 class="card-title" @onclick="()=>OpenCard()" style="cursor:pointer"><a>@Idea.Title</a></h5>
             }
             else
             {
@@ -33,7 +33,7 @@ else
             }
             <div id="toolbar" style="visibility:collapse"> </div>
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Description" />
-            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
+            <span class="badge border-secondary border-1 text-primary coursorpointer"  @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
             <IdeaUserPanelComponent Idea="@Idea" />
             <AgreeDisagreeComponent Idea="@Idea" />
@@ -79,7 +79,7 @@ else
             Description = Idea.Description;
             ShowMoreText = "";
         }
-        else if(Idea !=null)
+        else if (Idea != null)
         {
             Description = Idea.DescriptionShort;
         }
@@ -103,20 +103,23 @@ else
     }
     public async void OpenCardDetails(bool render = true)
     {
-        if (IsShowAll || FullMode)
+        if (Quill != null)
         {
-            ShowMoreText = "Hide...";
-            if (!FullMode) EventService.HideAllStories(Idea);
-            await Quill.SetContent(Idea.Description);
+            if (IsShowAll || FullMode)
+            {
+                ShowMoreText = "Hide...";
+                if (!FullMode) EventService.HideAllStories(Idea);
+                await Quill.SetContent(Idea.Description);
+            }
+            else
+            {
+                ShowMoreText = "Show More...";
+                await Quill.SetContent(Idea.DescriptionShort);
+            }
+            IsShowAll = !IsShowAll;
+            if (render)
+                StateHasChanged();
         }
-        else
-        {
-            ShowMoreText = "Show More...";
-            await Quill.SetContent(Idea.DescriptionShort);
-        }
-        IsShowAll = !IsShowAll;
-        if (render)
-            StateHasChanged();
     }
     public void OpenCard()
     {

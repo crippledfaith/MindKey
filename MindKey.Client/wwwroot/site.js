@@ -23,24 +23,37 @@
             new Quill(quillElement, options);
         },
         getQuillContent: function (quillControl) {
-            return JSON.stringify(quillControl.__quill.getContents());
+            if (quillControl && quillControl.__quill)
+                return JSON.stringify(quillControl.__quill.getContents());
+            return null;
         },
         getQuillText: function (quillControl) {
-            return quillControl.__quill.getText();
+            if (quillControl && quillControl.__quill)
+                return quillControl.__quill.getText();
+            return null;
         },
         getQuillHTML: function (quillControl) {
-            return quillControl.__quill.root.innerHTML;
+            if (quillControl && quillControl.__quill)
+                return quillControl.__quill.root.innerHTML;
+            return null;
         },
         loadQuillContent: function (quillControl, quillContent) {
-            content = JSON.parse(quillContent);
-            return quillControl.__quill.setContents(content, 'api');
+            if (quillControl && quillControl.__quill) {
+                content = JSON.parse(quillContent);
+                return quillControl.__quill.setContents(content, 'api');
+            }
+            return null;
         },
         setQuillContent: function (quillControl, quillContent) {
-            return quillControl.__quill.root.innerHTML = quillContent;
+            if (quillControl && quillControl.__quill && quillControl.__quill.root) {
+                quillControl.__quill.root.innerHTML = quillContent;
+            }
         },
         disableQuillEditor: function (quillControl) {
-            quillControl.__quill.enable(false);
-            return quillControl.__quill.root.innerHTML = "";
+            if (quillControl && quillControl.__quill) {
+                quillControl.__quill.enable(false);
+                quillControl.__quill.root.innerHTML = "";
+            }
         }
     };
 })();

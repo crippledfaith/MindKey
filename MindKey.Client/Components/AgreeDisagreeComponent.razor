@@ -10,18 +10,18 @@
     <button class="btn btn-primary" disabled>
         <i class="oi oi-thumb-up" title="Agree" aria-hidden="true"></i>
     </button>
-    <span class="badge border-secondary border-1 text-secondary">0</span>
+    <span class="badge border-secondary border-1 text-secondary coursorpointer">0</span>
 
     <button class="btn btn-primary" disabled>
         <i class="oi oi-thumb-down" title="Disagree" aria-hidden="true"></i>
     </button>
-    <span class="badge border-secondary border-1 text-secondary">0</span>
+    <span class="badge border-secondary border-1 text-secondary coursorpointer">0</span>
 
     <button class="btn btn-primary" disabled>
         <i class="oi oi-loop-square" title="Nutral" aria-hidden="true"></i>
     </button>
 
-    <span class="badge border-secondary border-1 text-secondary">0</span>
+    <span class="badge border-secondary border-1 text-secondary coursorpointer">0</span>
 
 }
 else
@@ -45,7 +45,7 @@ else
             <i class="oi oi-thumb-up" title="Agree" aria-hidden="true"></i>
         </button>
     }
-    <span class="badge border-secondary border-1 text-secondary">@ToKiloFormat(Idea.ForCount)</span>
+    <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.ForCount)</span>
     @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.Against) || disable)
     {
         <button class="btn btn-primary" disabled>
@@ -64,7 +64,7 @@ else
             <i class="oi oi-thumb-down" title="Disagree" aria-hidden="true"></i>
         </button>
     }
-    <span class="badge border-secondary border-1 text-secondary">@ToKiloFormat(Idea.AgainstCount)</span>
+    <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.AgainstCount)</span>
     @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.Nutral) || disable)
     {
         <button class="btn btn-primary" disabled>
@@ -84,7 +84,7 @@ else
         </button>
     }
 
-    <span class="badge border-secondary border-1 text-secondary">@ToKiloFormat(Idea.NetrulCount)</span>
+    <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.NetrulCount)</span>
 }
 
 @code {

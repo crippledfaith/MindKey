@@ -70,9 +70,9 @@
         }
         await base.OnAfterRenderAsync(firstRender);
     }
-    public async Task<object> DisableComponent()
+    public async Task DisableComponent()
     {
-        return await JSRuntime.InvokeAsync<object>("QuillFunctions.disableQuillEditor", divEditorElement);
+        await JSRuntime.InvokeAsync<object>("QuillFunctions.disableQuillEditor", divEditorElement);
     }
     public async Task<string> GetText()
     {
@@ -99,7 +99,7 @@
     }
     public async Task SetContent(string content)
     {
-        var QuillDelta = await JSRuntime.InvokeAsync<object>(
+        await JSRuntime.InvokeAsync<object>(
             "QuillFunctions.setQuillContent", divEditorElement, content);
     }
 }

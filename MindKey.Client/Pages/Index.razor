@@ -4,7 +4,6 @@
 @inject NavigationManager NavigationManager
 @inject EventService EventService
 
-<List Permission="@Permission" />
 
 @code {
     public string Permission { get; set; }
@@ -19,7 +18,7 @@
     }
     protected override void OnParametersSet()
     {
-
+        NavigationManager.NavigateTo("/wall/1");
         base.OnParametersSet();
     }
     public bool IsUrlLocal(string url)

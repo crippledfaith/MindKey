@@ -3,28 +3,46 @@
     @if (Result.PageCount > 1)
     {
         <ul class="pagination justify-content-center">
-            <li class="page-item pointer">
-                <a class="page-link pointer" @onclick="(() => PagerButtonClicked(1))" aria-ar>First</a>
-            </li>
+            @if (Result.CurrentPage != 1)
+            {
+                <li class="page-item coursorpointer">
+                    <a class="page-link coursorpointer" @onclick="(() => PagerButtonClicked(1))" aria-ar>First</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item  coursorpointer">
+                    <div class="page-link coursorpointer" disabled="disabled" aria-ar>First</div>
+                </li>
+            }
             @for (var i = StartIndex; i <= FinishIndex; i++)
             {
                 var currentIndex = i;
                 @if (i == Result.CurrentPage)
                 {
-                    <li class="page-item active pointer">
-                        <a class="page-link pointer">@i</a>
+                    <li class="page-item active coursorpointer">
+                        <a class="page-link coursorpointer">@i</a>
                     </li>
                 }
                 else
                 {
-                    <li class="page-item pointer">
-                        <a class="page-link pointer" @onclick="(() => PagerButtonClicked(currentIndex))">@i</a>
+                    <li class="page-item coursorpointer">
+                        <a class="page-link coursorpointer" @onclick="(() => PagerButtonClicked(currentIndex))">@i</a>
                     </li>
                 }
             }
-            <li class="page-item pointer">
-                <a class="page-link " @onclick="(() => PagerButtonClicked(Result.PageCount))">Last</a>
-            </li>
+            @if (Result.CurrentPage != Result.PageCount)
+            {
+                <li class="page-item coursorpointer">
+                    <a class="page-link coursorpointer" @onclick="(() => PagerButtonClicked(Result.PageCount))">Last</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item  coursorpointer">
+                    <div class="page-link coursorpointer" disabled="disabled" aria-ar>Last</div>
+                </li>
+            }
         </ul>
     }
 }
@@ -44,9 +62,9 @@
         await base.OnParametersSetAsync();
         StartIndex = Math.Max(Result.CurrentPage - 3, 1);
         FinishIndex = Math.Min(StartIndex + 6, Result.PageCount);
-        if (FinishIndex - StartIndex < 6 && StartIndex!=1)
+        if (FinishIndex - StartIndex < 6 && StartIndex != 1)
         {
-            var end = FinishIndex-Result.CurrentPage;
+            var end = FinishIndex - Result.CurrentPage;
             var add = 6 - end;
             StartIndex = Result.CurrentPage - add;
         }
