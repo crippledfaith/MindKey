@@ -8,12 +8,12 @@
 {
     <div class="card info-card" style="opacity:.7">
         <div class="card-body">
-            <h5 class="card-title">Loading...</h5>
+            <h5 class="card-title"><i class="bi bi-lightbulb-fill"> </i>Loading...</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
-            <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..." />
+            <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..."></QuillComponent>
             <span class="badge border-secondary border-1 text-primary" style="cursor:pointer">@ShowMoreText</span>
             <br />
-            <TagComponent Idea ="@null"/>
+            <TagComponent Idea="@null" />
             <IdeaUserPanelComponent Idea="@null" />
             <AgreeDisagreeComponent Idea="@null" />
             <CommentComponent Idea="@null" />
@@ -24,17 +24,18 @@ else
 {
     <div class="card info-card">
         <div class="card-body @DeletingClass">
+
             @if (!FullMode)
             {
-                <h5 class="card-title" @onclick="()=>OpenCard()" style="cursor:pointer"><a>@Idea.Title</a></h5>
+                <h5 class="card-title" @onclick="()=>OpenCard()" style="cursor:pointer"><i class="bi bi-lightbulb-fill"> </i><a>@Idea.Title</a></h5>
             }
             else
             {
-                <h5 class="card-title" style="Cursor:default">@Idea.Title</h5>
+                <h5 class="card-title" style="Cursor:default"><i class="bi bi-lightbulb-fill"></i>@Idea.Title</h5>
             }
             <div id="toolbar" style="visibility:collapse"> </div>
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Description" />
-            <span class="badge border-secondary border-1 text-primary coursorpointer"  @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
+            <span class="badge border-secondary border-1 text-primary coursorpointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
             <TagComponent Idea="@Idea" />
             <IdeaUserPanelComponent Idea="@Idea" />
