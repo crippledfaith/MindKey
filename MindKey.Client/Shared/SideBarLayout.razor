@@ -6,7 +6,9 @@
 <aside id="sidebar" class="sidebar">
 
     <ul class="sidebar-nav" id="sidebar-nav">
-        
+        <li class="nav-heading"><i class="bi bi-house-fill"></i> Home</li>
+        <NavLink href="/home" Match="NavLinkMatch.Prefix" class="nav-item nav-link"><i class="bi bi-house-fill"></i> Home</NavLink>
+
         <li class="nav-heading"><i class="bi bi-lightbulb-fill"></i> Ideas</li>
         <NavLink href="/wall/" Match="NavLinkMatch.Prefix" class="nav-item nav-link"><i class="bi bi-search"></i> Explore Ideas</NavLink>
         @if (UserService.User != null)

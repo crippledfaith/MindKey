@@ -13,6 +13,7 @@
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..." />
             <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
+            <TagComponent Idea ="@null"/>
             <IdeaUserPanelComponent Idea="@null" />
             <AgreeDisagreeComponent Idea="@null" />
             <CommentComponent Idea="@null" />
@@ -22,7 +23,7 @@
 else
 {
     <div class="card info-card">
-        <div class="card-body">
+        <div class="card-body @DeletingClass">
             @if (!FullMode)
             {
                 <h5 class="card-title" @onclick="()=>OpenCard()" style="cursor:pointer"><a>@Idea.Title</a></h5>
@@ -35,6 +36,7 @@ else
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Description" />
             <span class="badge border-secondary border-1 text-primary coursorpointer"  @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
+            <TagComponent Idea="@Idea" />
             <IdeaUserPanelComponent Idea="@Idea" />
             <AgreeDisagreeComponent Idea="@Idea" />
             <CommentComponent Idea="@Idea" FullMode="@FullMode" />
@@ -53,6 +55,8 @@ else
     private ElementReference divEditorElement;
     public QuillComponent Quill { get; set; }
     public string ShowMoreText { get; set; } = "Show More...";
+    public string DeletingClass { get; set; } = "";
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
@@ -65,7 +69,9 @@ else
 
     protected override void OnInitialized()
     {
-
+        EventService.EditIdeaEvent -= EditIdea;
+        EventService.DeleteIdeaEvent -= DeleteIdea;
+        EventService.HideAllStoriesEvent -= HideAllStories;
         EventService.EditIdeaEvent += EditIdea;
         EventService.DeleteIdeaEvent += DeleteIdea;
         EventService.HideAllStoriesEvent += HideAllStories;
@@ -74,6 +80,7 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
+        DeletingClass = "";
         if (FullMode && Idea != null)
         {
             Description = Idea.Description;
@@ -91,7 +98,13 @@ else
     }
     public void DeleteIdea(Idea idea)
     {
-
+        if (this.Idea.Id == idea.Id)
+        {
+            DeletingClass = "DeletingIdea";
+            StateHasChanged();
+            IdeaService.DeleteIdea(idea.Id);
+            EventService.DeletedIdea(idea);
+        }
     }
     public void HideAllStories(Idea idea)
     {

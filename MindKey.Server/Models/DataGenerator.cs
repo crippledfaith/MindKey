@@ -62,7 +62,7 @@ namespace MindKey.Server.Models
 
                 var xpeople = testPeople.Generate(appDbContext.Users.Count());
                 int x = 0;
-                foreach (Shared.Models.Person p in xpeople)
+                foreach (Person p in xpeople)
                 {
                     p.User = appDbContext.Users.Skip(x++).First();
                     p.FirstName = p.User.FirstName;
@@ -72,29 +72,29 @@ namespace MindKey.Server.Models
                 }
                 appDbContext.SaveChanges();
             }
-            if (appDbContext.People.Any() && !appDbContext.Ideas.Any())
-            {
-                people = appDbContext.People.ToList();
-                for (int i = 0; i < 100; i++)
-                {
-                    var idea = new Idea
-                    {
-                        Id = random.NextInt64(),
-                        Argument = ArgumentType.For,
-                        Description = LoremIpsum(100, 200, 1, 2, 2),
-                        Title = LoremIpsum(5, 20, 1, 1, 1),
-                        Person = people[random.Next(people.Count)],
-                        PostDateTime = DateTime.UtcNow,
-                        ForCount = random.Next(1000, 100000),
-                        AgainstCount = random.Next(1000, 100000),
-                        NetrulCount = random.Next(1000, 100000)
-                    };
-                    ideas.Add(idea);
-                    appDbContext.Ideas.Add(idea);
-                }
-                appDbContext.SaveChanges();
+            //if (appDbContext.People.Any() && !appDbContext.Ideas.Any())
+            //{
+            //    people = appDbContext.People.ToList();
+            //    for (int i = 0; i < 100; i++)
+            //    {
+            //        var idea = new Idea
+            //        {
+            //            Id = random.NextInt64(),
+            //            Argument = ArgumentType.For,
+            //            Description = LoremIpsum(100, 200, 1, 2, 2),
+            //            Title = LoremIpsum(5, 20, 1, 1, 1),
+            //            Person = people[random.Next(people.Count)],
+            //            PostDateTime = DateTime.UtcNow,
+            //            ForCount =0,// random.Next(1000, 100000),
+            //            AgainstCount =0,// random.Next(1000, 100000),
+            //            NetrulCount = random.Next(1000, 100000)
+            //        };
+            //        ideas.Add(idea);
+            //        appDbContext.Ideas.Add(idea);
+            //    }
+            //    appDbContext.SaveChanges();
 
-            }
+            //}
             if (!appDbContext.Uploads.Any())
             {
                 string jsonRecord = @"[{""FirstName"": ""Tim"",""LastName"": ""Bucktooth"",""Gender"": 1,""PhoneNumber"": ""717-211-3211"",

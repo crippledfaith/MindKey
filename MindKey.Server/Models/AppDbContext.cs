@@ -16,6 +16,7 @@ namespace MindKey.Server.Models
         public DbSet<Upload> Uploads => Set<Upload>();
         public DbSet<User> Users => Set<User>();
         public DbSet<Idea> Ideas => Set<Idea>();
+        public DbSet<Tag> Tags => Set<Tag>();
         public DbSet<IdeaUserComment> IdeaUserComments => Set<IdeaUserComment>();
     }
 }

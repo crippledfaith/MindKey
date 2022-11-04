@@ -1,5 +1,4 @@
 ﻿@page "/"
-@page "/admin"
 @using MindKey.Client.Pages.Wall
 @inject NavigationManager NavigationManager
 @inject EventService EventService
@@ -14,12 +13,14 @@
     }
     public void LoginAndOut(bool isLoggeding)
     {
-        NavigationManager.NavigateTo("/wall/1");
+        //NavigationManager.NavigateTo("/wall/1");
     }
     protected override void OnParametersSet()
     {
-        NavigationManager.NavigateTo("/wall/1");
         base.OnParametersSet();
+        EventService.ChangeLoadingStatus(false, "/");
+        NavigationManager.NavigateTo("/home");
+        
     }
     public bool IsUrlLocal(string url)
     {

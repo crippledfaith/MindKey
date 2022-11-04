@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MindKey.Shared.Data;
 using MindKey.Shared.Models.MindKey;
+using System.Globalization;
 
 namespace MindKey.Server.Models
 {
@@ -15,18 +16,70 @@ namespace MindKey.Server.Models
         {
             idea.Id = new Random().NextInt64();
             idea.Person = await _appDbContext.People.FirstOrDefaultAsync(q => q.PersonId == idea.Person.PersonId);
-            idea.Person.User = await _appDbContext.Users.FirstOrDefaultAsync(q => q.Id == idea.Person.User.Id);
-            var result = await _appDbContext.Ideas.AddAsync(idea);
-            await _appDbContext.SaveChangesAsync();
-            return result.Entity;
+            if (idea.Person != null)
+            {
+                //idea.Person.User = await _appDbContext.Users.FirstOrDefaultAsync(q => q.Id == idea.Person.User.Id);
+                UpdateTags(idea, null);
+                var result = await _appDbContext.Ideas.AddAsync(idea);
+                await _appDbContext.SaveChangesAsync();
+                return result.Entity;
+            }
+            throw new Exception($"PersonId is Invalid");
         }
+        public async Task<Idea?> UpdateIdea(Idea idea)
+        {
+            var result = await _appDbContext.Ideas.Include(q => q.Tags).FirstOrDefaultAsync(p => p.Id == idea.Id);
+            if (result != null)
+            {
+                UpdateTags(idea, result);
+                _appDbContext.Entry(result).CurrentValues.SetValues(idea);
+                await _appDbContext.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException("Idea not found");
+            }
+            return result;
+        }
+        private void UpdateTags(Idea idea, Idea? result)
+        {
+            idea.Tags.RemoveAll(q => q.Name == "");
+            foreach (var tag in idea.Tags.ToList())
+            {
+                tag.Name = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(tag.Name.Trim().ToLower());
+                if (result != null)
+                {
+                    var existingTags = result.Tags
+                    .Where(a => a.Name == tag.Name && a.IdeaId == idea.Id)
+                    .SingleOrDefault();
+                    if (existingTags != null)
+                    {
+                        tag.IdeaId = idea.Id;
+                        tag.Id = existingTags.Id;
+                        _appDbContext.Entry(existingTags).CurrentValues.SetValues(tag);
+                    }
+                    else
+                    {
+                        var newTag = new Tag()
+                        {
+                            Name = tag.Name,
+                            IdeaId = idea.Id,
+                        };
+                        result.Tags.Add(newTag);
+                    }
+                }
+            }
+        }
+
+
 
         public async Task<Idea?> DeleteIdea(long id)
         {
             var result = await _appDbContext.Ideas.FirstOrDefaultAsync(p => p.Id == id);
             if (result != null)
             {
-                _appDbContext.Ideas.Remove(result);
+                result.IsDeleted = true;
+                _appDbContext.Update(result);
                 await _appDbContext.SaveChangesAsync();
             }
             else
@@ -51,6 +104,7 @@ namespace MindKey.Server.Models
         {
 
             var result = await _appDbContext.Ideas
+                 .Include(q => q.Tags)
                  .Include(q => q.Person)
                  .Include(q => q.Person.User)
                  .Include(q => q.Person.Addresses)
@@ -61,7 +115,7 @@ namespace MindKey.Server.Models
             }
             else
             {
-                throw new KeyNotFoundException("Person not found");
+                throw new KeyNotFoundException("Idea not found");
             }
         }
 
@@ -71,6 +125,8 @@ namespace MindKey.Server.Models
             if (userId == null)
             {
                 return _appDbContext.Ideas
+                    .Where(q => !q.IsDeleted)
+                    .Include(q => q.Tags)
                     .Include(q => q.Person)
                     .Include(q => q.Person.User)
                     .Include(q => q.Person.Addresses)
@@ -80,10 +136,12 @@ namespace MindKey.Server.Models
             else
             {
                 return _appDbContext.Ideas
+                    .Where(p => p.Person.PersonId == userId)
+                    .Where(q => !q.IsDeleted)
+                    .Include(q => q.Tags)
                     .Include(q => q.Person)
                     .Include(q => q.Person.User)
                     .Include(q => q.Person.Addresses)
-                    .Where(p => p.Person.PersonId == userId)
                     .OrderByDescending(p => p.PostDateTime)
                     .GetPaged(page, pageSize);
             }
@@ -95,6 +153,8 @@ namespace MindKey.Server.Models
             if (userId == null)
             {
                 return _appDbContext.Ideas
+                    .Where(q => !q.IsDeleted)
+                    .Include(q => q.Tags)
                     .Include(q => q.Person)
                     .Include(q => q.Person.User)
                     .Include(q => q.Person.Addresses)
@@ -104,6 +164,7 @@ namespace MindKey.Server.Models
             else
             {
                 return _appDbContext.Ideas
+                     .Where(q => !q.IsDeleted)
                     .Include(q => q.Person)
                     .Include(q => q.Person.User)
                     .Include(q => q.Person.Addresses)
@@ -164,21 +225,11 @@ namespace MindKey.Server.Models
                 return false;
             }
         }
-
-        public async Task<Idea?> UpdateIdea(Idea idea)
+        public async Task<Dictionary<string, int>> GetTags(int count)
         {
-            var result = await _appDbContext.Ideas.FirstOrDefaultAsync(p => p.Id == idea.Id);
-            if (result != null)
-            {
-                // Update existing person
-                _appDbContext.Entry(result).CurrentValues.SetValues(idea);
-                await _appDbContext.SaveChangesAsync();
-            }
-            else
-            {
-                throw new KeyNotFoundException("Idea not found");
-            }
-            return result;
+            var list = await _appDbContext.Tags.ToListAsync();
+            return list.GroupBy(q => q.Name).ToDictionary(q => q.Key, q => q.Count());
         }
+
     }
 }

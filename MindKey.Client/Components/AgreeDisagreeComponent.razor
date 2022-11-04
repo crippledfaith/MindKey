@@ -46,6 +46,7 @@ else
         </button>
     }
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.ForCount)</span>
+
     @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.Against) || disable)
     {
         <button class="btn btn-primary" disabled>
@@ -65,6 +66,7 @@ else
         </button>
     }
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.AgainstCount)</span>
+
     @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.Nutral) || disable)
     {
         <button class="btn btn-primary" disabled>
@@ -83,7 +85,6 @@ else
             <i class="oi oi-loop-square" title="Nutral" aria-hidden="true"></i>
         </button>
     }
-
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.NetrulCount)</span>
 }
 
@@ -143,9 +144,12 @@ else
             Idea = await IdeaService.GetIdea(Idea.Id);
             if (Idea.AgainstCount == 0)
             {
-                Idea.AgainstCount = 1;
+                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(1 + Idea.ForCount)) * 100;
             }
-            Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+            else
+            {
+                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+            }
             EventService.AgreeDisagreeChanged(Idea);
         }
         catch (Exception ex)

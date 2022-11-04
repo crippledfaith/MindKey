@@ -38,7 +38,15 @@
         {
             UriHelper.NavigateTo("/wall/1");
         }
+        EventService.DeletedIdeaEvent -= DeletedIdea;
+        EventService.DeletedIdeaEvent += DeletedIdea;
         base.OnInitialized();
+    }
+    public async void DeletedIdea(Idea idea)
+    {
+        var results = (await IdeaService.GetIdeas(Page, UserService.User?.Id));
+        Ideas = results;
+        StateHasChanged();
     }
     protected override async Task OnParametersSetAsync()
     {

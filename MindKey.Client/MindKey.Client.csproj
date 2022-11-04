@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<Nullable>disable</Nullable>
+		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
@@ -10,12 +10,15 @@
 	  <ExternalConsole>true</ExternalConsole>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Blazor.ECharts" Version="0.7.8" />
+		<PackageReference Include="Blazor.ECharts.WordCloud" Version="0.7.8" />
+		<PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />
 		<PackageReference Include="FluentValidation" Version="11.2.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview3.20168.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.9" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
 		<PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
-		<ServiceWorker Include="wwwroot\service-worker.js"  PublishedContent="wwwroot\service-worker.published.js" />
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\MindKey.Shared\MindKey.Shared.csproj" />

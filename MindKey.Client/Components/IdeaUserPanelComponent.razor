@@ -16,21 +16,42 @@ else
 @if (Idea != null && UserService != null && Idea.Person != null && UserService.User != null && UserService.User.Id == Idea.Person.PersonId)
 {
     <button type="button" class="btn btn-link btn-sm" @onclick="()=>Edit()"><i class="oi oi-pencil"> Edit</i></button>
-    <button type="button" class="btn btn-link btn-sm" @onclick="()=>Delete()"><i class=" oi oi-trash"> Delete</i></button>
+    if (!IsDeleteConfrimMode)
+    {
+        <button type="button" class="btn btn-link btn-sm" @onclick="()=>DeleteConfirm()"><i class="bi bi-trash3-fill"> </i> Delete</button>
+    }
+    else
+    {
+        <span class="badge border-secondary border-1 text-secondary coursorpointer">
+            Are you sure you want to Delete?
+        </span>
+        <button type="button" class="btn btn-link btn-sm" @onclick="()=>Delete()"><i class="bi bi-trash3-fill"> </i> Delete</button>
+        <button type="button" class="btn btn-link btn-sm" @onclick="()=>Cancel()"><i class="bi bi-x-circle-fill"> </i> Cancel</button>
+    }
 }
 
 
 @code {
     [Parameter]
     public Idea Idea { get; set; } = null;
-
+    public bool IsDeleteConfrimMode { get; set; } = false;
     public void Edit()
     {
         EventService.EditIdea(Idea);
     }
+    public void Cancel()
+    {
+        IsDeleteConfrimMode = false;
+        StateHasChanged();
+    }
     public void Delete()
     {
         EventService.DeleteIdea(Idea);
+        Cancel();
     }
-
+    public void DeleteConfirm()
+    {
+        IsDeleteConfrimMode = true;
+        StateHasChanged();
+    }
 }

@@ -51,9 +51,7 @@ h6 {
         padding: 20px;
     }
 }
-.coursorpointer {
-    cursor:default;
-}
+
 /*--------------------------------------------------------------
 # Page Title
 --------------------------------------------------------------*/
@@ -1354,4 +1352,38 @@ h6 {
 .inputtext-for-comments {
     font-size: smaller !important;
     width: 100%
+}
+
+.coursorpointer {
+    cursor: default;
+}
+
+.DeletingIdea {
+    background: #2F2F2F
+}
+.chart-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    padding-right: 0px;
+    padding-top: 0px;
+    height: 85%;
+    width: 85%;
+}
+
+.chart-normal {
+    border-radius: 4px;
+    height: 300px;
+    width: 400px;
+    margin-top: 20px;
+}
+
+.chart-fill {
+    width: 100%;
+    height: 720px;
+    margin-top: 20px;
+    margin-right: 20px;
 }

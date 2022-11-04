@@ -36,8 +36,27 @@
                 Results = new List<Idea> { new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea(), new Idea() }
             };
         Ideas = EmptyIdeas;
-
+        EventService.DeletedIdeaEvent -= DeletedIdea;
+        EventService.DeletedIdeaEvent += DeletedIdea;
+        EventService.LoginAndOutEvent += LoginAndOut;
         base.OnInitialized();
+    }
+
+    public async void DeletedIdea(Idea idea)
+    {
+        var results = (await IdeaService.GetIdeasOfOthers(Page, UserService.User?.Id));
+        Ideas = results;
+        StateHasChanged();
+    }
+
+    public async void LoginAndOut(bool isLoggedin)
+    {
+        if (isLoggedin)
+        {
+            var results = (await IdeaService.GetIdeasOfOthers(Page, UserService.User?.Id));
+            Ideas = results;
+            StateHasChanged();
+        }
     }
     protected override async Task OnParametersSetAsync()
     {

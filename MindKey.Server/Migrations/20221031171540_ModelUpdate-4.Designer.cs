@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindKey.Server.Models;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MindKey.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221031171540_ModelUpdate-4")]
+    partial class ModelUpdate4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,32 +141,6 @@ namespace MindKey.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("IdeaUserComments");
-                });
-
-            modelBuilder.Entity("MindKey.Shared.Models.MindKey.Tag", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long?>("IdeaId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdeaId");
-
-                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("MindKey.Shared.Models.Person", b =>
@@ -305,15 +281,6 @@ namespace MindKey.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MindKey.Shared.Models.MindKey.Tag", b =>
-                {
-                    b.HasOne("MindKey.Shared.Models.MindKey.Idea", "Idea")
-                        .WithMany("Tags")
-                        .HasForeignKey("IdeaId");
-
-                    b.Navigation("Idea");
-                });
-
             modelBuilder.Entity("MindKey.Shared.Models.Person", b =>
                 {
                     b.HasOne("MindKey.Shared.Models.User", "User")
@@ -323,11 +290,6 @@ namespace MindKey.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MindKey.Shared.Models.MindKey.Idea", b =>
-                {
-                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("MindKey.Shared.Models.Person", b =>

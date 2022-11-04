@@ -6,25 +6,30 @@
 @inject IPersonService PersonService
 @inject IUserService UserService
 @inject EventService EventService
+@inject NavigationManager NavigationManager
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">State Your Opinion</h5>
         <div class="row g-3">
-
             <div class="col-12">
                 <label for="inputCity" class="form-label">Opinion</label>
                 <input type="text" class="form-control" @bind="Title" placeholder="State Your Opinion">
             </div>
-
         </div>
         <label for="inputCity" class="form-label">Description</label>
         <QuillComponent @ref="Quill" />
+        <div class="row g-3">
+            <div class="col-12">
+                <label for="inputCity" class="form-label">Tags</label>
+                <input type="text" class="form-control" @bind="TagsString" placeholder="Add tags">
+            </div>
+        </div>
 
         <hr />
         <div class="text-center">
             <button type="button" class="btn btn-primary" @onclick="()=>Save()">Save</button>
             <button type="button" class="btn btn-primary" @onclick="()=>Publish()">Publish</button>
-            <button type="reset" class="btn btn-secondary">Reset</button>
+            <button type="reset" class="btn btn-secondary" @onclick="()=>Reset()">Reset</button>
         </div>
     </div>
 </div>
@@ -33,6 +38,7 @@
     public string IdeaId { get; set; } = null;
     public Idea Idea { get; set; }
     public string Title { get; set; }
+    public string TagsString { get; set; }
     public string Description { get; set; }
     private string strSavedContent = "";
     public QuillComponent Quill { get; set; }
@@ -44,6 +50,7 @@
             if (Idea == null)
             {
                 Idea = new Idea();
+
                 Idea.Person = await PersonService.GetPersonByUser(UserService.User.Id);
                 Idea.PostDateTime = DateTime.UtcNow;
             }
@@ -59,15 +66,17 @@
                 Idea.DescriptionShort = text + "...";
             }
             Idea.PostDateTime = DateTime.UtcNow;
+            Idea.Tags = TagsString.Split(' ').ToList().Select(q => new Tag { Name = q }).ToList();
             if (Idea.Id != 0)
             {
                 await IdeaService.UpdateIdea(Idea);
             }
             else
             {
-                await IdeaService.AddIdea(Idea);
+                Idea = await IdeaService.AddIdea(Idea);
             }
             EventService.ShowMessage("Opinion Saved.", MessageType.Success);
+            NavigationManager.NavigateTo($"/idea/{Idea.Id}");
         }
         catch (Exception ex)
         {
@@ -80,6 +89,21 @@
     {
 
     }
+    public async void Reset()
+    {
+        try
+        {
+            Title = Idea?.Title;
+            Description = Idea?.Description;
+            await Quill.SetContent(Description);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
+
+    }
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -89,6 +113,7 @@
                 Idea = await IdeaService.GetIdea(long.Parse(IdeaId));
                 Title = Idea.Title;
                 Description = Idea.Description;
+                TagsString = string.Join(" ", Idea.Tags.Select(q => q.Name).ToArray());
             }
             else
             {

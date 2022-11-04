@@ -35,9 +35,9 @@ namespace MindKey.Client.Services
             await _httpService.Delete($"api/idea/{id}");
         }
 
-        public async Task AddIdea(Idea idea)
+        public async Task<Idea> AddIdea(Idea idea)
         {
-            await _httpService.Post($"api/idea", idea);
+            return await _httpService.Post<Idea>($"api/idea", idea);
         }
 
         public async Task UpdateIdea(Idea idea)
@@ -58,6 +58,11 @@ namespace MindKey.Client.Services
         public async Task<PagedResult<IdeaUserComment>> GetComments(Idea idea, string page, string pageSize = "5")
         {
             return await _httpService.Get<PagedResult<IdeaUserComment>>($"api/idea/GetComments?page={page}&pagesize={pageSize}&ideaId={idea.Id}");
+        }
+
+        public async Task<Dictionary<string, int>> GetTags(int count)
+        {
+            return await _httpService.Get<Dictionary<string, int>>($"api/idea/GetTags?count={count}");
         }
     }
 }

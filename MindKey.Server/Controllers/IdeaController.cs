@@ -57,11 +57,20 @@ namespace MindKey.Server.Controllers
         /// <summary>
         /// Creates a person with child addresses.
         /// </summary>
+        [HttpDelete]
+        public async Task<ActionResult> DeleteIdea(Idea idea)
+        {
+            return Ok(await _ideaRepository.DeleteIdea(idea.Id));
+        }
+        /// <summary>
+        /// Creates a person with child addresses.
+        /// </summary>
         [HttpPost("SetArgument")]
         public async Task<ActionResult> SetArgument(IdeaUserComment ideaUserComment)
         {
             return Ok(await _ideaRepository.SetArgument(ideaUserComment));
         }
+
         /// <summary>
         /// Creates a person with child addresses.
         /// </summary>
@@ -96,5 +105,12 @@ namespace MindKey.Server.Controllers
         {
             return Ok(_ideaRepository.GetComments(page, pageSize, ideaId));
         }
+        [AllowAnonymous]
+        [HttpGet("GetTags")]
+        public async Task<ActionResult> GetTags([FromQuery] int count)
+        {
+            return Ok(await _ideaRepository.GetTags(count));
+        }
+
     }
 }
