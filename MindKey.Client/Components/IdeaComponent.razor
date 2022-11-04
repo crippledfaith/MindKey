@@ -6,12 +6,12 @@
 @inject IJSRuntime JSRuntime
 @if (Idea == null || Idea.Id == 0)
 {
-    <div class="card info-card">
+    <div class="card info-card" style="opacity:.7">
         <div class="card-body">
             <h5 class="card-title">Loading...</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..." />
-            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
+            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer">@ShowMoreText</span>
             <br />
             <TagComponent Idea ="@null"/>
             <IdeaUserPanelComponent Idea="@null" />
