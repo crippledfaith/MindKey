@@ -13,8 +13,8 @@ namespace MindKey.Client.Services
         private EventService _eventService;
         private string _userKey = "user";
 
-        public User User { get; private set; }
-        public string IdeaId { get; set; }
+        public User? User { get; private set; }
+        public string? IdeaId { get; set; }
 
 
         public UserService(IHttpService httpService, ILocalStorageService localStorageService, NavigationManager navigationManager, EventService eventService)
@@ -23,15 +23,18 @@ namespace MindKey.Client.Services
             _localStorageService = localStorageService;
             _navigationManager = navigationManager;
             _eventService = eventService;
-            Initialize();
+            _ = Initialize();
         }
 
         public async Task Initialize()
         {
-            User = await _localStorageService.GetItem<User>(_userKey);
-            User = await GetUser(User.Id);
-            _eventService.ChangeLoginStatus(User != null);
 
+            User = await _localStorageService.GetItem<User>(_userKey);
+            if (User != null)
+            {
+                User = await GetUser(User.Id);
+                _eventService.ChangeLoginStatus(User != null);
+            }
         }
 
         public async Task Login(Login model)
@@ -47,12 +50,12 @@ namespace MindKey.Client.Services
             _navigationManager.NavigateTo("/user/login");
         }
 
-        public async Task<PagedResult<User>> GetUsers(string name, string page)
+        public async Task<PagedResult<User>?> GetUsers(string name, string page)
         {
             return await _httpService.Get<PagedResult<User>>("api/user" + "?page=" + page + "&name=" + name);
         }
 
-        public async Task<User> GetUser(long id)
+        public async Task<User?> GetUser(long id)
         {
             return await _httpService.Get<User>($"api/user/{id}");
         }
@@ -61,8 +64,12 @@ namespace MindKey.Client.Services
         {
             await _httpService.Delete($"api/user/{id}");
             // auto logout if the user deleted their own record
-            if (id == User.Id)
-                await Logout();
+            if (User != null)
+            {
+                if (id == User.Id)
+                    await Logout();
+            }
+
         }
 
         public async Task AddUser(User user)
@@ -72,9 +79,10 @@ namespace MindKey.Client.Services
 
         public async Task UpdateUser(User user)
         {
+
             await _httpService.Put($"api/user", user);
             // update local storage if the user updated their own record
-            if (user.Id == User.Id)
+            if (user.Id == User?.Id)
             {
                 User.FirstName = user.FirstName;
                 User.LastName = user.LastName;

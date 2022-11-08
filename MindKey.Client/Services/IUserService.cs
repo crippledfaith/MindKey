@@ -11,8 +11,8 @@ namespace MindKey.Client.Services
         Task Initialize();
         Task Login(Login model);
         Task Logout();
-        Task<PagedResult<User>> GetUsers(string name, string page);
-        Task<User> GetUser(long id);
+        Task<PagedResult<User>?> GetUsers(string name, string page);
+        Task<User?> GetUser(long id);
         Task DeleteUser(long id);
         Task AddUser(User user);
         Task UpdateUser(User user);

@@ -87,13 +87,15 @@ else
     }
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.NetrulCount)</span>
 }
+<PopupLayout @ref="popupRef" />
 
 @code {
     [Parameter]
-    public Idea Idea { get; set; } = null;
-    public IdeaUserComment? IdeaUserComment { get; set; } = null;
+    public Idea? Idea { get; set; }
+    public IdeaUserComment? IdeaUserComment { get; set; }
     public decimal Width { get; set; } = 0;
     public bool disable { get; set; } = true;
+    private PopupLayout? popupRef;
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -104,6 +106,7 @@ else
     }
     public async Task Agree()
     {
+        popupRef?.Show("Popup body text");
         await UpdateVote(ArgumentType.For);
         StateHasChanged();
     }
@@ -124,38 +127,42 @@ else
     {
         try
         {
-            Idea.Argument = type;
-            StateHasChanged();
-            var idea = await IdeaService.GetIdea(Idea.Id);
-            var ideaUserComment = new IdeaUserComment
-                {
-                    Argument = type,
-                    Idea = idea,
-                    User = UserService.User ?? new User(),
-                    Title = "Test Title",
-                    Description = "Test Description",
-                };
-            ideaUserComment.User.Password = "***";
+            if (Idea != null)
+            {
+                Idea.Argument = type;
+                StateHasChanged();
+                var idea = await IdeaService.GetIdea(Idea.Id);
+                var ideaUserComment = new IdeaUserComment
+                    {
+                        Argument = type,
+                        Idea = idea,
+                        User = UserService.User ?? new User(),
+                        Title = "Test Title",
+                        Description = "Test Description",
+                    };
+                ideaUserComment.User.Password = "***";
 
-            if (await IdeaService.SetAurgument(ideaUserComment))
-            {
-                IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+                if (await IdeaService.SetAurgument(ideaUserComment))
+                {
+                    IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+                }
+                Idea = await IdeaService.GetIdea(Idea.Id);
+                if (Idea.AgainstCount == 0)
+                {
+                    Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(1 + Idea.ForCount)) * 100;
+                }
+                else
+                {
+                    Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+                }
+                EventService.AgreeDisagreeChanged(Idea);
             }
-            Idea = await IdeaService.GetIdea(Idea.Id);
-            if (Idea.AgainstCount == 0)
-            {
-                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(1 + Idea.ForCount)) * 100;
-            }
-            else
-            {
-                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
-            }
-            EventService.AgreeDisagreeChanged(Idea);
         }
         catch (Exception ex)
         {
             EventService.ShowMessage(ex.Message, MessageType.Error);
         }
+
 
     }
 
@@ -175,31 +182,31 @@ else
     {
         try
         {
-            if (Idea?.Person == null)
+            if (Idea != null && Idea.Person != null)
             {
-                return;
-            }
-            EventService.ChangeLoadingStatus(true, "AgreeDisagreeComponent-OnParametersSetAsync()");
-            if (Idea.AgainstCount == 0)
-            {
-                Idea.AgainstCount = 1;
-            }
-            Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
-            if (UserService.User != null && Idea?.Person != null)
-                disable = (Idea.Person.PersonId == UserService.User.Id);
-            //Idea = await IdeaService.GetIdea(Idea.Id);
-            var ideaUserComment = new IdeaUserComment
+                EventService.ChangeLoadingStatus(true, "AgreeDisagreeComponent-OnParametersSetAsync()");
+                if (Idea.AgainstCount == 0)
                 {
-                    Argument = ArgumentType.Nutral,
-                    Idea = Idea,
-                    User = UserService.User ?? new User(),
-                    Title = "Test Title",
-                    Description = "Test Description",
-                };
-            ideaUserComment.User.Password = "***";
-            IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
-            EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
+                    Idea.AgainstCount = 1;
+                }
+                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+                if (UserService.User != null && Idea?.Person != null)
+                    disable = (Idea.Person.PersonId == UserService.User.Id);
+                //Idea = await IdeaService.GetIdea(Idea.Id);
+                var ideaUserComment = new IdeaUserComment
+                    {
+                        Argument = ArgumentType.Nutral,
+                        Idea = Idea,
+                        User = UserService.User ?? new User(),
+                        Title = "Test Title",
+                        Description = "Test Description",
+                    };
+                ideaUserComment.User.Password = "***";
+                IdeaUserComment = await IdeaService.GetSetAgument(ideaUserComment);
+                EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
+            }
             await base.OnParametersSetAsync();
+
         }
         catch (Exception ex)
         {

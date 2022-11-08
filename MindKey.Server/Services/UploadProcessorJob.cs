@@ -47,7 +47,11 @@ namespace MindKey.Server.Services
 
                 try
                 {
-                    List<Person> people = JsonSerializer.Deserialize<List<Person>>(base64Decoded);
+                    List<Person>? people = JsonSerializer.Deserialize<List<Person>>(base64Decoded);
+                    if (people == null)
+                    {
+                        continue;
+                    }
                     foreach (Person p in people)
                     {
                         _appDbContext.People.Add(p);

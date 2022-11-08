@@ -5,7 +5,7 @@ namespace MindKey.Client.Shared
 {
     public class StringConverter : JsonConverter<string>
     {
-        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             // deserialize numbers as strings.
             if (reader.TokenType == JsonTokenType.Number)

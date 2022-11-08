@@ -25,15 +25,15 @@ namespace MindKey.Client.Services
 
         public ILogger<EventService> Logger { get; }
 
-        public event LoginAndOutEventHandler LoginAndOutEvent;
-        public event EditIdeaEventHandler EditIdeaEvent;
-        public event LastIdeaUpdatedEventHandler LastIdeaUpdatedEvent;
-        public event DeleteIdeaEventHandler DeleteIdeaEvent;
-        public event DeletedIdeaEventHandler DeletedIdeaEvent;
-        public event HideAllStoriesEventHandler HideAllStoriesEvent;
-        public event LoadingStatusChanagedEventHandler LoadingStatusChanagedEvent;
-        public event ShowMessageEventHandler ShowMessageEvent;
-        public event AgreeDisagreeChangedEventHandler AgreeDisagreeChangedEvent;
+        public event LoginAndOutEventHandler? LoginAndOutEvent;
+        public event EditIdeaEventHandler? EditIdeaEvent;
+        public event LastIdeaUpdatedEventHandler? LastIdeaUpdatedEvent;
+        public event DeleteIdeaEventHandler? DeleteIdeaEvent;
+        public event DeletedIdeaEventHandler? DeletedIdeaEvent;
+        public event HideAllStoriesEventHandler? HideAllStoriesEvent;
+        public event LoadingStatusChanagedEventHandler? LoadingStatusChanagedEvent;
+        public event ShowMessageEventHandler? ShowMessageEvent;
+        public event AgreeDisagreeChangedEventHandler? AgreeDisagreeChangedEvent;
         public EventService(ILogger<EventService> logger)
         {
             Logger = logger;

@@ -8,13 +8,13 @@ namespace MindKey.Client.Shared
         void Info(string message, bool keepAfterRouteChange = false, bool autoClose = true);
         void Warn(string message, bool keepAfterRouteChange = false, bool autoClose = true);
         void Alert(AlertModel alert);
-        void Clear(string id = null);
+        void Clear(string? id = null);
     }
 
     public class AlertService : IAlertService
     {
         private const string _defaultId = "default-alert";
-        public event Action<AlertModel> OnAlert;
+        public event Action<AlertModel>? OnAlert;
 
         public void Success(string message, bool keepAfterRouteChange = false, bool autoClose = true)
         {

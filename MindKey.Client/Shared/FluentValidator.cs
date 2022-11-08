@@ -7,36 +7,46 @@ namespace MindKey.Client.Shared
     public class FluentValidator<TValidator> : ComponentBase where TValidator : IValidator, new()
     {
         private readonly static char[] separators = new[] { '.', '[' };
-        private TValidator validator;
+        private TValidator? validator;
 
-        [CascadingParameter] private EditContext EditContext { get; set; }
+        [CascadingParameter] private EditContext? EditContext { get; set; }
 
         protected override void OnInitialized()
         {
-            validator = new TValidator();
-            var messages = new ValidationMessageStore(EditContext);
+            if (EditContext != null)
+            {
+                validator = new TValidator();
+                var messages = new ValidationMessageStore(EditContext);
 
-            // Validate on field changes only after initial submission
-            // Check Saintly use of eventArgs.FieldIdentifier and ValidateField method
-            EditContext.OnFieldChanged += (sender, eventArgs)
-                => ValidateModel((EditContext)sender, messages);
+                // Validate on field changes only after initial submission
+                // Check Saintly use of eventArgs.FieldIdentifier and ValidateField method
+                EditContext.OnFieldChanged += (sender, eventArgs)
+                    => ValidateModel((EditContext?)sender, messages);
 
-            // Validate when the entire form requests submission
-            EditContext.OnValidationRequested += (sender, eventArgs)
-                => ValidateModel((EditContext)sender, messages);
+                // Validate when the entire form requests submission
+                EditContext.OnValidationRequested += (sender, eventArgs)
+                    => ValidateModel((EditContext?)sender, messages);
+            }
         }
 
-        private void ValidateModel(EditContext editContext, ValidationMessageStore messages)
+        private void ValidateModel(EditContext? editContext, ValidationMessageStore messages)
         {
-            var context = new ValidationContext<object>(editContext.Model);
-            var validationResult = validator.Validate(context);
-            messages.Clear();
-            foreach (var error in validationResult.Errors)
+            if (editContext != null)
             {
-                var fieldIdentifier = ToFieldIdentifier(editContext, error.PropertyName);
-                messages.Add(fieldIdentifier, error.ErrorMessage);
+
+                var context = new ValidationContext<object>(editContext.Model);
+                var validationResult = validator?.Validate(context);
+                messages.Clear();
+                if (validationResult != null)
+                {
+                    foreach (var error in validationResult.Errors)
+                    {
+                        var fieldIdentifier = ToFieldIdentifier(editContext, error.PropertyName);
+                        messages.Add(fieldIdentifier, error.ErrorMessage);
+                    }
+                    editContext.NotifyValidationStateChanged();
+                }
             }
-            editContext.NotifyValidationStateChanged();
         }
 
         private static FieldIdentifier ToFieldIdentifier(EditContext editContext, string propertyPath)
@@ -66,9 +76,9 @@ namespace MindKey.Client.Shared
                     // This code assumes C# conventions (one indexer named Item with one param)
                     nextToken = nextToken.Substring(0, nextToken.Length - 1);
                     var prop = obj.GetType().GetProperty("Item");
-                    var indexerType = prop.GetIndexParameters()[0].ParameterType;
+                    var indexerType = prop?.GetIndexParameters()[0].ParameterType;
                     var indexerValue = Convert.ChangeType(nextToken, indexerType);
-                    newObj = prop.GetValue(obj, new object[] { indexerValue });
+                    newObj = prop?.GetValue(obj, new object[] { indexerValue });
                 }
                 else
                 {
@@ -78,7 +88,7 @@ namespace MindKey.Client.Shared
                     {
                         throw new InvalidOperationException($"Could not find property named {nextToken} on object of type {obj.GetType().FullName}.");
                     }
-                    newObj = prop.GetValue(obj);
+                    newObj = prop?.GetValue(obj);
                 }
 
                 if (newObj == null)

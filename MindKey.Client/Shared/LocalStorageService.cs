@@ -19,7 +19,7 @@ namespace MindKey.Client.Shared
             _jsRuntime = jsRuntime;
         }
 
-        public async Task<T> GetItem<T>(string key)
+        public async Task<T?> GetItem<T>(string key)
         {
             var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
 

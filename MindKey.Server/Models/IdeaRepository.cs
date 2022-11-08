@@ -15,9 +15,10 @@ namespace MindKey.Server.Models
         public async Task<Idea?> AddIdea(Idea idea)
         {
             idea.Id = new Random().NextInt64();
-            idea.Person = await _appDbContext.People.FirstOrDefaultAsync(q => q.PersonId == idea.Person.PersonId);
-            if (idea.Person != null)
+            var person = await _appDbContext.People.FirstOrDefaultAsync(q => q.PersonId == idea.Person.PersonId);
+            if (person != null)
             {
+                idea.Person = person;
                 //idea.Person.User = await _appDbContext.Users.FirstOrDefaultAsync(q => q.Id == idea.Person.User.Id);
                 UpdateTags(idea, null);
                 var result = await _appDbContext.Ideas.AddAsync(idea);

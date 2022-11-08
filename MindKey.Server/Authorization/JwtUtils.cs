@@ -9,7 +9,7 @@ using System.Text;
 public interface IJwtUtils
 {
     public string GenerateToken(User user);
-    public long? ValidateToken(string token);
+    public long? ValidateToken(string? token);
 }
 
 public class JwtUtils : IJwtUtils
@@ -25,6 +25,10 @@ public class JwtUtils : IJwtUtils
     {
         // generate token that is valid for 7 days
         var tokenHandler = new JwtSecurityTokenHandler();
+        if (string.IsNullOrEmpty(_appSettings.Secret))
+        {
+            throw new ArgumentNullException("Secret not found.");
+        }
         var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -36,11 +40,14 @@ public class JwtUtils : IJwtUtils
         return tokenHandler.WriteToken(token);
     }
 
-    public long? ValidateToken(string token)
+    public long? ValidateToken(string? token)
     {
         if (token == null)
             return null;
-
+        if (string.IsNullOrEmpty(_appSettings.Secret))
+        {
+            throw new ArgumentNullException("Secret not found.");
+        }
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
         try
@@ -71,5 +78,5 @@ public class JwtUtils : IJwtUtils
 
 public class AppSettings
 {
-    public string Secret { get; set; }
+    public string? Secret { get; set; }
 }

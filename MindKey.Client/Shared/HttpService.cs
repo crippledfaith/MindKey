@@ -39,7 +39,7 @@ namespace MindKey.Client.Shared
             _configuration = configuration;
         }
 
-        public async Task<T> Get<T>(string uri)
+        public async Task<T?> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             return await sendRequest<T>(request);
@@ -51,7 +51,7 @@ namespace MindKey.Client.Shared
             await sendRequest(request);
         }
 
-        public async Task<T> Post<T>(string uri, object value)
+        public async Task<T?> Post<T>(string uri, object value)
         {
             var request = createRequest(HttpMethod.Post, uri, value);
             return await sendRequest<T>(request);
@@ -63,7 +63,7 @@ namespace MindKey.Client.Shared
             await sendRequest(request);
         }
 
-        public async Task<T> Put<T>(string uri, object value)
+        public async Task<T?> Put<T>(string uri, object value)
         {
             var request = createRequest(HttpMethod.Put, uri, value);
             return await sendRequest<T>(request);
@@ -75,7 +75,7 @@ namespace MindKey.Client.Shared
             await sendRequest(request);
         }
 
-        public async Task<T> Delete<T>(string uri)
+        public async Task<T?> Delete<T>(string uri)
         {
             var request = createRequest(HttpMethod.Delete, uri);
             return await sendRequest<T>(request);
@@ -83,7 +83,7 @@ namespace MindKey.Client.Shared
 
         // helper methods
 
-        private HttpRequestMessage createRequest(HttpMethod method, string uri, object value = null)
+        private HttpRequestMessage createRequest(HttpMethod method, string uri, object? value = null)
         {
             var request = new HttpRequestMessage(method, uri);
             if (value != null)
@@ -115,7 +115,7 @@ namespace MindKey.Client.Shared
 
         }
 
-        private async Task<T> sendRequest<T>(HttpRequestMessage request)
+        private async Task<T?> sendRequest<T>(HttpRequestMessage request)
         {
             await addJwtHeader(request);
 
@@ -141,8 +141,8 @@ namespace MindKey.Client.Shared
         {
             // add jwt auth header if user is logged in and request is to the api url
             var user = await _localStorageService.GetItem<User>("user");
-            var isApiUrl = !request.RequestUri.IsAbsoluteUri;
-            if (user != null && isApiUrl)
+            var isApiUrl = !request.RequestUri?.IsAbsoluteUri;
+            if (user != null && isApiUrl.HasValue && isApiUrl.Value)
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
         }
 
@@ -153,7 +153,10 @@ namespace MindKey.Client.Shared
             {
                 var erreor = await response.Content.ReadAsStringAsync();
                 var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                throw new Exception(error["message"]);
+                if (error != null)
+                {
+                    throw new Exception(error["message"]);
+                }
             }
         }
     }

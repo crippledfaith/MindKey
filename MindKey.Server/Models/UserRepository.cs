@@ -44,9 +44,9 @@ namespace MindKey.Server.Models
             {
 
                 return _appDbContext.Users
-                    .Where(u => EF.Functions.Like(u.FirstName.ToLower(), name.ToLower()) ||
-                        EF.Functions.Like(u.LastName.ToLower(), name.ToLower()) ||
-                        EF.Functions.Like(u.Username.ToLower(), name.ToLower()))
+                    .Where(u => u != null && (!string.IsNullOrEmpty(u.FirstName) && EF.Functions.Like(u.FirstName.ToLower(), name.ToLower()) ||
+                        !string.IsNullOrEmpty(u.LastName) && EF.Functions.Like(u.LastName.ToLower(), name.ToLower()) ||
+                       !string.IsNullOrEmpty(u.Username) && EF.Functions.Like(u.Username.ToLower(), name.ToLower())))
                     .OrderBy(u => u.Username)
                     .GetPaged(page, pageSize);
             }

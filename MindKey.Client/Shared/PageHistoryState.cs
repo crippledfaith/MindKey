@@ -14,7 +14,7 @@ namespace MindKey.Client.Shared
             previousPages.Add(PageName);
         }
 
-        public string GetGoBackPage()
+        public string? GetGoBackPage()
         {
             if (previousPages.Count > 1)
             {

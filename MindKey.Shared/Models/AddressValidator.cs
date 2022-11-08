@@ -6,7 +6,7 @@ namespace MindKey.Shared.Models
     {
         public AddressValidator()
         {
-            CascadeMode = CascadeMode.Stop;
+            ClassLevelCascadeMode = CascadeMode.Stop;
 
             RuleFor(address => address.Street).NotEmpty().WithMessage("Street is a required field.")
                 .Length(5, 50).WithMessage("Street must be between 5 and 50 characters.");
