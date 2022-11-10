@@ -66,7 +66,7 @@ namespace MindKey.Client.Shared
             OnAlert?.Invoke(alert);
         }
 
-        public void Clear(string id = _defaultId)
+        public void Clear(string? id = _defaultId)
         {
             OnAlert?.Invoke(new AlertModel { Id = id });
         }
