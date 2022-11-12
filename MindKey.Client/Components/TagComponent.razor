@@ -1,8 +1,9 @@
 ﻿@using MindKey.Shared.Models.MindKey;
-@foreach (var item in Tags)
-{
-    <span class="badge bg-secondary">@item.Name</span>
-}
+@if (Tags != null)
+    foreach (var item in Tags)
+    {
+        <span class="badge bg-secondary">@item.Name</span>
+    }
 <br />
 @code {
     [Parameter]
@@ -11,7 +12,11 @@
 
     protected override Task OnParametersSetAsync()
     {
-        Tags = Idea.Tags?? new List<Tag>();
         return base.OnParametersSetAsync();
+
+        if (Idea != null)
+        {
+            Tags = Idea.Tags ?? new List<Tag>();
+        }
     }
 }

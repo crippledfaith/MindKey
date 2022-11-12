@@ -1,0 +1,30 @@
+﻿@using MindKey.Shared.Models.MindKey;
+<table class="table table-borderless">
+    <thead>
+        <tr>
+            <th scope="col">Idea</th>
+            <th scope="col" style="width:20px"> <i class="oi oi-thumb-up" title="Agree" aria-hidden="true"></i></th>
+            <th scope="col" style="width:20px"> <i class="oi oi-thumb-down" title="Disagree" aria-hidden="true"></i></th>
+            <th scope="col" style="width:20px"> <i class="oi oi-loop-square" title="Nutral" aria-hidden="true"></i></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Ideas != null)
+        {
+            foreach (var idea in Ideas)
+            {
+                <tr>
+                    <td><a href="/idea/@idea.Id" class="text-primary fw-bold">@idea.Title</a></td>
+                    <td>@idea.ForCount</td>
+                    <td>@idea.AgainstCount</td>
+                    <td>@idea.NetrulCount</td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+@code {
+    [Parameter]
+    public IList<Idea>? Ideas { get; set; }
+}

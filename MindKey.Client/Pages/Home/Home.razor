@@ -2,22 +2,45 @@
 @using Blazor.ECharts.Options
 @using Blazor.ECharts.Options.Enum
 @using Blazor.ECharts.WordCloud.Components
+@using MindKey.Client.Components
 @using W = Blazor.ECharts.WordCloud.Options
 
 
 @using MindKey.Shared.Models.MindKey;
 @inject IIdeaService IdeaService;
 @inject EventService EventService;
-
-<div class="chart-container">
-    <EWordCloud Option="@Option1" Class="chart-fill"></EWordCloud>
+<div class="card  info-card">
+    <div class="card-body">
+        <h5 class="card-title"> Explore <span> by Popular Words </span></h5>
+        <div class="chart-container">
+            <EWordCloud Option="@Option1" Class="chart-fill"></EWordCloud>
+        </div>
+    </div>
 </div>
 
+<div class="card  info-card">
+    <div class="card-body">
+        <h5 class="card-title"> Interact <span> by Posting and Discussing </span> </h5>
+        <HomeHowToComponent />
+    </div>
+</div>
+
+
+
+<div class="card  info-card">
+    <div class="card-body">
+        <h5 class="card-title"> Participate <span> by giving Feedback and Commenting </span> </h5>
+        @if (Ideas != null)
+        {
+            <HomeTrendingIdeaComponent Ideas="@Ideas.Results" />
+        }
+    </div>
+</div>
 @code {
     private EChartsOption<W.WordCloud> Option1;
 
-
-    private Dictionary<string, int> TagList { get; set; }
+    private PagedResult<Idea>? Ideas { get; set; }
+    private Dictionary<string, int> TagList { get; set; } = new Dictionary<string, int>();
     protected override async Task OnInitializedAsync()
     {
         try
@@ -34,10 +57,8 @@
                     new W.WordCloud()
                     {
                         GridSize = 6,
-                        Shape = W.Shape.Circle,
+                        Shape = W.Shape.Diamond,
                         SizeRange = new int[] { 20, 45 },
-                        Width = 900,
-                        Height = 500,
                         TextStyle = new()
                         {
                             Emphasis = new()
@@ -48,7 +69,7 @@
                         },
                         Data = new[]
                         {
-                            new W.WordCloudData() { Name = "", Value = 30, TextStyle = new() { Color = GetRandomColor() } },
+                            new W.WordCloudData() { Name = "Mindkey", Value = 10000, TextStyle = new() { Color = GetRandomColor() } },
                             //new W.WordCloudData() { Name = "梧州公交", Value = 24, TextStyle = new() { Color = GetRandomColor() } },
                             //new W.WordCloudData() { Name = "WordCloud", Value = 21, TextStyle = new() { Color = GetRandomColor() } },
                             //new W.WordCloudData() { Name = "Blazor", Value = 19, TextStyle = new() { Color = GetRandomColor() } },
@@ -83,6 +104,7 @@
                 dataList.Add(new W.WordCloudData() { Name = item.Key, Value = item.Value, TextStyle = new() { Color = GetRandomColor() } });
             }
             ((W.WordCloud)Option1.Series[0]).Data = dataList.ToArray();
+            Ideas = await IdeaService.GetTopIdeas("1");
         }
         catch (Exception ex)
         {

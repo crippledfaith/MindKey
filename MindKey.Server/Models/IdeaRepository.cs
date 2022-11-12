@@ -120,6 +120,18 @@ namespace MindKey.Server.Models
             }
         }
 
+        public PagedResult<Idea>? GetTopIdeas(int page)
+        {
+            int pageSize = 10;
+            return _appDbContext.Ideas
+                .Where(q => !q.IsDeleted)
+                .Include(q => q.Tags)
+                .Include(q => q.Person)
+                .Include(q => q.Person.User)
+                .Include(q => q.Person.Addresses)
+                .OrderByDescending(q => q.AgainstCount + q.NetrulCount + q.ForCount)
+                .GetPaged(page, pageSize);
+        }
         public PagedResult<Idea>? GetIdeas(int page, long? userId)
         {
             int pageSize = 10;

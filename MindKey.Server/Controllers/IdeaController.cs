@@ -28,6 +28,12 @@ namespace MindKey.Server.Controllers
         {
             return Ok(_ideaRepository.GetIdeas(page, userId));
         }
+        [AllowAnonymous]
+        [HttpGet("top")]
+        public ActionResult GetTopIdeas([FromQuery] int page)
+        {
+            return Ok(_ideaRepository.GetTopIdeas(page));
+        }
 
         [AllowAnonymous]
         [HttpGet("others")]
