@@ -1,5 +1,6 @@
-﻿<div class="row">
-    <div class="col-8 center-div-containter">
+﻿@inject NavigationManager NavigationManager;
+<div class="row">
+    <div class="col-12 col-md-8 center-div-containter">
         <div class="center-div-content">
             <div class="row">
                 <div class="col" style="height:24px">
@@ -18,17 +19,19 @@
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-primary" @onclick="NavigatePostIdea">Post a new Idea</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-12 col-md-4">
         <img src="./assets/img/home_img1.png" class="image-center" />
     </div>
 </div>
 <div class="row">
-    <div class="col-4">
-        <img src="./assets/img/home_img2.png" class="image-center" />
-    </div>
-    <div class="col-8 center-div-containter">
+    <div class="col-12 col-md-8 center-div-containter">
         <div class="center-div-content">
             <div class="row">
                 <div class="col" style="height:24px">
@@ -47,9 +50,25 @@
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-primary" @onclick="NavigateExploreIdea">Explore Trending Ideas</button>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <img src="./assets/img/home_img2.png" class="image-center" />
     </div>
 </div>
 @code {
-
+    public void NavigateExploreIdea()
+    {
+        NavigationManager.NavigateTo("/wall/1");
+    }
+    public void NavigatePostIdea()
+    {
+        NavigationManager.NavigateTo("/makepost/");
+    }
 }
