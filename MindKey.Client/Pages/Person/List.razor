@@ -66,18 +66,20 @@
                                 @if (LoggedIn)
                                 {
                                     <NavLink href="@($"/person/updateperson/{person.PersonId}")" class=" btn oi oi-pencil text-warning mr-2 nounderline"></NavLink>
-
-                                    @if (person.IsDeleting)
+                                    @if (person.User.Username != "admin")
                                     {
-                                        <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
-                                            <span class="spinner-border spinner-border-sm"></span>
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
-                                            <span></span>
-                                        </button>
+                                        if (person.IsDeleting)
+                                        {
+                                            <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
+                                                <span class="spinner-border spinner-border-sm"></span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button @onclick="@(() => DeletePerson(person))" disabled="@person.IsDeleting" class=" btn btn-link oi oi-trash text-danger mr-1 nounderline">
+                                                <span></span>
+                                            </button>
+                                        }
                                     }
                                 }
                             </td>

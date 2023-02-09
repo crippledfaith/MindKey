@@ -62,6 +62,7 @@ namespace MindKey.Server.Controllers
         {
             person.User.FirstName = person.FirstName;
             person.User.LastName = person.LastName;
+
             await _userRepository.UpdateUser(person.User);
             return Ok(await _personRepository.UpdatePerson(person));
         }

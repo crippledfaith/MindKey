@@ -1,3 +1,4 @@
+using BlazorPro.BlazorSize;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MindKey.Client;
@@ -20,7 +21,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHttpService, HttpService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddSingleton<EventService>();
+builder.Services.AddScoped<IResizeListener, ResizeListener>();
 
+builder.Services.AddResizeListener();
 builder.Services.AddECharts();
 
 builder.Services.AddScoped(x =>

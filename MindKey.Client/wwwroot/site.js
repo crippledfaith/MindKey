@@ -56,4 +56,13 @@
             }
         }
     };
+    window.CanvasFunctions = {
+        resize: function () {
+            var canvas = document.querySelector('canvas');
+            canvas.style.width = '100%';
+            canvas.width = canvas.offsetWidth;
+            return  canvas.width
+        }
+    };
+
 })();

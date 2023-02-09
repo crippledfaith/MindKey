@@ -14,10 +14,13 @@
         public long AgainstCount { get; set; } = 0;
         public long NetrulCount { get; set; } = 0;
         public bool IsDeleted { get; set; } = false;
-
         public Idea()
         {
             Tags = new List<Tag>();
+        }
+        public override string ToString()
+        {
+            return AgainstCount.ToString();
         }
     }
 }

@@ -39,6 +39,7 @@ namespace MindKey.Server.Models
         {
             var result = await _appDbContext.People
                 .Include(p => p.Addresses)
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.PersonId == personId);
             if (result != null)
             {
@@ -53,6 +54,8 @@ namespace MindKey.Server.Models
         {
             var result = await _appDbContext.People
               .Include(p => p.Addresses)
+              .Include(p => p.User)
+
               .FirstOrDefaultAsync(p => p.User.Id == userid);
             if (result != null)
             {

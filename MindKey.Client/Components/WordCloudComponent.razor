@@ -1,0 +1,81 @@
+﻿@using Blazor.ECharts.Options
+@using Blazor.ECharts.Options.Enum
+@using Blazor.ECharts.WordCloud.Components
+@using MindKey.Client.Components
+@using W = Blazor.ECharts.WordCloud.Options
+@using MindKey.Shared.Models.MindKey;
+@inject IIdeaService IdeaService;
+@inject EventService EventService;
+
+<div class="chart-container">
+    <EWordCloud Option="@Option1" Class="chart-fill"></EWordCloud>
+</div>
+
+@code {
+    private EChartsOption<W.WordCloud> Option1;
+
+    private Dictionary<string, int> TagList { get; set; } = new Dictionary<string, int>();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            TagList = await IdeaService.GetTags(20);
+            Option1 = new EChartsOption<W.WordCloud>()
+            {
+                Tooltip = new()
+                {
+                    Show = true
+                },
+                Series = new()
+                {
+                    new W.WordCloud()
+                    {
+                        Type = "wordCloud",
+                        GridSize = 6,
+                        Shape = W.Shape.Diamond,
+                        SizeRange = new int[] { 20, 45 },
+                        TextStyle = new()
+                        {
+                            Emphasis = new()
+                            {
+                                ShadowBlur = 10,
+                                ShadowColor = "#333"
+                            }
+                        },
+                        Data = new[]
+                        {
+                            new W.WordCloudData() { Name = "Mindkey", Value = 0, TextStyle = new() { Color = GetRandomColor() } },
+                        }
+                    }
+                }
+            };
+            var dataList = ((Array)(((W.WordCloud)Option1.Series[0]).Data)).Cast<W.WordCloudData>().ToList();
+            foreach (var item in TagList)
+            {
+                dataList.Add(new W.WordCloudData()
+                {
+                    Name = item.Key,
+                    Value = item.Value,
+                    TextStyle = new() 
+                    { 
+                        Color = GetRandomColor() 
+                    }
+                });
+            }
+            ((W.WordCloud)Option1.Series[0]).Data = dataList.ToArray();
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
+        await base.OnInitializedAsync();
+
+
+    }
+    private static string GetRandomColor()
+    {
+        Random random = new();
+        return string.Format("#{0:X6}", random.Next(0x1000000));
+    }
+
+}

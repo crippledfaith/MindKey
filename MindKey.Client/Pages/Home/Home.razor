@@ -12,9 +12,7 @@
 <div class="card  info-card">
     <div class="card-body">
         <h5 class="card-title"> Explore <span> by Popular Words </span></h5>
-        <div class="chart-container">
-            <EWordCloud Option="@Option1" Class="chart-fill"></EWordCloud>
-        </div>
+        <WordCloudGTPVersionComponent />
     </div>
 </div>
 
@@ -37,87 +35,10 @@
     </div>
 </div>
 @code {
-    private EChartsOption<W.WordCloud> Option1;
-
     private PagedResult<Idea>? Ideas { get; set; }
-    private Dictionary<string, int> TagList { get; set; } = new Dictionary<string, int>();
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            TagList = await IdeaService.GetTags(20);
-            Ideas = await IdeaService.GetTopIdeas("1");
-            Option1 = new()
-                {
-                    Tooltip = new()
-                    {
-                        Show = true
-                    },
-                    Series = new()
-                {
-                    new W.WordCloud()
-                    {
-                        GridSize = 6,
-                        Shape = W.Shape.Diamond,
-                        SizeRange = new int[] { 20, 45 },
-                        TextStyle = new()
-                        {
-                            Emphasis = new()
-                            {
-                                ShadowBlur = 10,
-                                ShadowColor = "#333"
-                            }
-                        },
-                        Data = new[]
-                        {
-                            new W.WordCloudData() { Name = "Mindkey", Value = 10000, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "梧州公交", Value = 24, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "WordCloud", Value = 21, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "Blazor", Value = 19, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "Visual Studio", Value = 18, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = ".Net Core", Value = 18, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "C#", Value = 17, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "一个", Value = 12, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "不好", Value = 12, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "质量", Value = 11, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "快递", Value = 11, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "问题", Value = 10, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "物流", Value = 9, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "几天", Value = 9, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "一般", Value = 9, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "就是", Value = 9, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "使用", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "怎么", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "电池", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "不能", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "速度", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "客服", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "一星", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "拍照", Value = 8, TextStyle = new() { Color = GetRandomColor() } },
-                            //new W.WordCloudData() { Name = "摄像头", Value = 7, TextStyle = new() { Color = GetRandomColor() } }
-                        }
-                    }
-                }
-                };
-            var dataList = ((Array)(((W.WordCloud)Option1.Series[0]).Data)).Cast<W.WordCloudData>().ToList();
-            foreach (var item in TagList)
-            {
-                dataList.Add(new W.WordCloudData() { Name = item.Key, Value = item.Value, TextStyle = new() { Color = GetRandomColor() } });
-            }
-            ((W.WordCloud)Option1.Series[0]).Data = dataList.ToArray();
-        }
-        catch (Exception ex)
-        {
-            EventService.ShowMessage(ex.Message, MessageType.Error);
-        }
+        Ideas = await IdeaService.GetTopIdeas("1");
         await base.OnInitializedAsync();
-
-
     }
-    private static string GetRandomColor()
-    {
-        Random random = new();
-        return string.Format("#{0:X6}", random.Next(0x1000000));
-    }
-
 }

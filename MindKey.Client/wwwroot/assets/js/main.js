@@ -315,6 +315,14 @@
         })
       }).observe(mainContainer);
     }, 200);
-  }
+    }
+    function ResizeCanvas() {
+        var canvas = document.querySelector('canvas');
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        return { width: canvas.width, height: canvas.height };
+    }
 
 })();

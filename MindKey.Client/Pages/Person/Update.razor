@@ -6,6 +6,7 @@
 @inject IPersonService PersonService
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
+@inject EventService EventService
 <div class="pagetitle">
     <h1>Data Entry</h1>
 </div>
@@ -47,8 +48,9 @@
         loading = true;
         try
         {
+
             await PersonService.UpdatePerson(person);
-            AlertService.Success("Person updated successfully", keepAfterRouteChange: true);
+            EventService.ShowMessage("Person updated successfully", MessageType.Info);
             if (PageHistoryState.CanGoBack())
             {
                 navManager.NavigateTo(PageHistoryState.GetGoBackPage());
@@ -60,7 +62,7 @@
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message);
+            EventService.ShowMessage(ex.Message,MessageType.Error);
             loading = false;
             StateHasChanged();
         }
