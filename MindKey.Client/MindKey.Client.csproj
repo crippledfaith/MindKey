@@ -14,12 +14,11 @@
 		<PackageReference Include="Blazor.ECharts.WordCloud" Version="0.8.0" />
 		<PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />
 		<PackageReference Include="BlazorPro.BlazorSize" Version="6.2.0" />
-		<PackageReference Include="FluentValidation" Version="11.4.0" />
+		<PackageReference Include="FluentValidation" Version="11.5.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview3.20168.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.2" PrivateAssets="all" />
 		<PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
-		<PackageReference Include="WordCloud" Version="1.0.0.3" />
 		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
 	</ItemGroup>
 	<ItemGroup>

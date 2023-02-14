@@ -4,7 +4,10 @@ using MindKey.Server.Authorization;
 using MindKey.Server.Helpers;
 using MindKey.Server.Models;
 using MindKey.Server.Services;
+using MindKey.Server.Services.WordCloudGenerator;
 using Quartz;
+using SixLabors.ImageSharp.Web.Caching;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +23,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IIdeaRepository, IdeaRepository>();
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
+builder.Services.AddScoped<WordCloudService>();
+builder.Services.AddScoped<IWordCloudGenerator, PythonWordCloudGenerator>();
+
+builder.Services.AddImageSharp()
+.Configure<PhysicalFileSystemCacheOptions>(options =>
+ {
+     options.CacheFolder = "different-cache";
+ });
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -45,7 +56,8 @@ builder.Services.AddQuartzHostedService(
     q => q.WaitForJobsToComplete = true);
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-
+builder.Environment.ContentRootPath = Path.Combine(AppContext.BaseDirectory, "WebRoot");
+builder.Environment.WebRootPath = Path.Combine(AppContext.BaseDirectory, "WebRoot");
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -86,6 +98,8 @@ app.UseSwaggerUI(c =>
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseImageSharp();
+
 
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<JwtMiddleware>();

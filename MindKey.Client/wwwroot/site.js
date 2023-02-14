@@ -58,7 +58,7 @@
     };
     window.CanvasFunctions = {
         resize: function () {
-            var canvas = document.querySelector('canvas');
+            var canvas = document.getElementById('wordCloudSection');
             canvas.style.width = '100%';
             canvas.width = canvas.offsetWidth;
             return  canvas.width

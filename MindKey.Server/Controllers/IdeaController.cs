@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MindKey.Server.Authorization;
 using MindKey.Server.Models;
+using MindKey.Server.Services;
 using MindKey.Shared.Models.MindKey;
 
 namespace MindKey.Server.Controllers
@@ -12,11 +13,13 @@ namespace MindKey.Server.Controllers
     {
         private readonly IIdeaRepository _ideaRepository;
         private readonly IUserRepository _userRepository;
+        private readonly WordCloudService _wordCloudService;
 
-        public IdeaController(IIdeaRepository ideaRepository, IUserRepository userRepository)
+        public IdeaController(IIdeaRepository ideaRepository, IUserRepository userRepository, WordCloudService wordCloudService)
         {
             _ideaRepository = ideaRepository;
             _userRepository = userRepository;
+            _wordCloudService = wordCloudService;
         }
 
         /// <summary>
@@ -81,10 +84,10 @@ namespace MindKey.Server.Controllers
         /// Creates a person with child addresses.
         /// </summary>
         [AllowAnonymous]
-        [HttpPost("GetSetAgument")]
-        public async Task<ActionResult> GetSetAgument(IdeaUserComment ideaUserComment)
+        [HttpPost("GetSetArgument")]
+        public async Task<ActionResult> GetSetArgument(IdeaUserComment ideaUserComment)
         {
-            var result = await _ideaRepository.GetSetAgument(ideaUserComment);
+            var result = await _ideaRepository.GetSetArgument(ideaUserComment);
             return Ok(result ?? new IdeaUserComment());
         }
 
@@ -105,12 +108,14 @@ namespace MindKey.Server.Controllers
         {
             return Ok(await _ideaRepository.DeleteIdea(id));
         }
+
         [AllowAnonymous]
         [HttpGet("GetComments")]
         public ActionResult GetComments([FromQuery] int page, int pageSize, long? ideaId)
         {
             return Ok(_ideaRepository.GetComments(page, pageSize, ideaId));
         }
+
         [AllowAnonymous]
         [HttpGet("GetTags")]
         public async Task<ActionResult> GetTags([FromQuery] int count)
@@ -118,5 +123,11 @@ namespace MindKey.Server.Controllers
             return Ok(await _ideaRepository.GetTags(count));
         }
 
+        [AllowAnonymous]
+        [HttpPost("GetWordCloud")]
+        public async Task<WorkCloudResult> GetWordCloud(WorkCloudParameter param)
+        {
+            return await _wordCloudService.GenerateWordCloud(param);
+        }
     }
 }

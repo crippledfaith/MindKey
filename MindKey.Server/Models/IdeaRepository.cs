@@ -187,7 +187,7 @@ namespace MindKey.Server.Models
             }
         }
 
-        public async Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment)
+        public async Task<IdeaUserComment?> GetSetArgument(IdeaUserComment ideaUserComment)
         {
             var result = await _appDbContext.IdeaUserComments.FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
             return result;

@@ -11,10 +11,12 @@ namespace MindKey.Client.Services
         Task<PagedResult<Idea>?> GetIdeas(string page, long? userId);
         Task<PagedResult<Idea>?> GetTopIdeas(string page);
         Task<PagedResult<Idea>?> GetIdeasOfOthers(string page, long? userId);
-        Task<bool> SetAurgument(IdeaUserComment ideaUserComment);
+        Task<bool> SetArgument(IdeaUserComment ideaUserComment);
         Task UpdateIdea(Idea idea);
-        Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment);
+        Task<IdeaUserComment?> GetSetArgument(IdeaUserComment ideaUserComment);
         Task<PagedResult<IdeaUserComment>> GetComments(Idea idea, string page, string pageSize = "5");
         Task<Dictionary<string, int>> GetTags(int count);
+
+        Task<WorkCloudResult> GetWordCloud(WorkCloudParameter param);
     }
 }

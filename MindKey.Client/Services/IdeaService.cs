@@ -49,14 +49,14 @@ namespace MindKey.Client.Services
             await _httpService.Put($"api/idea", idea);
         }
 
-        public async Task<bool> SetAurgument(IdeaUserComment ideaUserComment)
+        public async Task<bool> SetArgument(IdeaUserComment ideaUserComment)
         {
             return await _httpService.Post<bool>($"api/idea/SetArgument", ideaUserComment);
         }
 
-        public async Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment)
+        public async Task<IdeaUserComment?> GetSetArgument(IdeaUserComment ideaUserComment)
         {
-            return await _httpService.Post<IdeaUserComment?>($"api/idea/GetSetAgument", ideaUserComment);
+            return await _httpService.Post<IdeaUserComment?>($"api/idea/GetSetArgument", ideaUserComment);
         }
 
         public async Task<PagedResult<IdeaUserComment>> GetComments(Idea idea, string page, string pageSize = "5")
@@ -68,5 +68,11 @@ namespace MindKey.Client.Services
         {
             return await _httpService.Get<Dictionary<string, int>>($"api/idea/GetTags?count={count}");
         }
+
+        public async Task<WorkCloudResult> GetWordCloud(WorkCloudParameter param)
+        {
+            return await _httpService.Post<WorkCloudResult>($"api/idea/GetWordCloud", param);
+        }
+
     }
 }

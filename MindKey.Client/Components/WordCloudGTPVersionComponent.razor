@@ -17,33 +17,31 @@
         height: 500px
     }
 </style>
+@if (_showImage)
+{
+    <img @ref="_image" src="@_imageSource" />
+}
+else if (_showCanvas)
+{
+    <BECanvas Height="500" @ref="_canvasReference"></BECanvas>
+}
 
-<BECanvas Height="500" @ref="_canvasReference"></BECanvas>
-@*<div style="display: flex; flex-wrap: wrap;">
-    @foreach (var word in TagList)
-    {
-        var color = GetRandomColor();
-        <div class="word" style="font-size: @(word.Value + 10)pt; padding: 5px; color: @color; transform: rotate(@(new Random().Next(-30, 30))deg);">@word.Key</div>
-    }
-    }
-</div>*@
+
 
 @code {
     private Dictionary<string, int> TagList { get; set; } = new Dictionary<string, int>();
     private readonly Random _random = new Random();
     protected BECanvasComponent _canvasReference;
+    protected ElementReference _image;
+    protected string? _imageSource;
     BrowserWindowSize browser = new BrowserWindowSize();
-
+    public bool _showImage { get; set; }
+    public bool _showCanvas { get; set; }
     protected override async Task OnInitializedAsync()
     {
 
 
         await base.OnInitializedAsync();
-    }
-    private string GetRandomColor()
-    {
-        var color = string.Format("#{0:X6}", new Random().Next(0x1000000));
-        return color;
     }
 
     class DictionaryComparer : IComparer<KeyValuePair<string, int>>
@@ -58,16 +56,7 @@
     {
         if (firstRender)
         {
-            List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>((await IdeaService.GetTags(20)));
-            list.Sort(new DictionaryComparer());
-
-            foreach (KeyValuePair<string, int> item in list)
-            {
-                TagList.Add(item.Key, item.Value);
-            }
             listener.OnResized += WindowResized;
-
-            //nvas = new Canvas(canvasRef);
         }
 
 
@@ -75,124 +64,55 @@
     }
     void IDisposable.Dispose()
     {
-        // Always use IDisposable in your component to unsubscribe from the event.
-        // Be a good citizen and leave things how you found them.
-        // This way event handlers aren't called when nobody is listening.
+
         listener.OnResized -= WindowResized;
     }
 
     async void WindowResized(object _, BrowserWindowSize window)
     {
-        // Get the browsers's width / height
         browser = window;
         var c = await JSRuntime.InvokeAsync<long>("CanvasFunctions.resize");
-        _canvasReference.Height = 500;
-        _canvasReference.Width = c;
-        await DrawWordCloud(TagList);
 
-        // We're outside of the component's lifecycle, be sure to let it know it has to re-render.
+        _showCanvas = false;
+        _showImage = false;
+        StateHasChanged();
+        await DrawWordCloud(TagList, 500 - 58, Convert.ToInt32(c)-40);
+
         StateHasChanged();
     }
 
-    private async Task DrawWordCloud(Dictionary<string, int> wordCount)
+    private async Task DrawWordCloud(Dictionary<string, int> wordCount, int height, int width)
     {
-        var context = await this._canvasReference.CreateCanvas2DAsync();
-        var maxSize = wordCount.Max(w => w.Value);
-        var minSize = wordCount.Min(w => w.Value);
-        var range = maxSize - minSize;
-        var width = Convert.ToInt32(_canvasReference.Width);
-        var hight = Convert.ToInt32(_canvasReference.Height);
-        var occupiedAreas = new List<Rect>();
+     
 
-        var x = 0;
+        var x = 50;
         var y = 50;
         var maxRowHeight = 0;
-
-        foreach (var word in wordCount)
+        var imageMask = new bool[width * height];
+        var result = await IdeaService.GetWordCloud(new WorkCloudParameter() { WordLimit = 50, Height = height, Width = width });
+        if (string.IsNullOrEmpty(result.Image))
         {
-            await context.SetFillStyleAsync(GetRandomColor());
-            await context.SetFontAsync(GetRandomFont(word.Value));
 
-            var textWidth = await context.MeasureTextAsync(word.Key);
-            var textHeight = word.Value + 20;
-
-            if (x + textWidth.Width >= width)
+            _showCanvas = true;
+            StateHasChanged();
+            var context = await this._canvasReference.CreateCanvas2DAsync();
+            this._canvasReference.Height = 500;
+            this._canvasReference.Width = width;
+            foreach (var word in result.Data)
             {
-                x = 0;
-                y += maxRowHeight;
-                maxRowHeight = 0;
+                await context.SetFillStyleAsync(word.FillStyle);
+                await context.SetFontAsync(word.Font);
+                await context.RotateAsync(word.Rotate);
+                await context.FillTextAsync(word.Word, word.X, word.Y);
+                await context.RotateAsync(-word.Rotate);
             }
-
-            maxRowHeight = Math.Max(maxRowHeight, textHeight);
-            await context.FillTextAsync(word.Key, x, y);
-            x += (int)textWidth.Width + 10;
         }
-
-       @* var context = await this._canvasReference.CreateCanvas2DAsync();
-        var maxSize = wordCount.Max(w => w.Value);
-        var minSize = wordCount.Min(w => w.Value);
-        var range = maxSize - minSize;
-        var width = Convert.ToInt32(_canvasReference.Width);
-        var hight = Convert.ToInt32(_canvasReference.Height);
-        var occupiedAreas = new List<Rect>();
-
-        const int X_PADDING = 50;
-        const int Y_PADDING = 10;
-
-        var x = X_PADDING;
-        var y = Y_PADDING;
-        var lineHeight = 0;
-
-        foreach (var word in wordCount)
+        else
         {
-            await context.SetFillStyleAsync(GetRandomColor());
-            await context.SetFontAsync(GetRandomFont(word.Value));
-
-            var textWidth = await context.MeasureTextAsync(word.Key);
-            var textHeight = word.Value + Y_PADDING;
-
-            lineHeight = Math.Max(lineHeight, textHeight);
-
-            if (x + textWidth.Width + X_PADDING > width)
-            {
-                x = X_PADDING;
-                y += lineHeight;
-                lineHeight = 0;
-            }
-
-            await context.FillTextAsync(word.Key, x, y);
-
-            x += (int)textWidth.Width + X_PADDING;
-        }*@
-    }
-
-
-    private string GetRandomFont(int fontSize)
-    {
-        var font = $"{fontSize + 20}pt Arial";
-        return font;
-    }
-    private class Rect
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-
-        public Rect(int x, int y, int width, int height)
-        {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-        }
-
-        public bool IntersectsWith(Rect other)
-        {
-            return !(other.X > X + Width
-                     || other.X + other.Width < X
-                     || other.Y > Y + Height
-                     || other.Y + other.Height < Y);
+            _showImage = true;
+            StateHasChanged();
+            _imageSource = $"data:image/png;base64,{result.Image}";
         }
     }
+
 }

@@ -13,9 +13,11 @@ namespace MindKey.Server.Models
         PagedResult<Idea>? GetIdeasOfOthers(int page, long? userId);
         Task<bool?> SetArgument(IdeaUserComment ideaUserComment);
         Task<Idea?> UpdateIdea(Idea idea);
-        Task<IdeaUserComment?> GetSetAgument(IdeaUserComment ideaUserComment);
+        Task<IdeaUserComment?> GetSetArgument(IdeaUserComment ideaUserComment);
         PagedResult<IdeaUserComment> GetComments(int page, int pageSize, long? ideaId);
 
         Task<Dictionary<string, int>> GetTags(int count);
+
+
     }
 }
