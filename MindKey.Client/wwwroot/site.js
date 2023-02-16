@@ -58,10 +58,13 @@
     };
     window.CanvasFunctions = {
         resize: function () {
-            var canvas = document.getElementById('wordCloudSection');
-            canvas.style.width = '100%';
-            canvas.width = canvas.offsetWidth;
-            return  canvas.width
+            var div = document.getElementById('wordCloudSection');
+            var canvas = document.querySelector('canvas');
+            if (canvas) {
+                canvas.style.width = '100%';
+                canvas.width = div.offsetWidth;
+            }
+            return div.offsetWidth
         }
     };
 

@@ -5,7 +5,8 @@ namespace MindKey.Server.Services.WordCloudGenerator
 {
     public class SimpleWordCloudGenerator : AWordCloudGenerator
     {
-        public override Task<WorkCloudResult> Generate(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
+
+        protected override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
             var width = Convert.ToInt32(parameter.Width) - 50;
             var height = Convert.ToInt32(parameter.Height);
@@ -62,6 +63,9 @@ namespace MindKey.Server.Services.WordCloudGenerator
             return color;
         }
 
-
+        protected override bool NeedMaskedFile(WorkCloudParameter parameter)
+        {
+            return false;
+        }
     }
 }

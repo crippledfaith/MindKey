@@ -49,14 +49,14 @@ namespace MindKey.Client.Services
             await _httpService.Put($"api/idea", idea);
         }
 
-        public async Task<bool> SetArgument(IdeaUserComment ideaUserComment)
+        public async Task<bool> SetComment(IdeaUserComment ideaUserComment)
         {
-            return await _httpService.Post<bool>($"api/idea/SetArgument", ideaUserComment);
+            return await _httpService.Post<bool>($"api/idea/SetComment", ideaUserComment);
         }
 
-        public async Task<IdeaUserComment?> GetSetArgument(IdeaUserComment ideaUserComment)
+        public async Task<IdeaUserComment?> GetComment(IdeaUserComment ideaUserComment)
         {
-            return await _httpService.Post<IdeaUserComment?>($"api/idea/GetSetArgument", ideaUserComment);
+            return await _httpService.Post<IdeaUserComment?>($"api/idea/GetComment", ideaUserComment);
         }
 
         public async Task<PagedResult<IdeaUserComment>> GetComments(Idea idea, string page, string pageSize = "5")

@@ -21,9 +21,9 @@
 {
     <img @ref="_image" src="@_imageSource" />
 }
-else if (_showCanvas)
+@if (_showCanvas)
 {
-    <BECanvas Height="500" @ref="_canvasReference"></BECanvas>
+    <BECanvas Height="500" Width="@_canvasWidth" @ref="_canvasReference"></BECanvas>
 }
 
 
@@ -35,8 +35,9 @@ else if (_showCanvas)
     protected ElementReference _image;
     protected string? _imageSource;
     BrowserWindowSize browser = new BrowserWindowSize();
-    public bool _showImage { get; set; }
-    public bool _showCanvas { get; set; }
+    public bool _showImage { get; set; } = false;
+    public bool _showCanvas { get; set; } = true;
+    public long _canvasWidth { get; set; }
     protected override async Task OnInitializedAsync()
     {
 
@@ -71,7 +72,7 @@ else if (_showCanvas)
     async void WindowResized(object _, BrowserWindowSize window)
     {
         browser = window;
-        var c = await JSRuntime.InvokeAsync<long>("CanvasFunctions.resize");
+        var c = await JSRuntime.InvokeAsync<int>("CanvasFunctions.resize");
 
         _showCanvas = false;
         _showImage = false;
@@ -83,8 +84,6 @@ else if (_showCanvas)
 
     private async Task DrawWordCloud(Dictionary<string, int> wordCount, int height, int width)
     {
-     
-
         var x = 50;
         var y = 50;
         var maxRowHeight = 0;
@@ -94,10 +93,14 @@ else if (_showCanvas)
         {
 
             _showCanvas = true;
+
             StateHasChanged();
+
             var context = await this._canvasReference.CreateCanvas2DAsync();
-            this._canvasReference.Height = 500;
-            this._canvasReference.Width = width;
+            _canvasWidth = width;
+
+            StateHasChanged();
+
             foreach (var word in result.Data)
             {
                 await context.SetFillStyleAsync(word.FillStyle);

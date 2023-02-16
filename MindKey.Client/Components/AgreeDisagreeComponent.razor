@@ -142,9 +142,9 @@ else
                     };
                 ideaUserComment.User.Password = "***";
 
-                if (await IdeaService.SetArgument(ideaUserComment))
+                if (await IdeaService.SetComment(ideaUserComment))
                 {
-                    IdeaUserComment = await IdeaService.GetSetArgument(ideaUserComment);
+                    IdeaUserComment = await IdeaService.GetComment(ideaUserComment);
                 }
                 Idea = await IdeaService.GetIdea(Idea.Id);
                 if (Idea.AgainstCount == 0)
@@ -202,7 +202,7 @@ else
                         Description = "Test Description",
                     };
                 ideaUserComment.User.Password = "***";
-                IdeaUserComment = await IdeaService.GetSetArgument(ideaUserComment);
+                IdeaUserComment = await IdeaService.GetComment(ideaUserComment);
                 EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
             }
             await base.OnParametersSetAsync();

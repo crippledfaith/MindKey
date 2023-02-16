@@ -187,13 +187,13 @@ namespace MindKey.Server.Models
             }
         }
 
-        public async Task<IdeaUserComment?> GetSetArgument(IdeaUserComment ideaUserComment)
+        public async Task<IdeaUserComment?> GetComment(IdeaUserComment ideaUserComment)
         {
             var result = await _appDbContext.IdeaUserComments.FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
             return result;
         }
 
-        public async Task<bool?> SetArgument(IdeaUserComment ideaUserComment)
+        public async Task<bool?> SetComment(IdeaUserComment ideaUserComment)
         {
             try
             {

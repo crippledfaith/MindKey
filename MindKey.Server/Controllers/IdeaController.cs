@@ -23,7 +23,7 @@ namespace MindKey.Server.Controllers
         }
 
         /// <summary>
-        /// Returns a list of paginated people with a default page size of 5.
+        /// Returns a list of paginated ideas with a default page size of 5.
         /// </summary>
         [AllowAnonymous]
         [HttpGet]
@@ -31,13 +31,19 @@ namespace MindKey.Server.Controllers
         {
             return Ok(_ideaRepository.GetIdeas(page, userId));
         }
+
+        /// <summary>
+        /// Returns a list of top ideas with a default page size of 5.
+        /// </summary>
         [AllowAnonymous]
         [HttpGet("top")]
         public ActionResult GetTopIdeas([FromQuery] int page)
         {
             return Ok(_ideaRepository.GetTopIdeas(page));
         }
-
+        /// <summary>
+        /// Returns a list of ideas of other users.
+        /// </summary>
         [AllowAnonymous]
         [HttpGet("others")]
         public ActionResult GetIdeasOfOthers([FromQuery] int page, long? userId)
@@ -46,7 +52,7 @@ namespace MindKey.Server.Controllers
         }
 
         /// <summary>
-        /// Gets a specific person by Id.
+        /// Gets a specific idea by Id.
         /// </summary>
         [AllowAnonymous]
         [HttpGet("{id}")]
@@ -56,7 +62,7 @@ namespace MindKey.Server.Controllers
         }
 
         /// <summary>
-        /// Creates a person with child addresses.
+        /// Creates a new Idea.
         /// </summary>
         [HttpPost]
         public async Task<ActionResult> AddIdea(Idea idea)
@@ -64,35 +70,17 @@ namespace MindKey.Server.Controllers
             return Ok(await _ideaRepository.AddIdea(idea));
         }
         /// <summary>
-        /// Creates a person with child addresses.
+        /// Delete an Idea.
         /// </summary>
         [HttpDelete]
         public async Task<ActionResult> DeleteIdea(Idea idea)
         {
             return Ok(await _ideaRepository.DeleteIdea(idea.Id));
         }
-        /// <summary>
-        /// Creates a person with child addresses.
-        /// </summary>
-        [HttpPost("SetArgument")]
-        public async Task<ActionResult> SetArgument(IdeaUserComment ideaUserComment)
-        {
-            return Ok(await _ideaRepository.SetArgument(ideaUserComment));
-        }
+
 
         /// <summary>
-        /// Creates a person with child addresses.
-        /// </summary>
-        [AllowAnonymous]
-        [HttpPost("GetSetArgument")]
-        public async Task<ActionResult> GetSetArgument(IdeaUserComment ideaUserComment)
-        {
-            var result = await _ideaRepository.GetSetArgument(ideaUserComment);
-            return Ok(result ?? new IdeaUserComment());
-        }
-
-        /// <summary>
-        /// Updates a person with a specific Id.
+        /// Updates an Idea with a specific Id.
         /// </summary>
         [HttpPut]
         public async Task<ActionResult> UpdateIdea(Idea idea)
@@ -101,14 +89,37 @@ namespace MindKey.Server.Controllers
         }
 
         /// <summary>
-        /// Deletes a person with a specific Id.
+        /// Deletes a Idea with a specific Id.
         /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteIdea(long id)
         {
             return Ok(await _ideaRepository.DeleteIdea(id));
         }
+        /// <summary>
+        /// Set an Argument to and Idea
+        /// </summary>
+        [HttpPost("SetComment")]
+        public async Task<ActionResult> SetComment(IdeaUserComment ideaUserComment)
+        {
+            return Ok(await _ideaRepository.SetComment(ideaUserComment));
+        }
 
+        /// <summary>
+        /// Get an Argument by id 
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPost("GetComment")]
+        public async Task<ActionResult> GetComment(IdeaUserComment ideaUserComment)
+        {
+            var result = await _ideaRepository.GetComment(ideaUserComment);
+            return Ok(result ?? new IdeaUserComment());
+        }
+
+
+        /// <summary>
+        /// Get a list of comment
+        /// </summary>
         [AllowAnonymous]
         [HttpGet("GetComments")]
         public ActionResult GetComments([FromQuery] int page, int pageSize, long? ideaId)
@@ -116,13 +127,18 @@ namespace MindKey.Server.Controllers
             return Ok(_ideaRepository.GetComments(page, pageSize, ideaId));
         }
 
+        /// <summary>
+        /// Get a list of Tags
+        /// </summary>
         [AllowAnonymous]
         [HttpGet("GetTags")]
         public async Task<ActionResult> GetTags([FromQuery] int count)
         {
             return Ok(await _ideaRepository.GetTags(count));
         }
-
+        /// <summary>
+        /// Generate WordCloud
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("GetWordCloud")]
         public async Task<WorkCloudResult> GetWordCloud(WorkCloudParameter param)

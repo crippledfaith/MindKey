@@ -35,9 +35,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Blazor CRUD API",
+        Title = "MindKey API",
         Version = "v1",
-        Description = "CRUD API Services that act as the backend to the Blazor CRUD website."
+        Description = "MindKey API Services that act as the backend to the MindKey website."
     });
 
     // Set the comments path for the Swagger JSON and UI.
@@ -91,7 +91,7 @@ else
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "blazorcrud.api v1");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "mindkey.api v1");
     c.DefaultModelsExpandDepth(-1);
 });
 
