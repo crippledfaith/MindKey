@@ -14,7 +14,7 @@ namespace MindKey.Server.Services.WordCloudGenerator
             var x = 50f;
             var y = 50f;
             var maxRowHeight = 0f;
-            var imageMask = new bool[width * height];
+
             foreach (var word in wordCount)
             {
                 WorkCloudData item = new WorkCloudData();
