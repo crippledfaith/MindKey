@@ -26,23 +26,32 @@ namespace MindKey.Server.Services.WordCloudGenerator
                 var textSize = GetTextSize(word.Key, font);
                 var textHeight = textSize.Y + textSize.Height;
                 var textWidth = textSize.X + textSize.Width + 20;
-
-                if (x + textWidth >= width)
+                // set x and  y position to draw the circle
+                if (x + textWidth > width)
                 {
-                    x = 50;
+                    x = 50f;
                     y += maxRowHeight;
-                    maxRowHeight = 0;
+                    maxRowHeight = 0f;
                 }
+                if (textHeight > maxRowHeight)
+                {
+                    maxRowHeight = textHeight;
+                }
+                x += textWidth;
+                y += textHeight;
 
-                maxRowHeight = Math.Max(maxRowHeight, textHeight);
-                item.Word = word.Key;
-                item.X = x;
-                item.Y = y;
-                item.Rotate = 0;
-                WordCloudResult.Data.Add(item);
+                //update WordCloudResult.Data to  include the new word so that it can be displayed on the UI in a circle
 
+                WordCloudResult.Data.Add(new WorkCloudData
+                {
+                    Word = word.Key,
+                    Font = item.Font,
+                    FillStyle = item.FillStyle,
+                    X = x,
+                    Y = y,
 
-                x += textWidth + 25;
+                });
+
 
             }
             return Task.FromResult(WordCloudResult);
