@@ -5,6 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<UseBlazorWebAssembly>true</UseBlazorWebAssembly>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(RunConfiguration)' == 'MindKey' ">
 	  <ExternalConsole>true</ExternalConsole>

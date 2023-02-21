@@ -96,6 +96,7 @@ namespace MindKey.Server.Models
                 .Where(q => q.Idea.Id == ideaId)
                  .Include(q => q.User)
                  .Include(q => q.Idea.Person)
+                 .Include(q => q.Idea.Person.Addresses)
                  .Include(q => q.Idea.Person.User)
                  .OrderByDescending(p => p.PostDateTime)
                  .GetPaged(page, pageSize);
@@ -189,7 +190,13 @@ namespace MindKey.Server.Models
 
         public async Task<IdeaUserComment?> GetComment(IdeaUserComment ideaUserComment)
         {
-            var result = await _appDbContext.IdeaUserComments.FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
+            var result = await _appDbContext.IdeaUserComments.Include(q => q.User).Include(q => q.Idea).Include(q => q.Idea.Person).Include(q => q.Idea.Person.User).Include(q => q.Idea.Person.Addresses).FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
+            if (result != null)
+            {
+                result.User.Password = "";
+                result.Idea.Person.User.PasswordHash = "";
+            }
+
             return result;
         }
 
@@ -204,11 +211,12 @@ namespace MindKey.Server.Models
                 {
                     throw new Exception("Posting user and arugment set user can't be same");
                 }
-                if (_appDbContext.IdeaUserComments.Any(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id))
+                var previous = await _appDbContext.IdeaUserComments.FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
+                if (previous != null && previous.Argument != ideaUserComment.Argument)
                 {
                     throw new Exception("One Vote Per User");
                 }
-                var argumentUser = _appDbContext.Users.FirstOrDefault(p => p.Id == ideaUserComment.User.Id);
+                var argumentUser = await _appDbContext.Users.FirstOrDefaultAsync(p => p.Id == ideaUserComment.User.Id);
                 var argumentIdea = await GetIdea(ideaUserComment.Idea.Id);
                 if (argumentUser == null)
                 {
@@ -219,17 +227,23 @@ namespace MindKey.Server.Models
                     throw new KeyNotFoundException("Idea not found.");
                 }
 
-                if (ideaUserComment.Argument == ArgumentType.For)
-                    argumentIdea.ForCount = argumentIdea.ForCount + 1;
-                if (ideaUserComment.Argument == ArgumentType.Against)
-                    argumentIdea.AgainstCount = argumentIdea.AgainstCount + 1;
-                if (ideaUserComment.Argument == ArgumentType.Nutral)
-                    argumentIdea.NetrulCount = argumentIdea.NetrulCount + 1;
+        
 
                 ideaUserComment.User = argumentUser;
                 ideaUserComment.Idea = argumentIdea;
-                _appDbContext.IdeaUserComments.Add(ideaUserComment);
-                _appDbContext.Entry(argumentUser).CurrentValues.SetValues(argumentUser);
+                if (previous == null)
+                {
+                    if (ideaUserComment.Argument == ArgumentType.For)
+                        argumentIdea.ForCount = argumentIdea.ForCount + 1;
+                    if (ideaUserComment.Argument == ArgumentType.Against)
+                        argumentIdea.AgainstCount = argumentIdea.AgainstCount + 1;
+                    if (ideaUserComment.Argument == ArgumentType.Nutral)
+                        argumentIdea.NetrulCount = argumentIdea.NetrulCount + 1;
+                    _appDbContext.IdeaUserComments.Add(ideaUserComment);
+
+                }
+                else
+                    _appDbContext.Entry(previous).CurrentValues.SetValues(ideaUserComment);
                 await _appDbContext.SaveChangesAsync();
                 return true;
             }
@@ -241,7 +255,7 @@ namespace MindKey.Server.Models
         public async Task<Dictionary<string, int>> GetTags(int count)
         {
             var list = await _appDbContext.Tags.ToListAsync();
-            return list.GroupBy(q => q.Name).OrderByDescending(q => q.Count()).ToDictionary(q => q.Key, q => q.Count());
+            return list.GroupBy(q => q.Name).OrderByDescending(q => q.Count()).Take(count).ToDictionary(q => q.Key, q => q.Count());
         }
 
     }

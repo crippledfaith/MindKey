@@ -1,15 +1,20 @@
-﻿using MindKey.Shared.Models.MindKey;
+﻿using Microsoft.Extensions.Configuration;
+using MindKey.Shared.Models.MindKey;
+using MindKey.WordCloudGenerator.Base;
 using SixLabors.Fonts;
 using System.Drawing;
 
-namespace MindKey.Server.Services.WordCloudGenerator
+namespace MindKey.WordCloudGenerator
 {
     public class SimpleWordCloudGenerator : AWordCloudGenerator
     {
         public SimpleWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
         }
-
+        protected override bool NeedMaskedFile(WorkCloudParameter parameter)
+        {
+            return false;
+        }
         protected override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
             var width = Convert.ToInt32(parameter.Width) - 50;
@@ -116,9 +121,6 @@ namespace MindKey.Server.Services.WordCloudGenerator
                 return temp1;
         }
 
-        protected override bool NeedMaskedFile(WorkCloudParameter parameter)
-        {
-            return false;
-        }
+
     }
 }

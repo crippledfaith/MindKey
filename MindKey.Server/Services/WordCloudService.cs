@@ -1,6 +1,6 @@
 ﻿using MindKey.Server.Models;
-using MindKey.Server.Services.WordCloudGenerator;
 using MindKey.Shared.Models.MindKey;
+using MindKey.WordCloudGenerator.Base;
 
 namespace MindKey.Server.Services
 {
@@ -20,7 +20,7 @@ namespace MindKey.Server.Services
 
         public async Task<WorkCloudResult> GenerateWordCloud(WorkCloudParameter parameter)
         {
-            var wordCount = await _ideaRepository.GetTags(20);
+            var wordCount = await _ideaRepository.GetTags(_configuration.GetSection("WordCloudGenerator").GetValue<int>("Limit"));
             return await _wordCloudGenerator.Generate(wordCount, parameter);
         }
 

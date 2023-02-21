@@ -87,7 +87,7 @@ else
     }
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.NetrulCount)</span>
 }
-<PopupLayout @ref="popupRef" />
+
 
 @code {
     [Parameter]
@@ -95,7 +95,6 @@ else
     public IdeaUserComment? IdeaUserComment { get; set; }
     public decimal Width { get; set; } = 0;
     public bool disable { get; set; } = true;
-    private PopupLayout? popupRef;
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -106,7 +105,6 @@ else
     }
     public async Task Agree()
     {
-        popupRef?.Show("Popup body text");
         await UpdateVote(ArgumentType.For);
         StateHasChanged();
     }

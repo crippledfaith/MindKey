@@ -21,27 +21,52 @@
                         <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
                                 <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
-                                <InputText @bind-Value="item.Title" class="inputtext-for-comments"></InputText>
+                                @item.User.FirstName  @item.User.LastName
+                                @if (item.Argument == ArgumentType.For)
+                                {
+                                    <i class="oi oi-thumb-up AgreeDisagreeIconMargin" title="Agree" aria-hidden="true"></i>
+                                }
+                                else if (item.Argument == ArgumentType.Against)
+                                {
+                                    <i class="oi oi-thumb-down AgreeDisagreeIconMargin" title="Disagree" aria-hidden="true"></i>
+                                }
+                                else
+                                {
+                                    <i class="oi oi-loop-square AgreeDisagreeIconMargin" title="Nutral" aria-hidden="true"></i>
+                                }
                             </button>
                         </h2>
                         <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
                             <div class="accordion-body">
-                                <InputTextArea @bind-Value="item.Description"></InputTextArea>
+                                <InputTextArea class="TextAreaFill" @bind-Value="item.Description"></InputTextArea>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-primary" @onclick="()=>Save(item)">Save</button>
                     </div>
-                    <hr/>
                 </EditForm>
             }
             else
             {
                 <div class="accordion-item">
-                    
+
                     <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
                             <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
-                            @item.Title
+                            @item.User.FirstName  @item.User.LastName
+                            @if (item.Argument == ArgumentType.For)
+                            {
+                                <i class="oi oi-thumb-up AgreeDisagreeIconMargin" title="Agree" aria-hidden="true"></i>
+                            }
+                            else if (item.Argument == ArgumentType.Against)
+                            {
+                                <i class="oi oi-thumb-down AgreeDisagreeIconMargin" title="Disagree" aria-hidden="true"></i>
+                            }
+                            else
+                            {
+                                <i class="oi oi-loop-square AgreeDisagreeIconMargin" title="Nutral" aria-hidden="true"></i>
+                            }
                         </button>
+
                     </h2>
                     <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
                         <div class="accordion-body">
@@ -116,5 +141,17 @@
 
         await base.OnParametersSetAsync();
 
+    }
+    public async Task Save(IdeaUserComment comment)
+    {
+        try
+        {
+            await IdeaService.SetComment(comment);
+            EventService.ShowMessage("Comment Saved", MessageType.Success);
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
     }
 }

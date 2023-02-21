@@ -1,10 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Win32;
 using MindKey.Shared.Models.MindKey;
+using MindKey.WordCloudGenerator.Base;
 using Python.Runtime;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 
-namespace MindKey.Server.Services.WordCloudGenerator
+namespace MindKey.WordCloudGenerator
 {
     public class PythonWordCloudGenerator : AWordCloudGenerator
     {
@@ -146,13 +148,6 @@ namespace MindKey.Server.Services.WordCloudGenerator
 
             return Task.FromResult(WordCloudResult);
         }
-        public int GetPythonVersion()
-        {
-            using (Py.GIL())
-            {
-                dynamic sys = Py.Import("sys");
-                return sys.version_info[0];
-            }
-        }
+       
     }
 }

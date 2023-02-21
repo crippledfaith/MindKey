@@ -1,13 +1,10 @@
-﻿using MindKey.Shared.Models.MindKey;
+﻿using Microsoft.Extensions.Configuration;
+using MindKey.Shared.Models.MindKey;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-namespace MindKey.Server.Services.WordCloudGenerator
+namespace MindKey.WordCloudGenerator.Base
 {
-    public interface IWordCloudGenerator
-    {
-        Task<WorkCloudResult> Generate(Dictionary<string, int> wordCount, WorkCloudParameter parameter);
-    }
     public abstract class AWordCloudGenerator : IWordCloudGenerator
     {
         private const string WebRootFolder = "WebRoot";
@@ -19,6 +16,7 @@ namespace MindKey.Server.Services.WordCloudGenerator
 
         private const string MaskLargeFileName = "wordcloud-1.png";
         private const string MaskSmallFileName = "wordcloud-min1.png";
+
         public readonly IConfiguration Configuration;
 
         public string AppPath { get; private set; }

@@ -5,7 +5,8 @@ using MindKey.Server.Authorization;
 using MindKey.Server.Helpers;
 using MindKey.Server.Models;
 using MindKey.Server.Services;
-using MindKey.Server.Services.WordCloudGenerator;
+using MindKey.WordCloudGenerator;
+using MindKey.WordCloudGenerator.Base;
 using Quartz;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.DependencyInjection;
@@ -31,7 +32,7 @@ static void SetupIOC(WebApplicationBuilder builder)
     var wordCloudGenerators = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
             .Where(x => typeof(IWordCloudGenerator).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
             .Select(x => x).ToList();
-    var wordCloudGenerator = wordCloudGenerators.FirstOrDefault(q => q.Name == builder.Configuration.GetValue<string>("WordCloudGenerator"));
+    var wordCloudGenerator = wordCloudGenerators.FirstOrDefault(q => q.Name == builder.Configuration.GetSection("WordCloudGenerator").GetValue<string>("Type"));
     if(wordCloudGenerator!=null)
     {
         builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IWordCloudGenerator), wordCloudGenerator));
