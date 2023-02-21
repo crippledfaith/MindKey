@@ -14,7 +14,7 @@
 <style>
     canvas {
         background-color: transparent;
-        height: 500px
+        height: 442px
     }
 </style>
 @if (_showImage)
@@ -23,7 +23,7 @@
 }
 @if (_showCanvas)
 {
-    <BECanvas Height="500" Width="@_canvasWidth" @ref="_canvasReference"></BECanvas>
+    <BECanvas Height="442" Width="@_canvasWidth" @ref="_canvasReference"></BECanvas>
 }
 
 
@@ -77,7 +77,7 @@
         _showCanvas = false;
         _showImage = false;
         StateHasChanged();
-        await DrawWordCloud(TagList, 500 - 58, Convert.ToInt32(c)-40);
+        await DrawWordCloud(TagList, 442, Convert.ToInt32(c) - 40);
 
         StateHasChanged();
     }

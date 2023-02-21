@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using MindKey.Server.Authorization;
 using MindKey.Server.Helpers;
@@ -26,7 +27,19 @@ static void SetupIOC(WebApplicationBuilder builder)
     builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
     builder.Services.AddScoped<WordCloudService>();
-    builder.Services.AddScoped<IWordCloudGenerator, PythonWordCloudGenerator>();
+
+    var wordCloudGenerators = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
+            .Where(x => typeof(IWordCloudGenerator).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
+            .Select(x => x).ToList();
+    var wordCloudGenerator = wordCloudGenerators.FirstOrDefault(q => q.Name == builder.Configuration.GetValue<string>("WordCloudGenerator"));
+    if(wordCloudGenerator!=null)
+    {
+        builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(IWordCloudGenerator), wordCloudGenerator));
+    }
+    else
+    {
+        builder.Services.AddScoped<IWordCloudGenerator, SimpleWordCloudGenerator>();
+    }
 }
 
 static void ConfigureBuilder(WebApplicationBuilder builder)

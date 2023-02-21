@@ -1,5 +1,6 @@
 ﻿using MindKey.Shared.Models.MindKey;
 using SixLabors.Fonts;
+using System.Drawing;
 
 namespace MindKey.Server.Services.WordCloudGenerator
 {
@@ -21,58 +22,98 @@ namespace MindKey.Server.Services.WordCloudGenerator
             foreach (var word in wordCount)
             {
                 WorkCloudData item = new WorkCloudData();
-
+                var fontSize = (word.Value + 5) * 5;
                 item.FillStyle = GetRandomColor();
-                item.Font = GetRandomFont(word.Value);
-                var fo = SystemFonts.Get("Arial");
-                var font = new Font(fo, word.Value + 20, FontStyle.Regular);
+                item.Font = GetRandomFont(fontSize);
+                var fo = SixLabors.Fonts.SystemFonts.Get("Arial");
+                var font = new SixLabors.Fonts.Font(fo, fontSize, SixLabors.Fonts.FontStyle.Regular);
                 var textSize = GetTextSize(word.Key, font);
                 var textHeight = textSize.Y + textSize.Height;
                 var textWidth = textSize.X + textSize.Width + 20;
                 // set x and  y position to draw the circle
-                if (x + textWidth > width)
+
+                if (x + textWidth >= width)
                 {
-                    x = 50f;
+                    x = 50;
                     y += maxRowHeight;
-                    maxRowHeight = 0f;
+                    maxRowHeight = 0;
+                    if (y > height)
+                        break;
                 }
-                if (textHeight > maxRowHeight)
-                {
-                    maxRowHeight = textHeight;
-                }
-                x += textWidth;
-                y += textHeight;
 
-                //update WordCloudResult.Data to  include the new word so that it can be displayed on the UI in a circle
+                maxRowHeight = Math.Max(maxRowHeight, textHeight);
+                item.Word = word.Key;
+                item.X = x;
+                item.Y = y;
+                item.Rotate = 0;
 
-                WordCloudResult.Data.Add(new WorkCloudData
-                {
-                    Word = word.Key,
-                    Font = item.Font,
-                    FillStyle = item.FillStyle,
-                    X = x,
-                    Y = y,
+                WordCloudResult.Data.Add(item);
 
-                });
-
-
+                x += textWidth + 25;
             }
             return Task.FromResult(WordCloudResult);
         }
 
-        private FontRectangle GetTextSize(string text, Font font)
+        private FontRectangle GetTextSize(string text, SixLabors.Fonts.Font font)
         {
             return TextMeasurer.Measure(text, new TextOptions(font));
         }
         private string GetRandomFont(int fontSize)
         {
-            var font = $"{fontSize + 20}pt Arial";
+            var font = $"{fontSize}pt Arial";
             return font;
         }
         private string GetRandomColor()
         {
-            var color = string.Format("#{0:X6}", new Random().Next(0x1000000));
-            return color;
+            var maxValue = 1.0;
+            var minValue = 0.6;
+
+            var rnd = new Random().NextDouble();
+            var l = (maxValue * rnd) + (minValue * (1d - rnd));
+            var color = ColorFromHSL(0, 0, l);
+            var colorString = string.Format($"#{color.R:X2}{color.G:X2}{color.B:X2}");
+            return colorString;
+        }
+        public static Color ColorFromHSL(double h, double s, double l)
+        {
+            double r = 0, g = 0, b = 0;
+            if (l != 0)
+            {
+                if (s == 0)
+                    r = g = b = l;
+                else
+                {
+                    double temp2;
+                    if (l < 0.5)
+                        temp2 = l * (1.0 + s);
+                    else
+                        temp2 = l + s - (l * s);
+
+                    double temp1 = 2.0 * l - temp2;
+
+                    r = GetColorComponent(temp1, temp2, h + 1.0 / 3.0);
+                    g = GetColorComponent(temp1, temp2, h);
+                    b = GetColorComponent(temp1, temp2, h - 1.0 / 3.0);
+                }
+            }
+            return Color.FromArgb((int)(255 * r), (int)(255 * g), (int)(255 * b));
+
+        }
+        private static double GetColorComponent(double temp1, double temp2, double temp3)
+        {
+            if (temp3 < 0.0)
+                temp3 += 1.0;
+            else if (temp3 > 1.0)
+                temp3 -= 1.0;
+
+            if (temp3 < 1.0 / 6.0)
+                return temp1 + (temp2 - temp1) * 6.0 * temp3;
+            else if (temp3 < 0.5)
+                return temp2;
+            else if (temp3 < 2.0 / 3.0)
+                return temp1 + ((temp2 - temp1) * ((2.0 / 3.0) - temp3) * 6.0);
+            else
+                return temp1;
         }
 
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)

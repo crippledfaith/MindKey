@@ -241,7 +241,7 @@ namespace MindKey.Server.Models
         public async Task<Dictionary<string, int>> GetTags(int count)
         {
             var list = await _appDbContext.Tags.ToListAsync();
-            return list.GroupBy(q => q.Name).ToDictionary(q => q.Key, q => q.Count());
+            return list.GroupBy(q => q.Name).OrderByDescending(q => q.Count()).ToDictionary(q => q.Key, q => q.Count());
         }
 
     }
