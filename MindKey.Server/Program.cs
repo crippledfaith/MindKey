@@ -26,7 +26,7 @@ static void SetupIOC(WebApplicationBuilder builder)
     builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
     builder.Services.AddScoped<WordCloudService>();
-    builder.Services.AddScoped<IWordCloudGenerator, SimpleWordCloudGenerator>();
+    builder.Services.AddScoped<IWordCloudGenerator, PythonWordCloudGenerator>();
 }
 
 static void ConfigureBuilder(WebApplicationBuilder builder)

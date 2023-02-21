@@ -19,6 +19,7 @@ namespace MindKey.Server.Services.WordCloudGenerator
 
         private const string MaskLargeFileName = "wordcloud-1.png";
         private const string MaskSmallFileName = "wordcloud-min1.png";
+        public readonly IConfiguration Configuration;
 
         public string AppPath { get; private set; }
         public string WordCloudWorkingPath { get; private set; }
@@ -28,9 +29,9 @@ namespace MindKey.Server.Services.WordCloudGenerator
         public string OutputFilePath { get; private set; }
         public WorkCloudResult WordCloudResult { get; set; } = new WorkCloudResult();
 
-        public AWordCloudGenerator()
+        public AWordCloudGenerator(IConfiguration configuration)
         {
-
+            Configuration = configuration;
         }
 
         protected abstract bool NeedMaskedFile(WorkCloudParameter parameter);

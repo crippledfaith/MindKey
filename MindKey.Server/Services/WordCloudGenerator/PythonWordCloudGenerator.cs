@@ -11,18 +11,25 @@ namespace MindKey.Server.Services.WordCloudGenerator
 
         private const string PythonFileName = "WordCloud.py";
 
-        static PythonWordCloudGenerator()
+
+        public PythonWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
-            var appdataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string pyPath = Path.Combine(appdataLocal, "Programs", "Python", "Python310", "python310.dll");
-            var pythonExePath = GetPythonPath("3.10");
-            //get the "python310.dll" file from the python installation folder by removing the "python.exe" from the path
-            if (pythonExePath != null)
+            if (string.IsNullOrEmpty(Runtime.PythonDLL))
             {
-                pyPath = pythonExePath.Replace("python.exe", "python310.dll");
+                var appdataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string pyPath = Path.Combine(appdataLocal, "Programs", "Python", "Python310", "python310.dll");
+
+                var pythonVersion = configuration.GetValue<string>("PythonVersion");
+                var pythonExePath = GetPythonPath(pythonVersion);
+                if (pythonExePath != null)
+                {
+                    var dllName = pythonVersion.Replace(".", "");
+                    pyPath = pythonExePath.Replace("python.exe", $"python{dllName}.dll");
+                }
+                Runtime.PythonDLL = pyPath;
             }
-            Runtime.PythonDLL = pyPath;
         }
+
         private static string GetPythonPath(string requiredVersion = "", string maxVersion = "")
         {
             string[] possiblePythonLocations = new string[3] {
@@ -39,24 +46,26 @@ namespace MindKey.Server.Services.WordCloudGenerator
                 string regKey = possibleLocation.Substring(0, 4), actualPath = possibleLocation.Substring(5);
                 RegistryKey theKey = (regKey == "HKLM" ? Registry.LocalMachine : Registry.CurrentUser);
                 RegistryKey theValue = theKey.OpenSubKey(actualPath);
-
-                foreach (var v in theValue.GetSubKeyNames())
+                if (theValue != null)
                 {
-                    RegistryKey productKey = theValue.OpenSubKey(v);
-                    if (productKey != null)
+                    foreach (var v in theValue.GetSubKeyNames())
                     {
-                        try
+                        RegistryKey productKey = theValue.OpenSubKey(v);
+                        if (productKey != null)
                         {
-                            string pythonExePath = productKey.OpenSubKey("InstallPath").GetValue("ExecutablePath").ToString();
-
-                            if (pythonExePath != null && pythonExePath != "")
+                            try
                             {
-                                pythonLocations.Add(v.ToString(), pythonExePath);
-                            }
-                        }
-                        catch
-                        {
+                                string pythonExePath = productKey.OpenSubKey("InstallPath").GetValue("ExecutablePath").ToString();
 
+                                if (pythonExePath != null && pythonExePath != "")
+                                {
+                                    pythonLocations.Add(v.ToString(), pythonExePath);
+                                }
+                            }
+                            catch
+                            {
+
+                            }
                         }
                     }
                 }

@@ -5,6 +5,9 @@ namespace MindKey.Server.Services.WordCloudGenerator
 {
     public class SimpleWordCloudGenerator : AWordCloudGenerator
     {
+        public SimpleWordCloudGenerator(IConfiguration configuration) : base(configuration)
+        {
+        }
 
         protected override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {

@@ -9,11 +9,13 @@ namespace MindKey.Server.Services
 
         private readonly IIdeaRepository _ideaRepository;
         private readonly IWordCloudGenerator _wordCloudGenerator;
+        private readonly IConfiguration _configuration;
 
-        public WordCloudService(IIdeaRepository ideaRepository, IWordCloudGenerator wordCloudGenerator)
+        public WordCloudService(IIdeaRepository ideaRepository, IWordCloudGenerator wordCloudGenerator,IConfiguration configuration)
         {
             _ideaRepository = ideaRepository;
             _wordCloudGenerator = wordCloudGenerator;
+            _configuration = configuration;
         }
 
         public async Task<WorkCloudResult> GenerateWordCloud(WorkCloudParameter parameter)
