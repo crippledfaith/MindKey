@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using SkiaSharp;
 using System.Drawing;
 using System.IO;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MindKey.WordCloudGenerator
 {
@@ -31,6 +32,9 @@ namespace MindKey.WordCloudGenerator
                 canvas.DrawCircle(0, 0, 50, new SKPaint { Color = SKColors.Red });
                 foreach (var item in wordCount)
                 {
+                    var x = random.Next(0, parameter.Width - 1);
+                    var y = random.Next(0, parameter.Height - 1);
+                    //bitmap.GetPixel()
                     using var paint = new SKPaint();
                     paint.TextSize = 64.0f;
                     paint.IsAntialias = true;
@@ -38,9 +42,10 @@ namespace MindKey.WordCloudGenerator
                     paint.IsStroke = true;
                     paint.StrokeWidth = 3;
                     paint.TextAlign = SKTextAlign.Center;
-                    var x = random.Next(0, parameter.Width - 1);
-                    var y = random.Next(0, parameter.Height - 1);
-                    var font = new SKFont(SKTypeface.Default, 40, 1, 0);
+                    using var font = new SKFont(SKTypeface.Default, 40, 1, 0);
+                    var bounds = new SKRect();
+                    paint.MeasureText("Skia (UTF-32)", ref bounds);
+                    //var glyphs = font.MeasureText(item.Key.ToCharArray(), paint);
                     canvas.DrawText(item.Key, x, y, font, paint);
                 }
 

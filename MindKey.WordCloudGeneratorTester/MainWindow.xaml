@@ -1,0 +1,19 @@
+﻿<Window x:Class="MindKey.WordCloudGeneratorTester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MindKey.WordCloudGeneratorTester"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Background="#222222">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="imgPreview"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Stretch="None"   />
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button x:Name="btnGenerate" Click="btnGenerate_Click" Content="Generate" Width="120"/>
+        </StackPanel>
+    </Grid>
+</Window>
