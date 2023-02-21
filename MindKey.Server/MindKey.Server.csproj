@@ -13,16 +13,14 @@
 		<PackageReference Include="Bogus" Version="34.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.2" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
-		<PackageReference Include="OpenTK" Version="4.7.5" />
 		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.0" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
-		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
-		<PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.1" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\MindKey.Client\MindKey.Client.csproj" />
+	  <ProjectReference Include="..\MindKey.Client\MindKey.Client.csproj">
+	    <TreatAsUsed>true</TreatAsUsed>
+	  </ProjectReference>
 	  <ProjectReference Include="..\MindKey.Shared\MindKey.Shared.csproj" />
 	  <ProjectReference Include="..\MindKey.WordCloudGenerator\MindKey.WordCloudGenerator.csproj" />
 	</ItemGroup>
