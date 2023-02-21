@@ -115,39 +115,42 @@ namespace MindKey.WordCloudGenerator
             return true;
         }
 
-        protected override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
+        protected async override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
-            object returnedVariable = new object();
-            var codePath = Path.Combine(WordCloudWorkingPath, PythonFileName);
-
-            PythonEngine.Initialize();
-
-            var d = PythonEngine.BeginAllowThreads();
-            using (Py.GIL())
+            return await Task.Factory.StartNew(() =>
             {
-                using (PyModule scope = Py.CreateScope())
+                object returnedVariable = new object();
+                var codePath = Path.Combine(WordCloudWorkingPath, PythonFileName);
+
+                PythonEngine.Initialize();
+
+                var d = PythonEngine.BeginAllowThreads();
+                using (Py.GIL())
                 {
-                    var list = wordCount.SelectMany(q => Enumerable.Repeat(q.Key, q.Value));
-                    scope.Set("wordlist", string.Join(" ", list).ToPython());
-                    scope.Set("mask_path", MaskFilePath);
-                    scope.Set("output_path", OutputFilePath);
-                    scope.Exec(File.ReadAllText(codePath));
-                    returnedVariable = scope.Get<object>("path");
+                    using (PyModule scope = Py.CreateScope())
+                    {
+                        var list = wordCount.SelectMany(q => Enumerable.Repeat(q.Key, q.Value));
+                        scope.Set("wordlist", string.Join(" ", list).ToPython());
+                        scope.Set("mask_path", MaskFilePath);
+                        scope.Set("output_path", OutputFilePath);
+                        scope.Exec(File.ReadAllText(codePath));
+                        returnedVariable = scope.Get<object>("path");
+                    }
                 }
-            }
-            PythonEngine.EndAllowThreads(d);
+                PythonEngine.EndAllowThreads(d);
 
-            using var outputImage = Image.Load(returnedVariable.ToString());
+                using var outputImage = Image.Load(returnedVariable.ToString());
 
-            using var stream = new MemoryStream();
-            outputImage.Save(stream, new JpegEncoder());
+                using var stream = new MemoryStream();
+                outputImage.Save(stream, new JpegEncoder());
 
-            var base64String = Convert.ToBase64String(stream.ToArray());
-            WordCloudResult.Image = base64String;
-            Directory.Delete(OutputPath, true);
+                var base64String = Convert.ToBase64String(stream.ToArray());
+                WordCloudResult.Image = base64String;
+                Directory.Delete(OutputPath, true);
 
-            return Task.FromResult(WordCloudResult);
+                return WordCloudResult;
+            });
         }
-       
+
     }
 }
