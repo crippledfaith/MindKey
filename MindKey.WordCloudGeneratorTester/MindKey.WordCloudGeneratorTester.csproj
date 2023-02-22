@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="RandomDataGenerator.Net" Version="1.0.17" />
-    <PackageReference Include="Uno.UI" Version="4.7.44" />
   </ItemGroup>
 
   <ItemGroup>

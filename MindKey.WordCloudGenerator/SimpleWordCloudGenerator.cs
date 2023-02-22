@@ -11,6 +11,9 @@ namespace MindKey.WordCloudGenerator
         public SimpleWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
         }
+
+        public override event EventHandler<WorkCloudResult> OnProgress;
+
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)
         {
             return false;
@@ -18,7 +21,7 @@ namespace MindKey.WordCloudGenerator
         protected async override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
             return await Task.Factory.StartNew(() =>
-             {
+            {
                  var width = Convert.ToInt32(parameter.Width) - 50;
                  var height = Convert.ToInt32(parameter.Height);
 

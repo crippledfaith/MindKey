@@ -38,6 +38,7 @@ namespace MindKey.WordCloudGeneratorTester
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
             IWordCloudGenerator wordCloudGenerator = new GeneticWordCloudGenerator(Configuration);
+            wordCloudGenerator.OnProgress += WordCloudGeneratorOnProgress;
             WorkCloudParameter workCloudParameter = new WorkCloudParameter();
             workCloudParameter.Width = 800;
             workCloudParameter.Height = 500;
@@ -50,8 +51,6 @@ namespace MindKey.WordCloudGeneratorTester
                 byte[] byteBuffer = Convert.FromBase64String(wordCloudResult.Image);
                 File.WriteAllBytes("ff.jpg", byteBuffer.ToArray());
                 var bitmap = new BitmapImage();
-                //bitmap.UriSource = new Uri("ms-appdata:///local/image.jpg");
-                //imgshow.Source = bitmap;
                 bitmap.BeginInit();
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
@@ -61,7 +60,21 @@ namespace MindKey.WordCloudGeneratorTester
 
             }
         }
-   
+
+        private void WordCloudGeneratorOnProgress(object? sender, WorkCloudResult e)
+        {
+            imgPreview.Source = null;
+            byte[] byteBuffer = Convert.FromBase64String(e.Image);
+            File.WriteAllBytes("ff.jpg", byteBuffer.ToArray());
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bitmap.UriSource = new Uri(AppDomain.CurrentDomain.BaseDirectory + "ff.jpg", UriKind.Absolute);
+            bitmap.EndInit();
+            imgPreview.Source = bitmap;
+        }
+
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);

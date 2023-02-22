@@ -32,6 +32,8 @@ namespace MindKey.WordCloudGenerator
             }
         }
 
+        public override event EventHandler<WorkCloudResult> OnProgress;
+
         private static string GetPythonPath(string requiredVersion = "", string maxVersion = "")
         {
             string[] possiblePythonLocations = new string[3] {
