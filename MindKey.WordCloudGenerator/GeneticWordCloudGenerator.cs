@@ -29,24 +29,29 @@ namespace MindKey.WordCloudGenerator
                 using SKBitmap bitmap = SKBitmap.Decode(MaskFilePath);
                 using SKCanvas canvas = new SKCanvas(bitmap);
 
-                canvas.DrawCircle(0, 0, 50, new SKPaint { Color = SKColors.Red });
+                //canvas.DrawCircle(0, 0, 50, new SKPaint { Color = SKColors.Red });
+                var canvasHeight = parameter.Height;
+                var canvasWidth = parameter.Width;
                 foreach (var item in wordCount)
                 {
-                    var x = random.Next(0, parameter.Width - 1);
-                    var y = random.Next(0, parameter.Height - 1);
-                    //bitmap.GetPixel()
-                    using var paint = new SKPaint();
-                    paint.TextSize = 64.0f;
-                    paint.IsAntialias = true;
-                    paint.Color = SKColors.White;
-                    paint.IsStroke = true;
-                    paint.StrokeWidth = 3;
-                    paint.TextAlign = SKTextAlign.Center;
-                    using var font = new SKFont(SKTypeface.Default, 40, 1, 0);
-                    var bounds = new SKRect();
-                    paint.MeasureText("Skia (UTF-32)", ref bounds);
-                    //var glyphs = font.MeasureText(item.Key.ToCharArray(), paint);
+                    var text = item.Key;
+                    var fontSize = item.Value + 10;
+
+                    //var x = 0f;
+                    //var y = 0f;
+                    using SKPaint paint = GetPaint(fontSize);
+
+                    SKRect bounds = GetTextMesurements(paint, text);
+                    var x = (float)random.Next(0, parameter.Width - 1);
+                    var y = (float)random.Next(0, parameter.Height - 1);
+
+                    using var font = new SKFont(SKTypeface.Default, fontSize, 1, 0);
+                    bool collision = CheckCollisionInRender(bitmap, x, y, bounds, canvasHeight, canvasWidth);
+                    if (collision) continue;
+                    x = x + bounds.Width / 2;
+                    y = y + bounds.Height;
                     canvas.DrawText(item.Key, x, y, font, paint);
+                    //break;
                 }
 
                 using SKData data = SKImage.FromBitmap(bitmap).Encode(SKEncodedImageFormat.Png, 100);
@@ -55,6 +60,51 @@ namespace MindKey.WordCloudGenerator
                 Directory.Delete(OutputPath, true);
                 return WordCloudResult;
             });
+        }
+
+        private bool CheckCollisionInRender(SKBitmap bitmap, float x, float y, SKRect bounds, int canvasHeight, int canvasWidth)
+        {
+            var endX = x + bounds.Width;
+            var endY = y + bounds.Height;
+            if (endX > canvasWidth || endY > canvasHeight)
+                return true;
+            for (var xCheck = x; xCheck < endX; xCheck++)
+            {
+                for (var yCheck = y; yCheck < endY; yCheck++)
+                {
+                    var color = bitmap.GetPixel((int)xCheck, (int)yCheck);
+                    if (!CheckIfBlack(color))
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
+        }
+
+        private bool CheckIfBlack(SKColor color)
+        {
+            return color.Alpha == 255 && color.Red == 0 && color.Blue == 0 && color.Green == 0 && color.Hue == 0;
+        }
+
+        private static SKRect GetTextMesurements(SKPaint paint, string text)
+        {
+            var bounds = new SKRect();
+            paint.MeasureText(text, ref bounds);
+            return bounds;
+        }
+
+        private static SKPaint GetPaint(float fontSize)
+        {
+            var paint = new SKPaint();
+            paint.TextSize = fontSize;
+            paint.IsAntialias = true;
+            paint.Color = SKColors.White;
+            paint.IsStroke = false;
+            paint.StrokeWidth = 1;
+            paint.TextAlign = SKTextAlign.Center;
+            return paint;
         }
     }
 }

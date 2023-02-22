@@ -4,24 +4,12 @@ using MindKey.WordCloudGenerator;
 using MindKey.WordCloudGenerator.Base;
 using RandomDataGenerator.FieldOptions;
 using RandomDataGenerator.Randomizers;
-using SkiaSharp;
 using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MindKey.WordCloudGeneratorTester
 {
@@ -35,7 +23,7 @@ namespace MindKey.WordCloudGeneratorTester
         {
             InitializeComponent();
             var randomizer = RandomizerFactory.GetRandomizer(new FieldOptionsCountry());
-            var randomizerint = RandomizerFactory.GetRandomizer(new FieldOptionsInteger() { Min = 1, Max = 100 });
+            var randomizerint = RandomizerFactory.GetRandomizer(new FieldOptionsInteger() { Min = 1, Max = 50 });
             for (int i = 0; i < 100; i++)
             {
                 string? key = randomizer.Generate();
@@ -51,7 +39,7 @@ namespace MindKey.WordCloudGeneratorTester
         {
             IWordCloudGenerator wordCloudGenerator = new GeneticWordCloudGenerator(Configuration);
             WorkCloudParameter workCloudParameter = new WorkCloudParameter();
-            workCloudParameter.Width = 500;
+            workCloudParameter.Width = 800;
             workCloudParameter.Height = 500;
             workCloudParameter.WordLimit = 50;
 
