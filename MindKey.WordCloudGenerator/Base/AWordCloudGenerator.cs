@@ -19,13 +19,14 @@ namespace MindKey.WordCloudGenerator.Base
 
         public readonly IConfiguration Configuration;
 
-        public string AppPath { get; private set; }
-        public string WordCloudWorkingPath { get; private set; }
-        public string OutputPath { get; private set; }
-        public string ImageFilePath { get; private set; }
-        public string MaskFilePath { get; private set; }
-        public string OutputFilePath { get; private set; }
+        public string? AppPath { get; private set; }
+        public string? WordCloudWorkingPath { get; private set; }
+        public string? OutputPath { get; private set; }
+        public string? ImageFilePath { get; private set; }
+        public string? MaskFilePath { get; private set; }
+        public string? OutputFilePath { get; private set; }
         public WorkCloudResult WordCloudResult { get; set; } = new WorkCloudResult();
+        public abstract event EventHandler<WorkCloudResult> OnProgress;
 
         public AWordCloudGenerator(IConfiguration configuration)
         {

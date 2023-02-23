@@ -4,59 +4,65 @@ using MindKey.WordCloudGenerator.Base;
 using SixLabors.Fonts;
 using System.Drawing;
 
-namespace MindKey.WordCloudGenerator
+namespace MindKey.WordCloudGenerator.SimpleWordCloud
 {
     public class SimpleWordCloudGenerator : AWordCloudGenerator
     {
         public SimpleWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
         }
+
+        public override event EventHandler<WorkCloudResult> OnProgress;
+
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)
         {
             return false;
         }
-        protected override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
+        protected async override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
-            var width = Convert.ToInt32(parameter.Width) - 50;
-            var height = Convert.ToInt32(parameter.Height);
-
-            var x = 50f;
-            var y = 50f;
-            var maxRowHeight = 0f;
-
-            foreach (var word in wordCount)
+            return await Task.Factory.StartNew(() =>
             {
-                WorkCloudData item = new WorkCloudData();
-                var fontSize = (word.Value + 5) * 5;
-                item.FillStyle = GetRandomColor();
-                item.Font = GetRandomFont(fontSize);
-                var fo = SixLabors.Fonts.SystemFonts.Get("Arial");
-                var font = new SixLabors.Fonts.Font(fo, fontSize, SixLabors.Fonts.FontStyle.Regular);
-                var textSize = GetTextSize(word.Key, font);
-                var textHeight = textSize.Y + textSize.Height;
-                var textWidth = textSize.X + textSize.Width + 20;
-                // set x and  y position to draw the circle
+                var width = Convert.ToInt32(parameter.Width) - 50;
+                var height = Convert.ToInt32(parameter.Height);
 
-                if (x + textWidth >= width)
+                var x = 50f;
+                var y = 50f;
+                var maxRowHeight = 0f;
+
+                foreach (var word in wordCount)
                 {
-                    x = 50;
-                    y += maxRowHeight;
-                    maxRowHeight = 0;
-                    if (y > height)
-                        break;
+                    WorkCloudData item = new WorkCloudData();
+                    var fontSize = (word.Value + 5) * 5;
+                    item.FillStyle = GetRandomColor();
+                    item.Font = GetRandomFont(fontSize);
+                    var fo = SixLabors.Fonts.SystemFonts.Get("Arial");
+                    var font = new SixLabors.Fonts.Font(fo, fontSize, SixLabors.Fonts.FontStyle.Regular);
+                    var textSize = GetTextSize(word.Key, font);
+                    var textHeight = textSize.Y + textSize.Height;
+                    var textWidth = textSize.X + textSize.Width + 20;
+                    // set x and  y position to draw the circle
+
+                    if (x + textWidth >= width)
+                    {
+                        x = 50;
+                        y += maxRowHeight;
+                        maxRowHeight = 0;
+                        if (y > height)
+                            break;
+                    }
+
+                    maxRowHeight = Math.Max(maxRowHeight, textHeight);
+                    item.Word = word.Key;
+                    item.X = x;
+                    item.Y = y;
+                    item.Rotate = 0;
+
+                    WordCloudResult.Data.Add(item);
+
+                    x += textWidth + 25;
                 }
-
-                maxRowHeight = Math.Max(maxRowHeight, textHeight);
-                item.Word = word.Key;
-                item.X = x;
-                item.Y = y;
-                item.Rotate = 0;
-
-                WordCloudResult.Data.Add(item);
-
-                x += textWidth + 25;
-            }
-            return Task.FromResult(WordCloudResult);
+                return WordCloudResult;
+            });
         }
 
         private FontRectangle GetTextSize(string text, SixLabors.Fonts.Font font)
@@ -74,7 +80,7 @@ namespace MindKey.WordCloudGenerator
             var minValue = 0.6;
 
             var rnd = new Random().NextDouble();
-            var l = (maxValue * rnd) + (minValue * (1d - rnd));
+            var l = maxValue * rnd + minValue * (1d - rnd);
             var color = ColorFromHSL(0, 0, l);
             var colorString = string.Format($"#{color.R:X2}{color.G:X2}{color.B:X2}");
             return colorString;
@@ -92,7 +98,7 @@ namespace MindKey.WordCloudGenerator
                     if (l < 0.5)
                         temp2 = l * (1.0 + s);
                     else
-                        temp2 = l + s - (l * s);
+                        temp2 = l + s - l * s;
 
                     double temp1 = 2.0 * l - temp2;
 
@@ -116,7 +122,7 @@ namespace MindKey.WordCloudGenerator
             else if (temp3 < 0.5)
                 return temp2;
             else if (temp3 < 2.0 / 3.0)
-                return temp1 + ((temp2 - temp1) * ((2.0 / 3.0) - temp3) * 6.0);
+                return temp1 + (temp2 - temp1) * (2.0 / 3.0 - temp3) * 6.0;
             else
                 return temp1;
         }

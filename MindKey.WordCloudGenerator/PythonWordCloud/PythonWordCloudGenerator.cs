@@ -6,7 +6,7 @@ using Python.Runtime;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 
-namespace MindKey.WordCloudGenerator
+namespace MindKey.WordCloudGenerator.PythonWordCloud
 {
     public class PythonWordCloudGenerator : AWordCloudGenerator
     {
@@ -32,6 +32,8 @@ namespace MindKey.WordCloudGenerator
             }
         }
 
+        public override event EventHandler<WorkCloudResult> OnProgress;
+
         private static string GetPythonPath(string requiredVersion = "", string maxVersion = "")
         {
             string[] possiblePythonLocations = new string[3] {
@@ -46,7 +48,7 @@ namespace MindKey.WordCloudGenerator
             foreach (string possibleLocation in possiblePythonLocations)
             {
                 string regKey = possibleLocation.Substring(0, 4), actualPath = possibleLocation.Substring(5);
-                RegistryKey theKey = (regKey == "HKLM" ? Registry.LocalMachine : Registry.CurrentUser);
+                RegistryKey theKey = regKey == "HKLM" ? Registry.LocalMachine : Registry.CurrentUser;
                 RegistryKey theValue = theKey.OpenSubKey(actualPath);
                 if (theValue != null)
                 {
@@ -75,8 +77,8 @@ namespace MindKey.WordCloudGenerator
 
             if (pythonLocations.Count > 0)
             {
-                System.Version desiredVersion = new System.Version(requiredVersion == "" ? "0.0.1" : requiredVersion),
-                    maxPVersion = new System.Version(maxVersion == "" ? "999.999.999" : maxVersion);
+                Version desiredVersion = new Version(requiredVersion == "" ? "0.0.1" : requiredVersion),
+                    maxPVersion = new Version(maxVersion == "" ? "999.999.999" : maxVersion);
 
                 string highestVersion = "", highestVersionPath = "";
 
@@ -85,7 +87,7 @@ namespace MindKey.WordCloudGenerator
                     int index = pVersion.Key.IndexOf("-");
                     string formattedVersion = index > 0 ? pVersion.Key.Substring(0, index) : pVersion.Key;
 
-                    System.Version thisVersion = new System.Version(formattedVersion);
+                    Version thisVersion = new Version(formattedVersion);
                     int comparison = desiredVersion.CompareTo(thisVersion),
                         maxComparison = maxPVersion.CompareTo(thisVersion);
 
@@ -115,39 +117,42 @@ namespace MindKey.WordCloudGenerator
             return true;
         }
 
-        protected override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
+        protected async override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
-            object returnedVariable = new object();
-            var codePath = Path.Combine(WordCloudWorkingPath, PythonFileName);
-
-            PythonEngine.Initialize();
-
-            var d = PythonEngine.BeginAllowThreads();
-            using (Py.GIL())
+            return await Task.Factory.StartNew(() =>
             {
-                using (PyModule scope = Py.CreateScope())
+                object returnedVariable = new object();
+                var codePath = Path.Combine(WordCloudWorkingPath, PythonFileName);
+
+                PythonEngine.Initialize();
+
+                var d = PythonEngine.BeginAllowThreads();
+                using (Py.GIL())
                 {
-                    var list = wordCount.SelectMany(q => Enumerable.Repeat(q.Key, q.Value));
-                    scope.Set("wordlist", string.Join(" ", list).ToPython());
-                    scope.Set("mask_path", MaskFilePath);
-                    scope.Set("output_path", OutputFilePath);
-                    scope.Exec(File.ReadAllText(codePath));
-                    returnedVariable = scope.Get<object>("path");
+                    using (PyModule scope = Py.CreateScope())
+                    {
+                        var list = wordCount.SelectMany(q => Enumerable.Repeat(q.Key, q.Value));
+                        scope.Set("wordlist", string.Join(" ", list).ToPython());
+                        scope.Set("mask_path", MaskFilePath);
+                        scope.Set("output_path", OutputFilePath);
+                        scope.Exec(File.ReadAllText(codePath));
+                        returnedVariable = scope.Get<object>("path");
+                    }
                 }
-            }
-            PythonEngine.EndAllowThreads(d);
+                PythonEngine.EndAllowThreads(d);
 
-            using var outputImage = Image.Load(returnedVariable.ToString());
+                using var outputImage = Image.Load(returnedVariable.ToString());
 
-            using var stream = new MemoryStream();
-            outputImage.Save(stream, new JpegEncoder());
+                using var stream = new MemoryStream();
+                outputImage.Save(stream, new JpegEncoder());
 
-            var base64String = Convert.ToBase64String(stream.ToArray());
-            WordCloudResult.Image = base64String;
-            Directory.Delete(OutputPath, true);
+                var base64String = Convert.ToBase64String(stream.ToArray());
+                WordCloudResult.Image = base64String;
+                Directory.Delete(OutputPath, true);
 
-            return Task.FromResult(WordCloudResult);
+                return WordCloudResult;
+            });
         }
-       
+
     }
 }
