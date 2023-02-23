@@ -2,6 +2,7 @@
 using MindKey.Shared.Models.MindKey;
 using MindKey.WordCloudGenerator;
 using MindKey.WordCloudGenerator.Base;
+using MindKey.WordCloudGenerator.GeneticWordCloud;
 using RandomDataGenerator.FieldOptions;
 using RandomDataGenerator.Randomizers;
 using System;
@@ -23,7 +24,7 @@ namespace MindKey.WordCloudGeneratorTester
         {
             InitializeComponent();
             var randomizer = RandomizerFactory.GetRandomizer(new FieldOptionsCountry());
-            var randomizerint = RandomizerFactory.GetRandomizer(new FieldOptionsInteger() { Min = 1, Max = 50 });
+            var randomizerint = RandomizerFactory.GetRandomizer(new FieldOptionsInteger() { Min = 1, Max = 20 });
             for (int i = 0; i < 100; i++)
             {
                 string? key = randomizer.Generate();
@@ -57,8 +58,10 @@ namespace MindKey.WordCloudGeneratorTester
                 bitmap.UriSource = new Uri(AppDomain.CurrentDomain.BaseDirectory + "ff.jpg", UriKind.Absolute);
                 bitmap.EndInit();
                 imgPreview.Source = bitmap;
-
+                lblStatus.Content = wordCloudResult.Status;
             }
+       
+
         }
 
         private void WordCloudGeneratorOnProgress(object? sender, WorkCloudResult e)
@@ -73,6 +76,7 @@ namespace MindKey.WordCloudGeneratorTester
             bitmap.UriSource = new Uri(AppDomain.CurrentDomain.BaseDirectory + "ff.jpg", UriKind.Absolute);
             bitmap.EndInit();
             imgPreview.Source = bitmap;
+            lblStatus.Content = e.Status;
         }
 
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)

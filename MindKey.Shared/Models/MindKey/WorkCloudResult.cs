@@ -5,6 +5,8 @@
 
         public List<WorkCloudData> Data { get; set; }
         public string Image { get; set; }
+        public string Status { get; set; }
+
 
         public WorkCloudResult()
         {

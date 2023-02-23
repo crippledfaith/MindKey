@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "MindKey.WordCloudGenerator": {
+      "commandName": "Project",
+      "sqlDebugging": false,
+      "nativeDebugging": true
+    }
+  }
+}

@@ -6,7 +6,7 @@ using Python.Runtime;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 
-namespace MindKey.WordCloudGenerator
+namespace MindKey.WordCloudGenerator.PythonWordCloud
 {
     public class PythonWordCloudGenerator : AWordCloudGenerator
     {
@@ -48,7 +48,7 @@ namespace MindKey.WordCloudGenerator
             foreach (string possibleLocation in possiblePythonLocations)
             {
                 string regKey = possibleLocation.Substring(0, 4), actualPath = possibleLocation.Substring(5);
-                RegistryKey theKey = (regKey == "HKLM" ? Registry.LocalMachine : Registry.CurrentUser);
+                RegistryKey theKey = regKey == "HKLM" ? Registry.LocalMachine : Registry.CurrentUser;
                 RegistryKey theValue = theKey.OpenSubKey(actualPath);
                 if (theValue != null)
                 {
@@ -77,8 +77,8 @@ namespace MindKey.WordCloudGenerator
 
             if (pythonLocations.Count > 0)
             {
-                System.Version desiredVersion = new System.Version(requiredVersion == "" ? "0.0.1" : requiredVersion),
-                    maxPVersion = new System.Version(maxVersion == "" ? "999.999.999" : maxVersion);
+                Version desiredVersion = new Version(requiredVersion == "" ? "0.0.1" : requiredVersion),
+                    maxPVersion = new Version(maxVersion == "" ? "999.999.999" : maxVersion);
 
                 string highestVersion = "", highestVersionPath = "";
 
@@ -87,7 +87,7 @@ namespace MindKey.WordCloudGenerator
                     int index = pVersion.Key.IndexOf("-");
                     string formattedVersion = index > 0 ? pVersion.Key.Substring(0, index) : pVersion.Key;
 
-                    System.Version thisVersion = new System.Version(formattedVersion);
+                    Version thisVersion = new Version(formattedVersion);
                     int comparison = desiredVersion.CompareTo(thisVersion),
                         maxComparison = maxPVersion.CompareTo(thisVersion);
 
