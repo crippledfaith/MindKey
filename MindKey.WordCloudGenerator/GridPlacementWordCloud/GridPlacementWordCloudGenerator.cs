@@ -16,7 +16,6 @@ namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
 
         public GridPlacementWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
-            WordCloudResult= new WorkCloudResult();
         }
 
 
@@ -35,10 +34,7 @@ namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
             var canvasWidth = parameter.Width;
             var service = new GridPlacementService(wordCount, canvasHeight, canvasWidth, bitmap.Copy());
             service.OnProgress += ServiceOnProgress;
-            using (var stream = File.OpenWrite(Path.Combine(OutputPath, "newBackGround.jpg")))
-            {
-                bitmap.Encode(stream, SKEncodedImageFormat.Jpeg, 100);
-            }
+
             var wordCloudCloud = await service.Start();
 
             foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))

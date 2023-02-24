@@ -50,7 +50,7 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
                     {
                         var list = wordCount.SelectMany(q => Enumerable.Repeat(q.Key, q.Value));
                         scope.Set("wordlist", string.Join(" ", list).ToPython());
-                        scope.Set("mask_path", MaskFilePath);
+                        scope.Set("mask_path", FinalMaskPath);
                         scope.Set("output_path", OutputFilePath);
                         scope.Exec(File.ReadAllText(codePath));
                         returnedVariable = scope.Get<object>("path");
@@ -138,14 +138,10 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
                             highestVersion = pVersion.Key;
                             highestVersionPath = pVersion.Value;
                         }
-
                     }
-
                 }
-
                 return highestVersionPath;
             }
-
             return "";
         }
 

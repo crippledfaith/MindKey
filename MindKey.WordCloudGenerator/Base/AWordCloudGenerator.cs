@@ -19,7 +19,7 @@ namespace MindKey.WordCloudGenerator.Base
 
         private const string MaskLargeFileName = "wordcloud-1.png";
         private const string MaskSmallFileName = "wordcloud-min1.png";
-
+        private const string FinalMaskFileName = "newBackGround.jpg";
         public readonly IConfiguration Configuration;
 
         public string? AppPath { get; private set; }
@@ -28,6 +28,7 @@ namespace MindKey.WordCloudGenerator.Base
         public string? ImageFilePath { get; private set; }
         public string? MaskFilePath { get; private set; }
         public string? OutputFilePath { get; private set; }
+        public string? FinalMaskPath { get; private set; }
         public WorkCloudResult WordCloudResult { get; set; } = new WorkCloudResult();
         public event EventHandler<WorkCloudResult>? OnProgress;
         public AWordCloudGenerator(IConfiguration configuration)
@@ -45,6 +46,7 @@ namespace MindKey.WordCloudGenerator.Base
             ImageFilePath = Path.Combine(WordCloudWorkingPath, parameter.Width > 500 ? MaskLargeFileName : MaskSmallFileName);
             MaskFilePath = Path.Combine(OutputPath, MaskImageFileName);
             OutputFilePath = Path.Combine(OutputPath, OutputFileName);
+            FinalMaskPath = Path.Combine(OutputPath, FinalMaskFileName);
             if (NeedMaskedFile(parameter))
             {
                 Directory.CreateDirectory(OutputPath);
@@ -54,12 +56,18 @@ namespace MindKey.WordCloudGenerator.Base
                 var y = (canvas.Height - image.Height) / 2;
                 canvas.Mutate(ctx => ctx.DrawImage(image, new Point(x, y), 1f));
                 canvas.Save(MaskFilePath);
+                using SKBitmap bitmap = SKBitmap.Decode(MaskFilePath);
+                ChangeColor(bitmap);
+                using (var stream = File.OpenWrite(FinalMaskPath))
+                {
+                    bitmap.Encode(stream, SKEncodedImageFormat.Jpeg, 100);
+                }
             }
             return await Start(wordCount, parameter);
         }
         protected void ServiceOnProgress(object? sender, WordCloudCloud wordCloudCloud)
         {
-            using SKBitmap bitmap = SKBitmap.Decode(Path.Combine(OutputPath, "newBackGround.jpg"));
+            using SKBitmap bitmap = SKBitmap.Decode(Path.Combine(OutputPath, FinalMaskFileName));
             using SKCanvas canvas = new SKCanvas(bitmap);
             //ChangeColor(bitmap);
             foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))

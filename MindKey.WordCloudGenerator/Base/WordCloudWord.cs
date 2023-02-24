@@ -11,6 +11,8 @@ namespace MindKey.WordCloudGenerator.Base
 
         private float x;
         private float y;
+        private int canvasWidth;
+        private int canvasHeight;
 
         [JsonIgnore]
         public bool? IsFit { get; set; }
@@ -38,8 +40,24 @@ namespace MindKey.WordCloudGenerator.Base
         public int Frequncy { get; private set; }
         public SKFont? Font { get; private set; }
         public SKPaint? Paint { get; private set; }
-        public int CanvasHeight { get; set; }
-        public int CanvasWidth { get; set; }
+        public int CanvasHeight 
+        { 
+            get => canvasHeight;
+            set 
+            { 
+                canvasHeight = value;
+                IsFit = null;
+            }
+        }
+        public int CanvasWidth
+        {
+            get => canvasWidth;
+            set
+            {
+                canvasWidth = value;
+                IsFit = null;
+            }
+        }
 
         public WordCloudWord(float x, float y, string? text, int frequncy, SKFont font, int canvasHeight, int canvasWidth)
         {
@@ -51,7 +69,7 @@ namespace MindKey.WordCloudGenerator.Base
             CanvasHeight = canvasHeight;
             CanvasWidth = canvasWidth;
         }
-        
+
         public void Initilize()
         {
             if (Font == null)
@@ -92,7 +110,7 @@ namespace MindKey.WordCloudGenerator.Base
                 newObj.Font = new SKFont(Font.Typeface, Font.Size, Font.ScaleX, Font.SkewX);
             return newObj;
         }
-       
+
         private bool CheckCollisionInRender(SKBitmap bitmap, float x, float y, SKRect bounds, int canvasHeight, int canvasWidth)
         {
             var endX = x + bounds.Width;
