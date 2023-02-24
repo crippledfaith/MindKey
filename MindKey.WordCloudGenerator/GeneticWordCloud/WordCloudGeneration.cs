@@ -81,10 +81,15 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
         {
             return WordCloudClouds.ToList().OrderByDescending(q => q.Score).Skip(1).Take(1).First();
         }
-
+        public async Task RemoveWordThatCannotFit()
+        {
+            await Task.Run(() => { WordCloudClouds.ToList().ForEach(q => q.RemoveWordThatCannotFit()); });
+        }
         public object Copy()
         {
             return MemberwiseClone();
         }
+
+        
     }
 }

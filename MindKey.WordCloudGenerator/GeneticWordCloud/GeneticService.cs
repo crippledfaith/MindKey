@@ -4,7 +4,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
 {
     public class GeneticService
     {
-        public event EventHandler<WordCloudCloud> OnProgress;
+        public event EventHandler<WordCloudCloud>? OnProgress;
         public int GenerationCount { get; set; }
         public Dictionary<string, int> WordCount { get; }
         public int CanvasHeight { get; }
@@ -25,6 +25,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             var intialGeneration = new WordCloudGeneration(GenerationCount++, WordCount, CanvasHeight, CanvasWidth, Bitmap);
             await intialGeneration.GeneratePopulation(100);
             await intialGeneration.ComputeScore();
+            await intialGeneration.RemoveWordThatCannotFit();
             WordCloudCloud bestCloud = (WordCloudCloud)intialGeneration.GetBestCloud().Copy();
             WordCloudCloud secondBestCloud = (WordCloudCloud)intialGeneration.GetSecondBestCloud().Copy();
             OnProgress(this, bestCloud);

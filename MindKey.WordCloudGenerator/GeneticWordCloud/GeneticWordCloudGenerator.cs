@@ -18,11 +18,11 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
 {
     public class GeneticWordCloudGenerator : AWordCloudGenerator
     {
+        public override event EventHandler<WorkCloudResult>? OnProgress;
+
         public GeneticWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
         }
-
-        public override event EventHandler<WorkCloudResult> OnProgress;
 
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)
         {
@@ -58,6 +58,24 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             WordCloudResult.Image = base64String;
             Directory.Delete(OutputPath, true);
             return WordCloudResult;
+        }
+
+        private void ServiceOnProgress(object? sender, WordCloudCloud wordCloudCloud)
+        {
+            using SKBitmap bitmap = SKBitmap.Decode(Path.Combine(OutputPath, "newBackGround.jpg"));
+            using SKCanvas canvas = new SKCanvas(bitmap);
+            //ChangeColor(bitmap);
+            foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))
+            {
+                canvas.DrawText(word.Text, word.DrawX, word.DrawY, word.Font, word.Paint);
+            }
+            using SKData data = SKImage.FromBitmap(bitmap).Encode(SKEncodedImageFormat.Png, 100);
+            var base64String = Convert.ToBase64String(data.ToArray());
+            WordCloudResult.Image = base64String;
+            var isFitCount = wordCloudCloud.WordCloudWords.Count(q => q.IsFit.HasValue && q.IsFit.Value);
+            var totalCount = wordCloudCloud.WordCount.Count;
+            WordCloudResult.Status = $"{wordCloudCloud.GenarationNumber} {isFitCount}/{totalCount} {Convert.ToDouble(isFitCount) / Convert.ToDouble(totalCount) * 100d}%";
+            OnProgress?.Invoke(sender, WordCloudResult);
         }
         public void ChangeColor(SKBitmap bitmap)
         {
@@ -96,23 +114,6 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
         private bool CheckIfWhite(SKColor color)
         {
             return color.Alpha == 255 && color.Red == 255 && color.Blue == 255 && color.Green == 255 && color.Hue == 0;
-        }
-        private void ServiceOnProgress(object? sender, WordCloudCloud wordCloudCloud)
-        {
-            using SKBitmap bitmap = SKBitmap.Decode(Path.Combine(OutputPath, "newBackGround.jpg"));
-            using SKCanvas canvas = new SKCanvas(bitmap);
-            //ChangeColor(bitmap);
-            foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))
-            {
-                canvas.DrawText(word.Text, word.DrawX, word.DrawY, word.Font, word.Paint);
-            }
-            using SKData data = SKImage.FromBitmap(bitmap).Encode(SKEncodedImageFormat.Png, 100);
-            var base64String = Convert.ToBase64String(data.ToArray());
-            WordCloudResult.Image = base64String;
-            var isFitCount = wordCloudCloud.WordCloudWords.Count(q => q.IsFit.HasValue && q.IsFit.Value);
-            var totalCount = wordCloudCloud.WordCount.Count;
-            WordCloudResult.Status = $"{wordCloudCloud.GenarationNumber} {isFitCount}/{totalCount} {Convert.ToDouble(isFitCount) / Convert.ToDouble(totalCount) * 100d}%";
-            OnProgress?.Invoke(sender, WordCloudResult);
         }
     }
 }

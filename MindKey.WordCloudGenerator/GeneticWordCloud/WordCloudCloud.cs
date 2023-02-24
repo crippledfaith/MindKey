@@ -109,7 +109,13 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
                 }
             });
         }
-
+        public void RemoveWordThatCannotFit()
+        {
+            var wordCloudChildrenList = WordCloudWords.ToList();
+            WordCloudWords.Clear();
+            wordCloudChildrenList.RemoveAll(q => q.GetTextMesurements(q.Paint, q.Text).Width> CanvasWidth);
+            wordCloudChildrenList.ForEach(q => WordCloudWords.Add(q));
+        }
         public void Dispose()
         {
             WordCloudWords.ToList().ForEach(x => x.Dispose());
@@ -141,6 +147,6 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             return newObj;
         }
 
-
+      
     }
 }

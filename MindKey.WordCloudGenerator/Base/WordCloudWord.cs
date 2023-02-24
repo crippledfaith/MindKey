@@ -163,7 +163,7 @@ namespace MindKey.WordCloudGenerator.Base
             return color.Alpha == 255 && color.Red == 0 && color.Blue == 0 && color.Green == 0 && color.Hue == 0;
         }
 
-        private SKRect GetTextMesurements(SKPaint paint, string text)
+        public SKRect GetTextMesurements(SKPaint paint, string text)
         {
             if (_textSize == null)
             {

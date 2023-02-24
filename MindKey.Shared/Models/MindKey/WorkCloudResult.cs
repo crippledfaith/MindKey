@@ -4,8 +4,8 @@
     {
 
         public List<WorkCloudData> Data { get; set; }
-        public string Image { get; set; }
-        public string Status { get; set; }
+        public string? Image { get; set; }
+        public string? Status { get; set; }
 
 
         public WorkCloudResult()
@@ -15,9 +15,9 @@
     }
     public class WorkCloudData
     {
-        public string Word { get; set; }
-        public string FillStyle { get; set; }
-        public string Font { get; set; }
+        public string? Word { get; set; } = default;
+        public string? FillStyle { get; set; }
+        public string? Font { get; set; }
         public float Rotate { get; set; }
         public float X { get; set; }
         public float Y { get; set; }

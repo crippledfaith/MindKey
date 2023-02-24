@@ -26,7 +26,7 @@ namespace MindKey.WordCloudGenerator.Base
         public string? MaskFilePath { get; private set; }
         public string? OutputFilePath { get; private set; }
         public WorkCloudResult WordCloudResult { get; set; } = new WorkCloudResult();
-        public abstract event EventHandler<WorkCloudResult> OnProgress;
+        public abstract event EventHandler<WorkCloudResult>? OnProgress;
 
         public AWordCloudGenerator(IConfiguration configuration)
         {

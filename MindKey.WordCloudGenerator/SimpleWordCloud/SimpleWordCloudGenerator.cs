@@ -8,11 +8,10 @@ namespace MindKey.WordCloudGenerator.SimpleWordCloud
 {
     public class SimpleWordCloudGenerator : AWordCloudGenerator
     {
+        public override event EventHandler<WorkCloudResult>? OnProgress;
         public SimpleWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
         }
-
-        public override event EventHandler<WorkCloudResult> OnProgress;
 
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)
         {
