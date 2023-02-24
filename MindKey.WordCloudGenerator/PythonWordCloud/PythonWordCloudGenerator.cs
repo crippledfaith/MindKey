@@ -12,7 +12,7 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
     {
         public override event EventHandler<WorkCloudResult>? OnProgress;
         private const string PythonFileName = "WordCloud.py";
-
+        
         public PythonWordCloudGenerator(IConfiguration configuration) : base(configuration)
         {
             if (string.IsNullOrEmpty(Runtime.PythonDLL))
@@ -30,12 +30,11 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
                 Runtime.PythonDLL = pyPath;
             }
         }
-
+        
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)
         {
             return true;
         }
-
         protected async override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
             return await Task.Factory.StartNew(() =>
@@ -72,7 +71,7 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
                 return WordCloudResult;
             });
         }
-
+        
         private static string GetPythonPath(string requiredVersion = "", string maxVersion = "")
         {
             string[] possiblePythonLocations = new string[3] {

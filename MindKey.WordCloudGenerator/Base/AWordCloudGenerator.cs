@@ -27,12 +27,10 @@ namespace MindKey.WordCloudGenerator.Base
         public string? OutputFilePath { get; private set; }
         public WorkCloudResult WordCloudResult { get; set; } = new WorkCloudResult();
         public abstract event EventHandler<WorkCloudResult>? OnProgress;
-
         public AWordCloudGenerator(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
         protected abstract bool NeedMaskedFile(WorkCloudParameter parameter);
         protected abstract Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter);
         public async Task<WorkCloudResult> Generate(Dictionary<string, int> wordCount, WorkCloudParameter parameter)

@@ -41,6 +41,7 @@ namespace MindKey.WordCloudGenerator.Base
         public SKPaint? Paint { get; private set; }
         public int CanvasHeight { get; set; }
         public int CanvasWidth { get; set; }
+
         public WordCloudWord(float x, float y, string? text, int frequncy, SKFont font, int canvasHeight, int canvasWidth)
         {
             X = x;
@@ -51,6 +52,7 @@ namespace MindKey.WordCloudGenerator.Base
             CanvasHeight = canvasHeight;
             CanvasWidth = canvasWidth;
         }
+        
         public void Initilize()
         {
             if (Font == null)
@@ -58,7 +60,6 @@ namespace MindKey.WordCloudGenerator.Base
             IsFit = null;
             Paint = GetPaint(Font.Size);
         }
-
         public bool DoesFit(SKBitmap bitmap)
         {
             if (!IsFit.HasValue)
@@ -69,14 +70,30 @@ namespace MindKey.WordCloudGenerator.Base
             }
             return IsFit.Value;
         }
-
-
         public void Dispose()
         {
             Paint?.Dispose();
             Font?.Dispose();
         }
-
+        public SKRect GetTextMesurements(SKPaint paint, string text)
+        {
+            if (_textSize == null)
+            {
+                var bounds = new SKRect();
+                paint.MeasureText(text, ref bounds);
+                _textSize = bounds;
+            }
+            return _textSize.Value;
+        }
+        public object Copy()
+        {
+            var newObj = (WordCloudWord)MemberwiseClone();
+            newObj.Paint = Paint?.Clone();
+            if (Font != null)
+                newObj.Font = new SKFont(Font.Typeface, Font.Size, Font.ScaleX, Font.SkewX);
+            return newObj;
+        }
+       
         private bool CheckCollisionInRender(SKBitmap bitmap, float x, float y, SKRect bounds, int canvasHeight, int canvasWidth)
         {
             var endX = x + bounds.Width;
@@ -163,24 +180,5 @@ namespace MindKey.WordCloudGenerator.Base
             return color.Alpha == 255 && color.Red == 0 && color.Blue == 0 && color.Green == 0 && color.Hue == 0;
         }
 
-        public SKRect GetTextMesurements(SKPaint paint, string text)
-        {
-            if (_textSize == null)
-            {
-                var bounds = new SKRect();
-                paint.MeasureText(text, ref bounds);
-                _textSize = bounds;
-            }
-            return _textSize.Value;
-        }
-
-        public object Copy()
-        {
-            var newObj = (WordCloudWord)MemberwiseClone();
-            newObj.Paint = Paint?.Clone();
-            if (Font != null)
-                newObj.Font = new SKFont(Font.Typeface, Font.Size, Font.ScaleX, Font.SkewX);
-            return newObj;
-        }
     }
 }

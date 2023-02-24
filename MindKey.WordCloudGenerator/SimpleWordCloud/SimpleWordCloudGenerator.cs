@@ -19,7 +19,7 @@ namespace MindKey.WordCloudGenerator.SimpleWordCloud
         }
         protected async override Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
-            return await Task.Factory.StartNew(() =>
+            return await Task.Run(() =>
             {
                 var width = Convert.ToInt32(parameter.Width) - 50;
                 var height = Convert.ToInt32(parameter.Height);
