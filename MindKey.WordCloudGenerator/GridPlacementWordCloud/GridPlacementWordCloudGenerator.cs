@@ -1,19 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MindKey.Shared.Models.MindKey;
 using MindKey.WordCloudGenerator.Base;
-using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+using SkiaSharp;
 namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
 {
-    internal class GridPlacementWordCloudGenerator : AWordCloudGenerator
+    public class GridPlacementWordCloudGenerator : AWordCloudGenerator
     {
 
         //Determine the size of the grid: The first step is to determine the size of the grid based on the available space and the desired number of cells.For example, if the available space is a 500 x 500 pixel image and we want to use a 10 x 10 grid, each cell will be 50 x 50 pixels.
@@ -28,7 +19,6 @@ namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
             WordCloudResult= new WorkCloudResult();
         }
 
-        public override event EventHandler<WorkCloudResult>? OnProgress;
 
         protected override bool NeedMaskedFile(WorkCloudParameter parameter)
         {
@@ -37,12 +27,33 @@ namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
 
         protected override async Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
-
             //Determine the size of the grid: The first step is to determine the size of the grid based on the available space and the desired number of cells.For example, if the available space is a 500 x 500 pixel image and we want to use a 10 x 10 grid, each cell will be 50 x 50 pixels.
-            int canvasHeight = parameter.Height;
-            int canvasWidth = parameter.Width;
+            using SKBitmap bitmap = SKBitmap.Decode(MaskFilePath);
+            using SKCanvas canvas = new SKCanvas(bitmap);
 
+            var canvasHeight = parameter.Height;
+            var canvasWidth = parameter.Width;
+            var service = new GridPlacementService(wordCount, canvasHeight, canvasWidth, bitmap.Copy());
+            service.OnProgress += ServiceOnProgress;
+            using (var stream = File.OpenWrite(Path.Combine(OutputPath, "newBackGround.jpg")))
+            {
+                bitmap.Encode(stream, SKEncodedImageFormat.Jpeg, 100);
+            }
+            var wordCloudCloud = await service.Start();
+
+            foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))
+            {
+                canvas.DrawText(word.Text, word.DrawX, word.DrawY, word.Font, word.Paint);
+            }
+            using SKData data = SKImage.FromBitmap(bitmap).Encode(SKEncodedImageFormat.Png, 100);
+            var base64String = Convert.ToBase64String(data.ToArray());
+            var isFitCount = wordCloudCloud.WordCloudWords.Count(q => q.IsFit.HasValue && q.IsFit.Value);
+            var totalCount = wordCloudCloud.WordCount.Count;
+            WordCloudResult.Status = $"Done";
+            WordCloudResult.Image = base64String;
+            Directory.Delete(OutputPath, true);
             return WordCloudResult;
         }
+
     }
 }

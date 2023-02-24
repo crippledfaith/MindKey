@@ -1,32 +1,23 @@
 ﻿using MindKey.WordCloudGenerator.Base;
 using SkiaSharp;
 using System.Collections.Concurrent;
-using JsonIgnoreAttribute = Newtonsoft.Json.JsonIgnoreAttribute;
 
 namespace MindKey.WordCloudGenerator.GeneticWordCloud
 {
-    public class WordCloudCloud : IDisposable, ICopyable
+    public class GeneticWordCloudCloud : WordCloudCloud
     {
-        public int CanvasHeight { get; private set; }
-        public int CanvasWidth { get; private set; }
-        public int GenarationNumber { get; }
         public int CloudNumber { get; }
-        [JsonIgnore]
-        public SKBitmap Bitmap { get; }
-        public Dictionary<string, int> WordCount { get; }
-        public int Score => WordCloudWords.Count(q => q.IsFit.HasValue && q.IsFit.Value);
-        public ConcurrentBag<WordCloudWord> WordCloudWords { get; private set; }
 
-        public WordCloudCloud(int genarationNumber, int cloudNumber, Dictionary<string, int> wordCount, int canvasHeight, int canvasWidth, SKBitmap bitmap)
+        public int GenarationNumber { get; }
+
+        public int Score => WordCloudWords.Count(q => q.IsFit.HasValue && q.IsFit.Value);
+
+        public GeneticWordCloudCloud(int genarationNumber, int cloudNumber, Dictionary<string, int> wordCount, int canvasHeight, int canvasWidth, SKBitmap bitmap) : base(wordCount, canvasHeight, canvasWidth, bitmap)
         {
-            WordCount = new Dictionary<string, int>(wordCount);
             GenarationNumber = genarationNumber;
             CloudNumber = cloudNumber;
-            CanvasHeight = canvasHeight;
-            CanvasWidth = canvasWidth;
-            Bitmap = bitmap.Copy();
-            WordCloudWords = new ConcurrentBag<WordCloudWord>();
         }
+
         public async Task Generate()
         {
             var random = new Random();
@@ -56,7 +47,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
                 }
             });
         }
-        public async Task CrossOver(WordCloudCloud wordCloudCloud1, WordCloudCloud wordCloudCloud2)
+        public async Task CrossOver(GeneticWordCloudCloud wordCloudCloud1, GeneticWordCloudCloud wordCloudCloud2)
         {
             await Task.Run(() =>
               {
@@ -109,19 +100,6 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
                 }
             });
         }
-        public void RemoveWordThatCannotFit()
-        {
-            var wordCloudChildrenList = WordCloudWords.ToList();
-            WordCloudWords.Clear();
-            wordCloudChildrenList.RemoveAll(q => q.GetTextMesurements(q.Paint, q.Text).Width> CanvasWidth);
-            wordCloudChildrenList.ForEach(q => WordCloudWords.Add(q));
-        }
-        public void Dispose()
-        {
-            WordCloudWords.ToList().ForEach(x => x.Dispose());
-            WordCloudWords.Clear();
-            Bitmap.Dispose();
-        }
         private async Task RandomizeWordCount()
         {
             await Task.Run(() =>
@@ -139,10 +117,26 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             });
         }
 
-
-        public object Copy()
+        public void RemoveWordThatCannotFit()
         {
-            var newObj = (WordCloudCloud)MemberwiseClone();
+            var wordCloudChildrenList = WordCloudWords.ToList();
+            WordCloudWords.Clear();
+            wordCloudChildrenList.RemoveAll(q => q.GetTextMesurements(q.Paint, q.Text).Width> CanvasWidth);
+            wordCloudChildrenList.ForEach(q => WordCloudWords.Add(q));
+        }
+
+        public override void Dispose()
+        {
+            WordCloudWords.ToList().ForEach(x => x.Dispose());
+            WordCloudWords.Clear();
+            Bitmap.Dispose();
+        }
+
+
+
+        public override object Copy()
+        {
+            var newObj = (GeneticWordCloudCloud)MemberwiseClone();
             newObj.WordCloudWords = new ConcurrentBag<WordCloudWord>(WordCloudWords.Select(q => q.Copy()).Cast<WordCloudWord>());
             return newObj;
         }

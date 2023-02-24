@@ -1,5 +1,4 @@
 ﻿using IronSoftware.Drawing;
-using MindKey.WordCloudGenerator.GeneticWordCloud;
 using SkiaSharp;
 using JsonIgnoreAttribute = Newtonsoft.Json.JsonIgnoreAttribute;
 

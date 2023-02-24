@@ -1,27 +1,28 @@
-﻿using SixLabors.ImageSharp;
+﻿using MindKey.WordCloudGenerator.Base;
+using SixLabors.ImageSharp;
 using SkiaSharp;
 using System.Collections.Concurrent;
 
 namespace MindKey.WordCloudGenerator.GeneticWordCloud
 {
-    public class WordCloudGeneration : IDisposable, ICopyable
+    public class GeneticWordCloudGeneration : IDisposable, ICopyable
     {
         public int GenerationNumber { get; set; }
         public int CanvasHeight { get; private set; }
         public int CanvasWidth { get; private set; }
         public SKBitmap Bitmap { get; }
         public Dictionary<string, int> WordCount { get; }
-        public ConcurrentBag<WordCloudCloud> WordCloudClouds { get; private set; }
+        public ConcurrentBag<GeneticWordCloudCloud> WordCloudClouds { get; private set; }
 
 
-        public WordCloudGeneration(int generationNumber, Dictionary<string, int> wordCount, int canvasHeight, int canvasWidth, SKBitmap bitmap)
+        public GeneticWordCloudGeneration(int generationNumber, Dictionary<string, int> wordCount, int canvasHeight, int canvasWidth, SKBitmap bitmap)
         {
             GenerationNumber = generationNumber;
             WordCount = wordCount;
             CanvasHeight = canvasHeight;
             CanvasWidth = canvasWidth;
             Bitmap = bitmap;
-            WordCloudClouds = new ConcurrentBag<WordCloudCloud>();
+            WordCloudClouds = new ConcurrentBag<GeneticWordCloudCloud>();
         }
 
 
@@ -31,7 +32,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             {
                 Parallel.For(0, limit, (x) =>
                 {
-                    var cloud = new WordCloudCloud(GenerationNumber, x, WordCount, CanvasHeight, CanvasWidth, Bitmap);
+                    var cloud = new GeneticWordCloudCloud(GenerationNumber, x, WordCount, CanvasHeight, CanvasWidth, Bitmap);
                     WordCloudClouds.Add(cloud);
                 });
                 foreach (var cloud in WordCloudClouds)
@@ -40,13 +41,13 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
                 }
             });
         }
-        public async Task GeneratePopulation(WordCloudCloud wordCloudCloud1, WordCloudCloud wordCloudCloud2, int limit = 10)
+        public async Task GeneratePopulation(GeneticWordCloudCloud wordCloudCloud1, GeneticWordCloudCloud wordCloudCloud2, int limit = 10)
         {
             await Task.Run(async () =>
             {
                 Parallel.For(0, limit, (x) =>
                 {
-                    var cloud = new WordCloudCloud(GenerationNumber, x, WordCount, CanvasHeight, CanvasWidth, Bitmap);
+                    var cloud = new GeneticWordCloudCloud(GenerationNumber, x, WordCount, CanvasHeight, CanvasWidth, Bitmap);
                     WordCloudClouds.Add(cloud);
                 });
                
@@ -72,12 +73,12 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             WordCloudClouds.Clear();
         }
 
-        public WordCloudCloud GetBestCloud()
+        public GeneticWordCloudCloud GetBestCloud()
         {
             return WordCloudClouds.ToList().OrderByDescending(q => q.Score).Take(1).First();
         }
 
-        public WordCloudCloud GetSecondBestCloud()
+        public GeneticWordCloudCloud GetSecondBestCloud()
         {
             return WordCloudClouds.ToList().OrderByDescending(q => q.Score).Skip(1).Take(1).First();
         }

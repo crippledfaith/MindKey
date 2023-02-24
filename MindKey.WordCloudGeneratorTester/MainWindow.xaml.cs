@@ -3,6 +3,7 @@ using MindKey.Shared.Models.MindKey;
 using MindKey.WordCloudGenerator;
 using MindKey.WordCloudGenerator.Base;
 using MindKey.WordCloudGenerator.GeneticWordCloud;
+using MindKey.WordCloudGenerator.GridPlacementWordCloud;
 using RandomDataGenerator.FieldOptions;
 using RandomDataGenerator.Randomizers;
 using System;

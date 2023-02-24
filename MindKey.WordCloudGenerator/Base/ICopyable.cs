@@ -1,4 +1,4 @@
-﻿namespace MindKey.WordCloudGenerator.GeneticWordCloud
+﻿namespace MindKey.WordCloudGenerator.Base
 {
     public interface ICopyable
     {

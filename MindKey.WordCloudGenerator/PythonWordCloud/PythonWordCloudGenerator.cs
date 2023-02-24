@@ -10,7 +10,6 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
 {
     public class PythonWordCloudGenerator : AWordCloudGenerator
     {
-        public override event EventHandler<WorkCloudResult>? OnProgress;
         private const string PythonFileName = "WordCloud.py";
         
         public PythonWordCloudGenerator(IConfiguration configuration) : base(configuration)
