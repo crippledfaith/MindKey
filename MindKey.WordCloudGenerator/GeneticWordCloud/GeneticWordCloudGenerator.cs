@@ -38,6 +38,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             var service = new GeneticService(wordCount, canvasHeight, canvasWidth, bitmap.Copy());
             service.OnProgress += ServiceOnProgress;
             var wordCloudCloud = await service.Start();
+            ChangeColor(bitmap);
             foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))
             {
                 canvas.DrawText(word.Text, word.DrawX, word.DrawY, word.Font, word.Paint);

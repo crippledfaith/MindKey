@@ -11,10 +11,15 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <Image x:Name="imgPreview"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Stretch="None"   />
+        <Grid Background="Aquamarine" x:Name="gridImage">
+            <Image x:Name="imgPreview"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Stretch="None"  />
+        </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button x:Name="btnGenerate" Click="btnGenerate_Click" Content="Generate" Width="120"/>
-            <Label x:Name="lblStatus"/>
+            <StackPanel Width="200">
+                <ComboBox x:Name="cmbGenerator"/>
+                <Label x:Name="lblStatus" Content=" "/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

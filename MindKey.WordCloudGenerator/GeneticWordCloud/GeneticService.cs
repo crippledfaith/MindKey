@@ -15,7 +15,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
         public async Task<GeneticWordCloudCloud> Start()
         {
             var intialGeneration = new GeneticWordCloudGeneration(GenerationCount++, WordCount, CanvasHeight, CanvasWidth, Bitmap);
-            await intialGeneration.GeneratePopulation(100);
+            await intialGeneration.GeneratePopulation(20);
             await intialGeneration.ComputeScore();
             await intialGeneration.RemoveWordThatCannotFit();
             GeneticWordCloudCloud bestCloud = (GeneticWordCloudCloud)intialGeneration.GetBestCloud().Copy();
@@ -25,7 +25,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
             do
             {
                 var newGeneration = new GeneticWordCloudGeneration(GenerationCount++, WordCount, CanvasHeight, CanvasWidth, Bitmap);
-                await newGeneration.GeneratePopulation(bestCloud, secondBestCloud, 100);
+                await newGeneration.GeneratePopulation(bestCloud, secondBestCloud, 20);
                 await newGeneration.ComputeScore();
                 var newBestCloud = (GeneticWordCloudCloud)newGeneration.GetBestCloud().Copy();
                 if (newBestCloud.Score >= bestCloud.Score)
@@ -40,7 +40,7 @@ namespace MindKey.WordCloudGenerator.GeneticWordCloud
                 UpdateOnProgress(bestCloud);
                 newGeneration.Dispose();
 
-            } while (bestCloud.Score < WordCount.Count() || GenerationCount < 10);
+            } while (bestCloud.Score < WordCount.Count() && GenerationCount < 3);
 
             return bestCloud;
         }

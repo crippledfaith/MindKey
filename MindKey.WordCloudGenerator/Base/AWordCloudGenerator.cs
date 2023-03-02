@@ -67,7 +67,7 @@ namespace MindKey.WordCloudGenerator.Base
         }
         protected void ServiceOnProgress(object? sender, WordCloudCloud wordCloudCloud)
         {
-            using SKBitmap bitmap = SKBitmap.Decode(Path.Combine(OutputPath, FinalMaskFileName));
+            using SKBitmap bitmap = SKBitmap.Decode(Path.Combine(FinalMaskPath));
             using SKCanvas canvas = new SKCanvas(bitmap);
             //ChangeColor(bitmap);
             foreach (var word in wordCloudCloud.WordCloudWords.Where(q => q.IsFit.HasValue && q.IsFit.Value))

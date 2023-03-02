@@ -3,7 +3,6 @@ using MindKey.Shared.Models.MindKey;
 using MindKey.WordCloudGenerator;
 using MindKey.WordCloudGenerator.Base;
 using MindKey.WordCloudGenerator.GeneticWordCloud;
-using MindKey.WordCloudGenerator.GridPlacementWordCloud;
 using RandomDataGenerator.FieldOptions;
 using RandomDataGenerator.Randomizers;
 using System;
@@ -21,9 +20,22 @@ namespace MindKey.WordCloudGeneratorTester
     public partial class MainWindow : Window
     {
         Dictionary<string, int> words = new Dictionary<string, int>();
+        List<Type> WordCloudGenerators = new List<Type>();
         public MainWindow(IConfiguration configuration)
         {
             InitializeComponent();
+            var v = new GeneticWordCloudGenerator(configuration);
+            this.SizeChanged += MainWindow_SizeChanged;
+
+            IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes());
+            WordCloudGenerators = types
+            .Where(x => typeof(IWordCloudGenerator).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
+            .Select(x => x).ToList();
+            foreach (var item in WordCloudGenerators)
+            {
+                cmbGenerator.Items.Add(item.Name);
+            }
+            cmbGenerator.SelectedIndex = 0;
             var randomizer = RandomizerFactory.GetRandomizer(new FieldOptionsCountry());
             var randomizerint = RandomizerFactory.GetRandomizer(new FieldOptionsInteger() { Min = 1, Max = 20 });
             for (int i = 0; i < 100; i++)
@@ -36,16 +48,17 @@ namespace MindKey.WordCloudGeneratorTester
         }
 
         public IConfiguration Configuration { get; }
+        public int CanvasHeight { get; set; }
+        public int CanvasWidth { get; set; }
 
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            IWordCloudGenerator wordCloudGenerator = new GeneticWordCloudGenerator(Configuration);
+            IWordCloudGenerator wordCloudGenerator = (IWordCloudGenerator)Activator.CreateInstance(WordCloudGenerators[cmbGenerator.SelectedIndex], Configuration);
             wordCloudGenerator.OnProgress += WordCloudGeneratorOnProgress;
             WorkCloudParameter workCloudParameter = new WorkCloudParameter();
-            workCloudParameter.Width = 800;
-            workCloudParameter.Height = 500;
+            workCloudParameter.Width = CanvasWidth;
+            workCloudParameter.Height = CanvasHeight;
             workCloudParameter.WordLimit = 50;
-
             var wordCloudResult = await wordCloudGenerator.Generate(words, workCloudParameter);
             if (wordCloudResult != null)
             {
@@ -61,8 +74,14 @@ namespace MindKey.WordCloudGeneratorTester
                 imgPreview.Source = bitmap;
                 lblStatus.Content = wordCloudResult.Status;
             }
-       
 
+
+        }
+
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            CanvasWidth = (int)gridImage.ActualWidth;
+            CanvasHeight = (int)gridImage.ActualHeight;
         }
 
         private void WordCloudGeneratorOnProgress(object? sender, WorkCloudResult e)
