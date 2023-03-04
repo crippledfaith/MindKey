@@ -17,10 +17,10 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
             if (string.IsNullOrEmpty(Runtime.PythonDLL))
             {
                 var appdataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string pyPath = Path.Combine(appdataLocal, "Programs", "Python", "Python310", "python310.dll");
+                string pyPath = Path.Combine(appdataLocal, "Programs", "Python", "Python310", "python311.dll");
 
                 var pythonVersion = configuration.GetValue<string>("PythonVersion");
-                var pythonExePath = GetPythonPath(pythonVersion);
+                var pythonExePath = GetPythonPath(pythonVersion, pythonVersion);
                 if (pythonExePath != null)
                 {
                     var dllName = pythonVersion.Replace(".", "");
