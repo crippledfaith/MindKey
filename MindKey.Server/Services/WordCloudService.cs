@@ -21,6 +21,7 @@ namespace MindKey.Server.Services
         public async Task<WorkCloudResult> GenerateWordCloud(WorkCloudParameter parameter)
         {
             var wordCount = await _ideaRepository.GetTags(_configuration.GetSection("WordCloudGenerator").GetValue<int>("Limit"));
+
             return await _wordCloudGenerator.Generate(wordCount, parameter);
         }
 

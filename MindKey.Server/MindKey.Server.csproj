@@ -3,28 +3,34 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+		<EmccInitialHeapSize>33554432</EmccInitialHeapSize>
 	</PropertyGroup>
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<UserSecretsId>fdc596af-7611-4615-a915-0b5a77118dc5</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="Bogus" Version="34.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.2" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
 		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.1" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\MindKey.Client\MindKey.Client.csproj">
-	    <TreatAsUsed>true</TreatAsUsed>
-	  </ProjectReference>
+	  <ProjectReference Include="..\MindKey.Client\MindKey.Client.csproj" />
 	  <ProjectReference Include="..\MindKey.Shared\MindKey.Shared.csproj" />
 	  <ProjectReference Include="..\MindKey.WordCloudGenerator\MindKey.WordCloudGenerator.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Update="Dockerfile">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="WebRoot\placeholder.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>

@@ -39,6 +39,10 @@ namespace MindKey.WordCloudGenerator.Base
         protected abstract Task<WorkCloudResult> Start(Dictionary<string, int> wordCount, WorkCloudParameter parameter);
         public async Task<WorkCloudResult> Generate(Dictionary<string, int> wordCount, WorkCloudParameter parameter)
         {
+            if(wordCount.Count==0)
+            {
+                return new WorkCloudResult();
+            }
             AppPath = AppDomain.CurrentDomain.BaseDirectory;
             WordCloudWorkingPath = Path.Combine(AppPath, WebRootFolder, WordCloudFolderName);
             OutputPath = Path.Combine(WordCloudWorkingPath, OutputFolderName, Guid.NewGuid().ToString("D"));
