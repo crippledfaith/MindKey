@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Win32;
 using MindKey.Shared.Models.MindKey;
 using MindKey.WordCloudGenerator.Base;
 using Python.Runtime;
@@ -16,16 +15,16 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
         {
             if (string.IsNullOrEmpty(Runtime.PythonDLL))
             {
-                var appdataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string pyPath = Path.Combine(appdataLocal, "Programs", "Python", "Python310", "python311.dll");
+                var appdataLocal = configuration.GetValue<string>("PythonPath");
+                string pyPath = Path.Combine(appdataLocal, "python311.dll");
 
                 var pythonVersion = configuration.GetValue<string>("PythonVersion");
-                var pythonExePath = GetPythonPath(pythonVersion, pythonVersion);
-                if (pythonExePath != null)
-                {
-                    var dllName = pythonVersion.Replace(".", "");
-                    pyPath = pythonExePath.Replace("python.exe", $"python{dllName}.dll");
-                }
+                pyPath = appdataLocal;
+                //if (pythonExePath != null)
+                //{
+                //    var dllName = pythonVersion.Replace(".", "");
+                //    pyPath = pythonExePath.Replace("python.exe", $"python{dllName}.dll");
+                //}
                 Runtime.PythonDLL = pyPath;
             }
         }
@@ -73,76 +72,11 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
         
         private static string GetPythonPath(string requiredVersion = "", string maxVersion = "")
         {
-            string[] possiblePythonLocations = new string[3] {
-                @"HKLM\SOFTWARE\Python\PythonCore\",
-                @"HKCU\SOFTWARE\Python\PythonCore\",
-                @"HKLM\SOFTWARE\Wow6432Node\Python\PythonCore\"
-            };
 
             //Version number, install path
             Dictionary<string, string> pythonLocations = new Dictionary<string, string>();
-
-            foreach (string possibleLocation in possiblePythonLocations)
-            {
-                string regKey = possibleLocation.Substring(0, 4), actualPath = possibleLocation.Substring(5);
-                RegistryKey theKey = regKey == "HKLM" ? Registry.LocalMachine : Registry.CurrentUser;
-                RegistryKey theValue = theKey.OpenSubKey(actualPath);
-                if (theValue != null)
-                {
-                    foreach (var v in theValue.GetSubKeyNames())
-                    {
-                        RegistryKey productKey = theValue.OpenSubKey(v);
-                        if (productKey != null)
-                        {
-                            try
-                            {
-                                string pythonExePath = productKey.OpenSubKey("InstallPath").GetValue("ExecutablePath").ToString();
-
-                                if (pythonExePath != null && pythonExePath != "")
-                                {
-                                    pythonLocations.Add(v.ToString(), pythonExePath);
-                                }
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (pythonLocations.Count > 0)
-            {
-                Version desiredVersion = new Version(requiredVersion == "" ? "0.0.1" : requiredVersion),
-                    maxPVersion = new Version(maxVersion == "" ? "999.999.999" : maxVersion);
-
-                string highestVersion = "", highestVersionPath = "";
-
-                foreach (KeyValuePair<string, string> pVersion in pythonLocations)
-                {
-                    int index = pVersion.Key.IndexOf("-");
-                    string formattedVersion = index > 0 ? pVersion.Key.Substring(0, index) : pVersion.Key;
-
-                    Version thisVersion = new Version(formattedVersion);
-                    int comparison = desiredVersion.CompareTo(thisVersion),
-                        maxComparison = maxPVersion.CompareTo(thisVersion);
-
-                    if (comparison <= 0)
-                    {
-
-                        if (maxComparison >= 0)
-                        {
-                            desiredVersion = thisVersion;
-
-                            highestVersion = pVersion.Key;
-                            highestVersionPath = pVersion.Value;
-                        }
-                    }
-                }
-                return highestVersionPath;
-            }
             return "";
+            
         }
 
     }

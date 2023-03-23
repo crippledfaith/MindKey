@@ -33,7 +33,7 @@ namespace MindKey.WordCloudGenerator.SimpleWordCloud
                     var fontSize = (word.Value + 5) * 5;
                     item.FillStyle = GetRandomColor();
                     item.Font = GetRandomFont(fontSize);
-                    var fo = SixLabors.Fonts.SystemFonts.Get("Arial");
+                    var fo = SixLabors.Fonts.SystemFonts.Collection.Families.First();;
                     var font = new SixLabors.Fonts.Font(fo, fontSize, SixLabors.Fonts.FontStyle.Regular);
                     var textSize = GetTextSize(word.Key, font);
                     var textHeight = textSize.Y + textSize.Height;
