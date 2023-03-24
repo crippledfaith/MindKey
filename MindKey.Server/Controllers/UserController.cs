@@ -44,7 +44,7 @@ namespace MindKey.Server.Controllers
         /// Gets a specific user by Id.
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetUser(int id)
+        public async Task<ActionResult> GetUser(long id)
         {
             return Ok(await _userRepository.GetUser(id));
         }
@@ -72,7 +72,7 @@ namespace MindKey.Server.Controllers
         /// Deletes a user with a specific Id.
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteUser(int id)
+        public async Task<ActionResult> DeleteUser(long id)
         {
             return Ok(await _userRepository.DeleteUser(id));
         }

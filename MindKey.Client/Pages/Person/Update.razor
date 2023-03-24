@@ -40,7 +40,7 @@
 
     protected async override Task OnParametersSetAsync()
     {
-        person = await PersonService.GetPerson(int.Parse(Id));
+        person = await PersonService.GetPerson(long.Parse(Id));
     }
 
     async Task UpdatePerson()
@@ -57,7 +57,7 @@
             }
             else
             {
-                navManager.NavigateTo("/person/1");
+                navManager.NavigateTo("/wall");
             }
         }
         catch (Exception ex)

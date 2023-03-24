@@ -22,9 +22,13 @@ namespace MindKey.Server.Models
 
         public async Task<Person?> DeletePerson(long personId)
         {
-            var result = await _appDbContext.People.FirstOrDefaultAsync(p => p.PersonId == personId);
+            var result = await _appDbContext.People.Include(q=>q.Addresses).FirstOrDefaultAsync(p => p.PersonId == personId);
             if (result != null)
             {
+                foreach (var item in result.Addresses)
+                {
+                    _appDbContext.Addresses.Remove(item);
+                }
                 _appDbContext.People.Remove(result);
                 await _appDbContext.SaveChangesAsync();
             }

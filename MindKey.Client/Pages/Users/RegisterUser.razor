@@ -126,8 +126,8 @@
             await UserService.AddUser(user);
             if (user == null)
                 throw new Exception("Failed to create user.");
-            person.User = await UserService.GetUser(user.Id);
-            await PersonService.AddPerson(person);
+            //person.User = await UserService.GetUser(user.Id);
+            //await PersonService.AddPerson(person);
             NavigationManager.NavigateTo("/user/login");
             EventService.ShowMessage("User created successfully, Please login.", MessageType.Success);
         }

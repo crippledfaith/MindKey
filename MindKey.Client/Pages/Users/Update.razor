@@ -29,7 +29,7 @@
 
     protected async override Task OnParametersSetAsync()
     {
-        user = await UserService.GetUser(int.Parse(Id));
+        user = await UserService.GetUser(long.Parse(Id));
     }
 
     async Task UpdateUser()
