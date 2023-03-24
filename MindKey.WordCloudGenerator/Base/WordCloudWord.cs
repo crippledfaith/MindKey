@@ -97,7 +97,7 @@ namespace MindKey.WordCloudGenerator.Base
             if (_textSize == null)
             {
                 var bounds = new SKRect();
-                paint.MeasureText(text, ref bounds);
+                var s = paint.MeasureText(text, ref bounds);
                 _textSize = bounds;
             }
             return _textSize.Value;
@@ -139,6 +139,8 @@ namespace MindKey.WordCloudGenerator.Base
             paint.IsStroke = false;
             paint.StrokeWidth = 1;
             paint.TextAlign = SKTextAlign.Center;
+            var fo = SixLabors.Fonts.SystemFonts.Collection.Families.First();
+            paint.Typeface = SKTypeface.FromFamilyName(fo.Name);
             return paint;
         }
         private Color GetRandomColor()

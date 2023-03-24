@@ -4,11 +4,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-RUN apt-get update \
-          && apt-get install -y libfontconfig1 \
-          && apt-get install -y python3.10 
 
-RUN apt-get update; apt-get install -y fontconfig fonts-liberation
+
+RUN apt-get update && apt-get install -y fontconfig fonts-liberation && apt-get install -y python3 && apt-get install -y  python3-pip  && pip3 install  wordcloud
 RUN fc-cache -f -v
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
@@ -22,7 +20,7 @@ COPY ["MindKey.Shared/MindKey.Shared.csproj", "MindKey.Shared/"]
 COPY ["MindKey.WordCloudGenerator/MindKey.WordCloudGenerator.csproj", "MindKey.WordCloudGenerator/"]
 
 
-RUN ln -s /usr/bin/python3.10 /usr/bin/python
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 RUN dotnet restore "MindKey.Server/MindKey.Server.csproj"
 COPY . .

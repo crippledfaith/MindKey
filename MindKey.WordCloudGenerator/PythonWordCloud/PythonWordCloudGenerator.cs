@@ -16,15 +16,10 @@ namespace MindKey.WordCloudGenerator.PythonWordCloud
             if (string.IsNullOrEmpty(Runtime.PythonDLL))
             {
                 var appdataLocal = configuration.GetValue<string>("PythonPath");
-                string pyPath = Path.Combine(appdataLocal, "python311.dll");
 
-                var pythonVersion = configuration.GetValue<string>("PythonVersion");
-                pyPath = appdataLocal;
-                //if (pythonExePath != null)
-                //{
-                //    var dllName = pythonVersion.Replace(".", "");
-                //    pyPath = pythonExePath.Replace("python.exe", $"python{dllName}.dll");
-                //}
+                var pythonExcutable = configuration.GetValue<string>("PythonExcutable");
+                string pyPath = Path.Combine(appdataLocal, pythonExcutable);
+
                 Runtime.PythonDLL = pyPath;
             }
         }

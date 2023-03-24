@@ -48,7 +48,8 @@ namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
                     var key = keyValuePair.Key;
                     var value = keyValuePair.Value;
                     var fontSize = (int)((value + 10) * ratio);
-                    var font = new SKFont(SKTypeface.Default, fontSize);
+                    var fo = SixLabors.Fonts.SystemFonts.Collection.Families.First();
+                    var font = new SKFont(SKTypeface.FromFamilyName(fo.Name), fontSize);
                     var x = Convert.ToInt64((grid.Columb - 1) * grid.Width);
                     var y = Convert.ToInt64((grid.Row - 1) * grid.Height);
                     var word = new WordCloudWord(x, y, key, value, font, CanvasHeight, CanvasWidth);
@@ -64,7 +65,8 @@ namespace MindKey.WordCloudGenerator.GridPlacementWordCloud
             var longestWordCount = wordCount.Where(q => q.Value == maxFontSize).Max(q => q.Key.Count());
             var bigestWord = wordCount.FirstOrDefault(q => q.Value == maxFontSize && q.Key.Count() == longestWordCount);
             var fontSize = bigestWord.Value + 10;
-            var font = new SKFont(SKTypeface.Default, fontSize);
+            var fo = SixLabors.Fonts.SystemFonts.Collection.Families.First();
+            var font = new SKFont(SKTypeface.FromFamilyName(fo.Name), fontSize);
             var word = new WordCloudWord(0, 0, bigestWord.Key, bigestWord.Value, font, CanvasHeight, CanvasWidth);
             word.Initilize();
             var textSize = word.GetTextMesurements(word.Paint, word.Text);
