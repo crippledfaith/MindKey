@@ -1,5 +1,6 @@
 ﻿@page "/makepost"
 @page "/makepost/{IdeaId}"
+@attribute [Authorize]
 @using MindKey.Client.Components
 @using MindKey.Shared.Models.MindKey
 @inject IIdeaService IdeaService
@@ -56,6 +57,7 @@
                 }
                 Idea.Title = Title;
                 Idea.Description = await Quill.GetHTML();
+                Idea.IsPublished = false;
                 var text = await Quill.GetText();
                 if (text.Length > 500)
                 {
@@ -76,7 +78,6 @@
                     Idea = await IdeaService.AddIdea(Idea);
                 }
                 EventService.ShowMessage("Opinion Saved.", MessageType.Success);
-                NavigationManager.NavigateTo($"/idea/{Idea.Id}");
             }
         }
         catch (Exception ex)
@@ -86,9 +87,49 @@
 
 
     }
-    public void Publish()
+    public async void Publish()
     {
+        try
+        {
+            if (Quill != null)
+            {
+                if (Idea == null)
+                {
+                    Idea = new Idea();
 
+                    Idea.Person = await PersonService.GetPersonByUser(UserService.User.Id);
+                    Idea.PostDateTime = DateTime.UtcNow;
+                }
+                Idea.Title = Title;
+                Idea.IsPublished = true;
+                Idea.Description = await Quill.GetHTML();
+                var text = await Quill.GetText();
+                if (text.Length > 500)
+                {
+                    Idea.DescriptionShort = text.Substring(0, 500) + "...";
+                }
+                else
+                {
+                    Idea.DescriptionShort = text + "...";
+                }
+                Idea.PostDateTime = DateTime.UtcNow;
+                Idea.Tags = TagsString.Split(' ').ToList().Select(q => new Tag { Name = q }).ToList();
+                if (Idea.Id != 0)
+                {
+                    await IdeaService.UpdateIdea(Idea);
+                }
+                else
+                {
+                    Idea = await IdeaService.AddIdea(Idea);
+                }
+                EventService.ShowMessage("Opinion Publish.", MessageType.Success);
+                NavigationManager.NavigateTo($"/idea/{Idea.Id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
     }
     public async void Reset()
     {

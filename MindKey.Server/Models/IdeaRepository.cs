@@ -94,7 +94,8 @@ namespace MindKey.Server.Models
         {
             return _appDbContext.IdeaUserComments
                 .Where(q => q.Idea.Id == ideaId)
-                 .Include(q => q.User)
+                 .Include(q => q.Person)
+                 .Include(q => q.Person.User)
                  .Include(q => q.Idea.Person)
                  .Include(q => q.Idea.Person.Addresses)
                  .Include(q => q.Idea.Person.User)
@@ -150,7 +151,7 @@ namespace MindKey.Server.Models
             else
             {
                 return _appDbContext.Ideas
-                    .Where(p => p.Person.PersonId == userId)
+                    .Where(p => p.Person.User.Id == userId)
                     .Where(q => !q.IsDeleted)
                     .Include(q => q.Tags)
                     .Include(q => q.Person)
@@ -167,22 +168,21 @@ namespace MindKey.Server.Models
             if (userId == null)
             {
                 return _appDbContext.Ideas
-                    .Where(q => !q.IsDeleted)
                     .Include(q => q.Tags)
                     .Include(q => q.Person)
                     .Include(q => q.Person.User)
                     .Include(q => q.Person.Addresses)
+                    .Where(q => !q.IsDeleted && q.IsPublished)
                     .OrderByDescending(p => p.PostDateTime)
                     .GetPaged(page, pageSize);
             }
             else
             {
                 return _appDbContext.Ideas
-                     .Where(q => !q.IsDeleted)
                     .Include(q => q.Person)
                     .Include(q => q.Person.User)
                     .Include(q => q.Person.Addresses)
-                    .Where(p => p.Person.PersonId != userId)
+                    .Where(p => p.Person.User.Id != userId && !p.IsDeleted && p.IsPublished)
                     .OrderByDescending(p => p.PostDateTime)
                     .GetPaged(page, pageSize);
             }
@@ -190,10 +190,11 @@ namespace MindKey.Server.Models
 
         public async Task<IdeaUserComment?> GetComment(IdeaUserComment ideaUserComment)
         {
-            var result = await _appDbContext.IdeaUserComments.Include(q => q.User).Include(q => q.Idea).Include(q => q.Idea.Person).Include(q => q.Idea.Person.User).Include(q => q.Idea.Person.Addresses).FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
+            var users = _appDbContext.IdeaUserComments.Include(q => q.Person).ThenInclude(q => q.User).Include(q => q.Idea).Include(q => q.Idea.Person).Include(q => q.Idea.Person.User).Include(q => q.Idea.Person.Addresses);
+            var result = await users.FirstOrDefaultAsync(q => q.Person.PersonId == ideaUserComment.Person.PersonId && q.Idea.Id == ideaUserComment.Idea.Id);
             if (result != null)
             {
-                result.User.Password = "";
+                result.Person.User.Password = "";
                 result.Idea.Person.User.PasswordHash = "";
             }
 
@@ -207,16 +208,16 @@ namespace MindKey.Server.Models
                 if (ideaUserComment == null)
                     throw new Exception("Idea not given.");
 
-                if (ideaUserComment.User.Id == ideaUserComment.Idea.Person.User.Id)
+                if (ideaUserComment.Person.PersonId == ideaUserComment.Idea.Person.PersonId)
                 {
                     throw new Exception("Posting user and arugment set user can't be same");
                 }
-                var previous = await _appDbContext.IdeaUserComments.FirstOrDefaultAsync(q => q.User.Id == ideaUserComment.User.Id && q.Idea.Id == ideaUserComment.Idea.Id);
+                var previous = await _appDbContext.IdeaUserComments.FirstOrDefaultAsync(q => q.Person.PersonId == ideaUserComment.Person.PersonId && q.Idea.Id == ideaUserComment.Idea.Id);
                 if (previous != null && previous.Argument != ideaUserComment.Argument)
                 {
                     throw new Exception("One Vote Per User");
                 }
-                var argumentUser = await _appDbContext.Users.FirstOrDefaultAsync(p => p.Id == ideaUserComment.User.Id);
+                var argumentUser = await _appDbContext.People.FirstOrDefaultAsync(p => p.PersonId == ideaUserComment.Person.PersonId);
                 var argumentIdea = await GetIdea(ideaUserComment.Idea.Id);
                 if (argumentUser == null)
                 {
@@ -227,9 +228,9 @@ namespace MindKey.Server.Models
                     throw new KeyNotFoundException("Idea not found.");
                 }
 
-        
 
-                ideaUserComment.User = argumentUser;
+
+                ideaUserComment.Person = argumentUser;
                 ideaUserComment.Idea = argumentIdea;
                 if (previous == null)
                 {

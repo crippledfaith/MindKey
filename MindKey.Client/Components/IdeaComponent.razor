@@ -11,7 +11,7 @@
             <h5 class="card-title"><i class="bi bi-lightbulb-fill"> </i>Loading...</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..."></QuillComponent>
-            <span class="badge border-secondary border-1 text-primary" style="cursor:pointer">@ShowMoreText</span>
+            
             <br />
             <TagComponent Idea="@null" />
             <IdeaUserPanelComponent Idea="@null" />
@@ -37,7 +37,6 @@ else
             <div style="margin-top:-10px">
                 <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="@Description" />
             </div>
-            <span class="badge border-secondary border-1 text-primary coursorpointer" @onclick="()=>OpenCardDetails()">@ShowMoreText</span>
             <br />
             <TagComponent Idea="@Idea" />
             <IdeaUserPanelComponent Idea="@Idea" />
@@ -53,45 +52,24 @@ else
     public Idea? Idea { get; set; }
     [Parameter]
     public bool FullMode { get; set; } = false;
-    public bool IsShowAll { get; set; } = false;
     public string? Description { get; set; }
     public QuillComponent? Quill { get; set; }
-    public string ShowMoreText { get; set; } = "Show More...";
     public string DeletingClass { get; set; } = "";
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            IsShowAll = true;
-        }
-
-        base.OnAfterRender(firstRender);
-    }
 
     protected override void OnInitialized()
     {
         EventService.EditIdeaEvent -= EditIdea;
         EventService.DeleteIdeaEvent -= DeleteIdea;
-        EventService.HideAllStoriesEvent -= HideAllStories;
         EventService.EditIdeaEvent += EditIdea;
         EventService.DeleteIdeaEvent += DeleteIdea;
-        EventService.HideAllStoriesEvent += HideAllStories;
         base.OnInitialized();
     }
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
         DeletingClass = "";
-        if (FullMode && Idea != null)
-        {
-            Description = Idea.Description;
-            ShowMoreText = "";
-        }
-        else if (Idea != null)
-        {
-            Description = Idea.DescriptionShort;
-        }
+        Description = Idea.Description;
     }
 
     public void EditIdea(Idea idea)
@@ -108,34 +86,8 @@ else
             EventService.DeletedIdea(idea);
         }
     }
-    public void HideAllStories(Idea idea)
-    {
-        if (idea.Id != Idea?.Id)
-        {
-            IsShowAll = false;
-            OpenCardDetails();
-        }
-    }
-    public async void OpenCardDetails(bool render = true)
-    {
-        if (Idea != null && Quill != null)
-        {
-            if (IsShowAll || FullMode)
-            {
-                ShowMoreText = "Hide...";
-                if (!FullMode) EventService.HideAllStories(Idea);
-                await Quill.SetContent(Idea.Description);
-            }
-            else
-            {
-                ShowMoreText = "Show More...";
-                await Quill.SetContent(Idea.DescriptionShort);
-            }
-            IsShowAll = !IsShowAll;
-            if (render)
-                StateHasChanged();
-        }
-    }
+
+   
     public void OpenCard()
     {
         if (Idea != null)

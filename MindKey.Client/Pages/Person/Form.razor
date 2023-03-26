@@ -44,38 +44,29 @@
     </div>
 
     <h5 class="card-title">Address</h5>
-    <div class="form-row">
-        <div class="form-group col-md-3">
-            <label>Street</label>
-        </div>
-        <div class="form-group col-md-3">
-            <label>City</label>
-        </div>
-        <div class="form-group col-md-3">
-            <label>State</label>
-        </div>
-        <div class="form-group col-md-2">
-            <label>Zip Code</label>
-        </div>
-    </div>
+
 
     <ValidationMessage For="@(() => person.Addresses)" />
     @foreach (var address in person.Addresses)
     {
         <div class="form-row">
             <div class="form-group col-md-3">
+                <label>Street</label>
                 <InputText id="Street" class="form-control" placeholder="Street" @bind-Value="address.Street" />
                 <ValidationMessage For="@(() => address.Street)" />
             </div>
             <div class="form-group col-md-3">
+                <label>City</label>
                 <InputText id="City" class="form-control" placeholder="City" @bind-Value="address.City" />
                 <ValidationMessage For="@(() => address.City)" />
             </div>
             <div class="form-group col-md-3">
+                <label>State</label>
                 <InputText id="State" class="form-control" placeholder="State" @bind-Value="address.State" />
                 <ValidationMessage For="@(() => address.State)" />
             </div>
             <div class="form-group col-md-2">
+                <label>Zip Code</label>
                 <InputText id="ZipCode" class="form-control" placeholder="Zip Code" @bind-Value="address.ZipCode" />
                 <ValidationMessage For="@(() => address.ZipCode)" />
             </div>
@@ -101,7 +92,7 @@
             <NavLink href="@PageHistoryState.GetGoBackPage()" class="btn btn-link">Cancel</NavLink>
         }
         else{
-            <NavLink href="/person/1" class="btn btn-link">Back</NavLink>
+            <NavLink href="/wall/1" class="btn btn-link">Back</NavLink>
         }
     </div>
 

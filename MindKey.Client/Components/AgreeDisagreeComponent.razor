@@ -1,6 +1,7 @@
 ﻿@using MindKey.Shared.Models.MindKey
 @inject IUserService UserService
 @inject IIdeaService IdeaService
+@inject IPersonService PersonService
 @inject EventService EventService
 
 <div class="progress" style="height: 10px;"><div class="progress-bar" role="progressbar" style="width: @Width%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div></div>
@@ -27,13 +28,13 @@
 else
 {
 
-    @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.For) || disable)
+    @if ((IdeaUserComment.Person != null && IdeaUserComment.Argument != ArgumentType.For) || disable)
     {
         <button class="btn btn-primary" disabled>
             <i class="oi oi-thumb-up" title="Agree" aria-hidden="true"></i>
         </button>
     }
-    else if (IdeaUserComment.User != null && IdeaUserComment.Argument == ArgumentType.For)
+    else if (IdeaUserComment.Person != null && IdeaUserComment.Argument == ArgumentType.For)
     {
         <button class="btn btn-info" disabled>
             <i class="oi oi-thumb-up" title="Agree" aria-hidden="true"></i>
@@ -47,13 +48,13 @@ else
     }
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.ForCount)</span>
 
-    @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.Against) || disable)
+    @if ((IdeaUserComment.Person != null && IdeaUserComment.Argument != ArgumentType.Against) || disable)
     {
         <button class="btn btn-primary" disabled>
             <i class="oi oi-thumb-down" title="Disagree" aria-hidden="true"></i>
         </button>
     }
-    else if (IdeaUserComment.User != null && IdeaUserComment.Argument == ArgumentType.Against)
+    else if (IdeaUserComment.Person != null && IdeaUserComment.Argument == ArgumentType.Against)
     {
         <button class="btn btn-info" disabled>
             <i class="oi oi-thumb-down" title="Disagree" aria-hidden="true"></i>
@@ -67,13 +68,13 @@ else
     }
     <span class="badge border-secondary border-1 text-secondary coursorpointer">@ToKiloFormat(Idea.AgainstCount)</span>
 
-    @if ((IdeaUserComment.User != null && IdeaUserComment.Argument != ArgumentType.Nutral) || disable)
+    @if ((IdeaUserComment.Person != null && IdeaUserComment.Argument != ArgumentType.Nutral) || disable)
     {
         <button class="btn btn-primary" disabled>
             <i class="oi oi-loop-square" title="Nutral" aria-hidden="true"></i>
         </button>
     }
-    else if (IdeaUserComment.User != null && IdeaUserComment.Argument == ArgumentType.Nutral)
+    else if (IdeaUserComment.Person != null && IdeaUserComment.Argument == ArgumentType.Nutral)
     {
         <button class="btn btn-info" disabled>
             <i class="oi oi-loop-square" title="Nutral" aria-hidden="true"></i>
@@ -134,11 +135,10 @@ else
                     {
                         Argument = type,
                         Idea = idea,
-                        User = UserService.User ?? new User(),
+                        Person = UserService.User != null ? await PersonService.GetPersonByUser(UserService.User.Id) : new Person() { Addresses = new List<Address>(), User = new User() { Password = "****" } },
                         Title = "Test Title",
                         Description = "Test Description",
                     };
-                ideaUserComment.User.Password = "***";
 
                 if (await IdeaService.SetComment(ideaUserComment))
                 {
@@ -189,19 +189,19 @@ else
                 }
                 Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
                 if (UserService.User != null && Idea?.Person != null)
-                    disable = (Idea.Person.PersonId == UserService.User.Id);
-                //Idea = await IdeaService.GetIdea(Idea.Id);
+                    disable = (Idea.Person.User.Id == UserService.User.Id);
+
                 var ideaUserComment = new IdeaUserComment
                     {
                         Argument = ArgumentType.Nutral,
                         Idea = Idea,
-                        User = UserService.User ?? new User(),
+                        Person = UserService.User != null ? await PersonService.GetPersonByUser(UserService.User.Id) :  new Person() { Addresses = new List<Address>(), User = new User() { Password = "****" } },
                         Title = "Test Title",
                         Description = "Test Description",
                     };
-                ideaUserComment.User.Password = "***";
                 IdeaUserComment = await IdeaService.GetComment(ideaUserComment);
                 EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
+
             }
             await base.OnParametersSetAsync();
 

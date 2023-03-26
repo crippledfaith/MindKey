@@ -4,7 +4,7 @@
     {
         public long Id { get; set; }
         public Idea Idea { get; set; } = default!;
-        public User User { get; set; } = default!;
+        public Person Person { get; set; } = default!;
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
         public DateTime PostDateTime { get; set; } = default!;

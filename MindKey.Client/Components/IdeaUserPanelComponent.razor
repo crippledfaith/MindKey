@@ -13,7 +13,7 @@ else
     <span class="badge border-primary border-1 text-primary coursorpointer">Author: Loading...</span>
     <span class="badge border-secondary border-1 text-secondary coursorpointer">Date:  Loading...</span>
 }
-@if (Idea != null && UserService != null && Idea.Person != null && UserService.User != null && UserService.User.Id == Idea.Person.PersonId)
+@if (Idea != null && UserService != null && Idea.Person != null && UserService.User != null && UserService.User.Id == Idea.Person.User.Id)
 {
     <button type="button" class="btn btn-link btn-sm" @onclick="()=>Edit()"><i class="oi oi-pencil"> Edit</i></button>
     if (!IsDeleteConfrimMode)

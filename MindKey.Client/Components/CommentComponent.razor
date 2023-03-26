@@ -14,14 +14,14 @@
     {
         @foreach (var item in IdeaUserCommentPaged.Results)
         {
-            if (FullMode && UserService.User != null && item.User.Id == UserService.User.Id)
+            if (FullMode && UserService.User != null && item.Person.User.Id == UserService.User.Id)
             {
                 <EditForm Model="@item">
                     <div class="accordion-item">
                         <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
                                 <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
-                                @item.User.FirstName  @item.User.LastName
+                                @item.Person.FirstName  @item.Person.LastName
                                 @if (item.Argument == ArgumentType.For)
                                 {
                                     <i class="oi oi-thumb-up AgreeDisagreeIconMargin" title="Agree" aria-hidden="true"></i>
@@ -52,7 +52,7 @@
                     <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
                             <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
-                            @item.User.FirstName  @item.User.LastName
+                            @item.Person.FirstName  @item.Person.LastName
                             @if (item.Argument == ArgumentType.For)
                             {
                                 <i class="oi oi-thumb-up AgreeDisagreeIconMargin" title="Agree" aria-hidden="true"></i>
@@ -146,6 +146,7 @@
     {
         try
         {
+            comment.Person.Addresses = new List<Address>();
             await IdeaService.SetComment(comment);
             EventService.ShowMessage("Comment Saved", MessageType.Success);
         }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindKey.Server.Models;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MindKey.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230324232310_Idea_IsPublished")]
+    partial class Idea_IsPublished
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,9 +128,6 @@ namespace MindKey.Server.Migrations
                     b.Property<long>("IdeaId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("PersonId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("PostDateTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -135,11 +135,14 @@ namespace MindKey.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdeaId");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("IdeaUserComments");
                 });
@@ -294,15 +297,15 @@ namespace MindKey.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MindKey.Shared.Models.Person", "Person")
+                    b.HasOne("MindKey.Shared.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("PersonId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Idea");
 
-                    b.Navigation("Person");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MindKey.Shared.Models.MindKey.Tag", b =>

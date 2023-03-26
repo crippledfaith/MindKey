@@ -14,6 +14,7 @@
         public long AgainstCount { get; set; } = 0;
         public long NetrulCount { get; set; } = 0;
         public bool IsDeleted { get; set; } = false;
+        public bool IsPublished { get; set; } = true;
         public Idea()
         {
             Tags = new List<Tag>();
