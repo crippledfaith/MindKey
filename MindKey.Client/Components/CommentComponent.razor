@@ -14,12 +14,12 @@
     {
         @foreach (var item in IdeaUserCommentPaged.Results)
         {
-            if (FullMode && UserService.User != null && item.Person.User.Id == UserService.User.Id)
+            if (UserService.User != null && item.Person.User.Id == UserService.User.Id)
             {
                 <EditForm Model="@item">
                     <div class="accordion-item">
                         <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="true" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
                                 <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
                                 @item.Person.FirstName  @item.Person.LastName
                                 @if (item.Argument == ArgumentType.For)
@@ -36,12 +36,13 @@
                                 }
                             </button>
                         </h2>
-                        <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
+                        <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse show" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
                             <div class="accordion-body">
                                 <InputTextArea class="TextAreaFill" @bind-Value="item.Description"></InputTextArea>
                             </div>
+                            <button type="button" class="btn btn-primary" @onclick="()=>Save(item)">Save</button>
                         </div>
-                        <button type="button" class="btn btn-primary" @onclick="()=>Save(item)">Save</button>
+               
                     </div>
                 </EditForm>
             }
