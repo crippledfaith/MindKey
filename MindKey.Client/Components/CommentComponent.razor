@@ -14,7 +14,7 @@
     {
         @foreach (var item in IdeaUserCommentPaged.Results)
         {
-            if (FullMode && UserService.User != null && item.Person.User.Id == UserService.User.Id)
+            if (UserService.User != null && item.Person.User.Id == UserService.User.Id)
             {
                 <EditForm Model="@item">
                     <div class="accordion-item">
@@ -36,12 +36,13 @@
                                 }
                             </button>
                         </h2>
-                        <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
+                        <div id="flush-collapse-@item.Id-@accordionHeaderId" class="accordion-collapse collapse show" aria-labelledby="flush-heading-@item" data-bs-parent="#accordionFlushExample" style="">
                             <div class="accordion-body">
                                 <InputTextArea class="TextAreaFill" @bind-Value="item.Description"></InputTextArea>
                             </div>
+                            <button type="button" class="btn btn-primary" @onclick="()=>Save(item)">Save</button>
                         </div>
-                        <button type="button" class="btn btn-primary" @onclick="()=>Save(item)">Save</button>
+                      
                     </div>
                 </EditForm>
             }

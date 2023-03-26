@@ -136,8 +136,8 @@ else
                         Argument = type,
                         Idea = idea,
                         Person = UserService.User != null ? await PersonService.GetPersonByUser(UserService.User.Id) : new Person() { Addresses = new List<Address>(), User = new User() { Password = "****" } },
-                        Title = "Test Title",
-                        Description = "Test Description",
+                        Title = "No Title",
+                        Description = "No Comments",
                     };
 
                 if (await IdeaService.SetComment(ideaUserComment))
