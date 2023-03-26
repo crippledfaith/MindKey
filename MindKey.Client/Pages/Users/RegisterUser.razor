@@ -29,7 +29,7 @@
                             <ValidationMessage For="@(() => person.LastName)" />
                         </div>
                     </div>
-                    <div class="col-12">
+                   @* <div class="col-12">
                         <div>
                             <label>Gender</label>
                             <div>
@@ -42,7 +42,7 @@
                                 <ValidationMessage For="@(() => person.Gender)" />
                             </div>
                         </div>
-                    </div>
+                    </div>*@
                 </EditForm>
                 <EditForm Model="@user" class="row g-3" OnValidSubmit="@CreateUser">
                     <FluentValidator TValidator="UserValidator" />

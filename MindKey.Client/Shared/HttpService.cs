@@ -42,7 +42,7 @@ namespace MindKey.Client.Shared
         public async Task<T?> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await sendRequest<T>(request);
+             return await sendRequest<T>(request);
         }
 
         public async Task Post(string uri, object value)

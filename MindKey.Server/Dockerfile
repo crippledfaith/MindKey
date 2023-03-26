@@ -6,7 +6,7 @@ EXPOSE 80
 EXPOSE 443
 
 
-RUN apt-get update && apt-get install -y fontconfig fonts-liberation && apt-get install -y python3 && apt-get install -y  python3-pip  
+RUN apt-get update && apt-get install -y fontconfig fonts-liberation && apt-get install -y python3 && apt-get install -y  python3-pip  && pip3 install wordcloud
 #RUN fc-cache -f -v
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build

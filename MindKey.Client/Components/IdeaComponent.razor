@@ -11,7 +11,7 @@
             <h5 class="card-title"><i class="bi bi-lightbulb-fill"> </i>Loading...</h5>
             <div id="toolbar" style="visibility:collapse"> </div>
             <QuillComponent @ref="Quill" Disable="true" HideToolBar="true" DefaultText="Loading..."></QuillComponent>
-            
+
             <br />
             <TagComponent Idea="@null" />
             <IdeaUserPanelComponent Idea="@null" />
@@ -42,9 +42,18 @@ else
             <IdeaUserPanelComponent Idea="@Idea" />
             <AgreeDisagreeComponent Idea="@Idea" />
             <CommentComponent Idea="@Idea" FullMode="@FullMode" />
+
+
         </div>
     </div>
-
+    @if (FullMode)
+    {
+        <div class="card info-card">
+            <div class="card-body">
+                <IdeaChatComponent Idea="@Idea" />
+            </div>
+        </div>
+    }
 }
 
 @code {
@@ -87,7 +96,7 @@ else
         }
     }
 
-   
+
     public void OpenCard()
     {
         if (Idea != null)

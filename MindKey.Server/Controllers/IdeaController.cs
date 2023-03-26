@@ -36,10 +36,10 @@ namespace MindKey.Server.Controllers
         /// Returns a list of top ideas with a default page size of 5.
         /// </summary>
         [AllowAnonymous]
-        [HttpGet("top")]
-        public ActionResult GetTopIdeas([FromQuery] int page)
+        [HttpGet("GetTopIdeas")]
+        public ActionResult GetTopIdeas([FromQuery] string page)
         {
-            return Ok(_ideaRepository.GetTopIdeas(page));
+            return Ok(_ideaRepository.GetTopIdeas(int.Parse(page)));
         }
         /// <summary>
         /// Returns a list of ideas of other users.

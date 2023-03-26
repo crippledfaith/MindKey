@@ -318,7 +318,9 @@ h6 {
     color: #2494C2;
     background-color: #f6f9ff;
 }
-
+.validation-message {
+    color: darkred;
+}
 .accordion-flush .accordion-button {
     padding: 15px 0;
     background: none;
@@ -332,7 +334,6 @@ h6 {
 
 .accordion-flush .accordion-body {
     padding: 0 0 15px 0;
-    color: #3e4f6f;
     font-size: 15px;
 }
 

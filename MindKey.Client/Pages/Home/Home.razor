@@ -4,8 +4,6 @@
 @using Blazor.ECharts.WordCloud.Components
 @using MindKey.Client.Components
 @using W = Blazor.ECharts.WordCloud.Options
-
-
 @using MindKey.Shared.Models.MindKey;
 @inject IIdeaService IdeaService;
 @inject EventService EventService;
@@ -38,7 +36,15 @@
     private PagedResult<Idea>? Ideas { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        Ideas = await IdeaService.GetTopIdeas("1");
-        await base.OnInitializedAsync();
+        try
+        {
+            Ideas = await IdeaService.GetTopIdeas("1");
+            await base.OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            EventService.ShowMessage(ex.Message, MessageType.Error);
+        }
+
     }
 }

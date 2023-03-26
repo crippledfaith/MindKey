@@ -52,7 +52,7 @@ namespace MindKey.Server.Models
                 {
                     var existingTags = result.Tags
                     .Where(a => a.Name == tag.Name && a.IdeaId == idea.Id)
-                    .SingleOrDefault();
+                    .FirstOrDefault();
                     if (existingTags != null)
                     {
                         tag.IdeaId = idea.Id;
@@ -69,6 +69,10 @@ namespace MindKey.Server.Models
                         result.Tags.Add(newTag);
                     }
                 }
+            }
+            if (result != null)
+            {
+                result.Tags.RemoveAll(q => !idea.Tags.Any(e => e.Name == q.Name));
             }
         }
 

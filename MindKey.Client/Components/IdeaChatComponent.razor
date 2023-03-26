@@ -1,0 +1,16 @@
+﻿@using MindKey.Shared.Models.MindKey;
+<h5 class="card-title"><i class="bi bi-chat-right-dots"></i> Chat</h5>
+<hr />
+<h6>sdasd</h6>
+<hr />
+<InputText style="width:91%" @bind-Value="TextToSend"></InputText>
+<button type="button" class="btn btn-primary" @onclick="()=>Send()">Send</button>
+@code {
+    [Parameter]
+    public Idea? Idea { get; set; }
+    public string? TextToSend { get; set; }
+    public void Send()
+    {
+        TextToSend = "";
+    }
+}
