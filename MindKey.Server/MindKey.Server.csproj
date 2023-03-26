@@ -25,11 +25,15 @@
 		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0-preview.2.23153.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\MindKey.Client\MindKey.Client.csproj" />
 	  <ProjectReference Include="..\MindKey.Shared\MindKey.Shared.csproj" />
 	  <ProjectReference Include="..\MindKey.WordCloudGenerator\MindKey.WordCloudGenerator.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Microsoft.AspNetCore.Components.WebAssembly.DevServer" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="Dockerfile">

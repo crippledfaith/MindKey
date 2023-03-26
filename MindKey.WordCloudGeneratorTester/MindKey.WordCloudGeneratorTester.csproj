@@ -24,7 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MindKey.WordCloudGenerator\MindKey.WordCloudGenerator.csproj" />
+    <ProjectReference Include="..\MindKey.WordCloudGenerator\MindKey.WordCloudGenerator.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
