@@ -57,7 +57,16 @@ namespace MindKey.Client.Services
 
         public async Task<User?> GetUser(long id)
         {
-            return await _httpService.Get<User>($"api/user/{id}");
+            try
+            {
+                return await _httpService.Get<User>($"api/user/{id}");
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+           
         }
 
         public async Task DeleteUser(long id)

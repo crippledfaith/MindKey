@@ -18,5 +18,6 @@ namespace MindKey.Server.Models
         public DbSet<Idea> Ideas => Set<Idea>();
         public DbSet<Tag> Tags => Set<Tag>();
         public DbSet<IdeaUserComment> IdeaUserComments => Set<IdeaUserComment>();
+        public DbSet<ChatLine> ChatLines => Set<ChatLine>();
     }
 }

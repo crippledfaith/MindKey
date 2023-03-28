@@ -37,9 +37,9 @@ namespace MindKey.Server.Controllers
         /// </summary>
         [AllowAnonymous]
         [HttpGet("GetTopIdeas")]
-        public ActionResult GetTopIdeas([FromQuery] string page)
+        public ActionResult GetTopIdeas([FromQuery] int page)
         {
-            return Ok(_ideaRepository.GetTopIdeas(int.Parse(page)));
+            return Ok(_ideaRepository.GetTopIdeas(page));
         }
         /// <summary>
         /// Returns a list of ideas of other users.

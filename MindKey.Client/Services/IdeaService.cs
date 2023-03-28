@@ -21,9 +21,9 @@ namespace MindKey.Client.Services
         {
             return await _httpService.Get<PagedResult<Idea>>("api/idea" + "?page=" + page + "&userId=" + userId);
         }
-        public async Task<PagedResult<Idea>?> GetTopIdeas(string page)
+        public async Task<PagedResult<Idea?>?> GetTopIdeas(string page)
         {
-            return await _httpService.Get<PagedResult<Idea>>("api/idea/GetTopIdeas" + "?page=" + page);
+            return await _httpService.Get<PagedResult<Idea?>?>("api/idea/GetTopIdeas" + "?page=" + page);
         }
         public async Task<PagedResult<Idea>?> GetIdeasOfOthers(string page, long? userId)
         {

@@ -1,7 +1,30 @@
 ﻿@using MindKey.Shared.Models.MindKey;
+@inject IUserService UserService;
+@inject IChatLinesService ChatLinesService;
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 <h5 class="card-title"><i class="bi bi-chat-right-dots"></i> Chat</h5>
 <hr />
-<h6>sdasd</h6>
+<div style="height:400px; overflow:scroll;overflow-x: hidden;" @ref=@ChatDiv>
+    @if (Chats != null)
+    {
+        @foreach (var chat in Chats)
+        {
+            <div style="margin-left:0.9em;margin-right:0.9em; background-color:@(chat.User.Id == UserService.User.Id?"#3b3b3b":"#2494c2"); border-radius:.5em">
+                <div style="padding:5px">
+                    <div>
+                        <small style="font-size: 0.75em !important">
+                            (@chat.DateTime.ToLocalTime().ToString("dd-MM-yyy hh:mm:ss"))
+                            @chat.User.FirstName @chat.User.LastName :
+                        </small>
+                    </div>
+                    <h8>@chat.Line</h8>
+                </div>
+            </div>
+            <br />
+        }
+    }
+</div>
 <hr />
 <InputText style="width:91%" @bind-Value="TextToSend"></InputText>
 <button type="button" class="btn btn-primary" @onclick="()=>Send()">Send</button>
@@ -9,8 +32,41 @@
     [Parameter]
     public Idea? Idea { get; set; }
     public string? TextToSend { get; set; }
-    public void Send()
+    public List<ChatLine?>? Chats { get; set; }
+    public ElementReference ChatDiv { get; set; }
+    protected override void OnInitialized()
     {
-        TextToSend = "";
+        Chats = new List<ChatLine?>();
+        base.OnInitialized();
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("scrollToEnd", new object[] { ChatDiv });
+        await base.OnAfterRenderAsync(firstRender);
+    }
+    public async Task Send()
+    {
+        if (Chats==null)
+        {
+            Chats = (await ChatLinesService.GetByIdea(Idea.Id)).ToList();
+        }
+        if (!string.IsNullOrWhiteSpace(TextToSend))
+        {
+            var chat = new ChatLine() { Idea = Idea, Line = TextToSend, User = UserService.User, DateTime = DateTime.Now };
+            Chats.Add(chat);
+            await ChatLinesService.Add(chat);
+            TextToSend = "";
+        }
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Idea==null)
+        {
+            return;
+        }
+        Chats = (await ChatLinesService.GetByIdea(Idea.Id)).ToList();
+        StateHasChanged();
+        await base.OnParametersSetAsync();
+    }
+
 }

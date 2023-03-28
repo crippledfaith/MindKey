@@ -4,6 +4,7 @@
 @inject EventService EventService
 @inject IIdeaService IdeaService
 @inject IJSRuntime JSRuntime
+@inject IUserService UserService
 @if (Idea == null || Idea.Id == 0)
 {
     <div class="card info-card" style="opacity:.7">
@@ -46,7 +47,7 @@ else
 
         </div>
     </div>
-    @if (FullMode)
+    @if (FullMode && UserService.User!=null)
     {
         <div class="card info-card">
             <div class="card-body">

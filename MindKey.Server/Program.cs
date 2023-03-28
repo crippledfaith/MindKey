@@ -25,6 +25,7 @@ static void SetupIOC(WebApplicationBuilder builder)
     builder.Services.AddScoped<IUploadRepository, UploadRepository>();
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IIdeaRepository, IdeaRepository>();
+    builder.Services.AddScoped<IChatLineRepository, ChatLineRepository>();
     builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
     builder.Services.AddScoped<WordCloudService>();

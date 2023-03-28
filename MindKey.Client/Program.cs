@@ -15,6 +15,7 @@ builder.Services.AddLogging(builder => builder
 
 builder.Services.AddScoped<IIdeaService, IdeaService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IChatLinesService, ChatLinesService>();
 builder.Services.AddScoped<IUploadService, UploadService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 builder.Services.AddScoped<IUserService, UserService>();
