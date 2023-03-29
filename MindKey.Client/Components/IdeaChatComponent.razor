@@ -1,4 +1,8 @@
-﻿@using MindKey.Shared.Models.MindKey;
+﻿@using Humanizer;
+@using Humanizer.Localisation;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using MindKey.Shared.Models.MindKey;
+@inject NavigationManager NavigationManager
 @inject IUserService UserService;
 @inject IChatLinesService ChatLinesService;
 @using Microsoft.JSInterop
@@ -10,11 +14,11 @@
     {
         @foreach (var chat in Chats)
         {
-            <div style="margin-left:0.9em;margin-right:0.9em; background-color:@(chat.User.Id == UserService.User.Id?"#3b3b3b":"#2494c2"); border-radius:.5em">
-                <div style="padding:5px">
+            <div style="margin-left:@(chat.User.Id == UserService.User.Id?"1em":"6em");margin-right:@(chat.User.Id == UserService.User.Id?"6em":"1em"); background-color:@(chat.User.Id == UserService.User.Id?"#3b3b3b":"#2494c2"); border-radius:.5em">
+                <div style="padding:.7em">
                     <div>
                         <small style="font-size: 0.75em !important">
-                            (@chat.DateTime.ToLocalTime().ToString("dd-MM-yyy hh:mm:ss"))
+                            (@((chat.DateTime - DateTime.UtcNow).Humanize(minUnit: TimeUnit.Second)))
                             @chat.User.FirstName @chat.User.LastName :
                         </small>
                     </div>
@@ -26,7 +30,7 @@
     }
 </div>
 <hr />
-<InputText style="width:91%" @bind-Value="TextToSend"></InputText>
+<InputText style="width:92%" @bind-Value="TextToSend"></InputText>
 <button type="button" class="btn btn-primary" @onclick="()=>Send()">Send</button>
 @code {
     [Parameter]
@@ -34,39 +38,63 @@
     public string? TextToSend { get; set; }
     public List<ChatLine?>? Chats { get; set; }
     public ElementReference ChatDiv { get; set; }
-    protected override void OnInitialized()
+    private HubConnection hubConnection;
+    public bool IsConnected =>
+       hubConnection.State == HubConnectionState.Connected;
+
+    protected override async Task OnInitializedAsync()
     {
         Chats = new List<ChatLine?>();
+        hubConnection = new HubConnectionBuilder()
+           .WithUrl(NavigationManager.ToAbsoluteUri("/broadcastHub"))
+           .Build();
+        hubConnection.On("ReceiveMessage", (ChatLine chatLine) =>
+        {
+            if (chatLine.Idea.Id == Idea.Id)
+            {
+                Chats.Add(chatLine);
+                StateHasChanged();
+            }
+        });
+        await hubConnection.StartAsync();
         base.OnInitialized();
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JS.InvokeVoidAsync("scrollToEnd", new object[] { ChatDiv });
         await base.OnAfterRenderAsync(firstRender);
     }
+    Task SendMessage(ChatLine chatLine) => hubConnection.SendAsync("SendMessage", chatLine);
+
     public async Task Send()
     {
-        if (Chats==null)
+        if (Chats == null)
         {
             Chats = (await ChatLinesService.GetByIdea(Idea.Id)).ToList();
         }
         if (!string.IsNullOrWhiteSpace(TextToSend))
         {
-            var chat = new ChatLine() { Idea = Idea, Line = TextToSend, User = UserService.User, DateTime = DateTime.Now };
-            Chats.Add(chat);
+            var chat = new ChatLine() { Idea = Idea, Line = TextToSend, User = UserService.User, DateTime = DateTime.UtcNow };
+            //Chats.Add(chat);
             await ChatLinesService.Add(chat);
+            if (IsConnected) await SendMessage(chat);
             TextToSend = "";
         }
     }
     protected override async Task OnParametersSetAsync()
     {
-        if (Idea==null)
+        if (Idea == null)
         {
             return;
         }
         Chats = (await ChatLinesService.GetByIdea(Idea.Id)).ToList();
         StateHasChanged();
         await base.OnParametersSetAsync();
+    }
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
     }
 
 }

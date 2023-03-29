@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using Microsoft.EntityFrameworkCore;
+using MindKey.Server.Helpers;
 using MindKey.Shared.Data;
 using MindKey.Shared.Models;
 
@@ -9,9 +10,12 @@ namespace MindKey.Server.Models
     public class ChatLineRepository : IChatLineRepository
     {
         private readonly AppDbContext _appDbContext;
-        public ChatLineRepository(AppDbContext appDbContext)
+        private readonly BroadcastHub _broadcastHub;
+
+        public ChatLineRepository(AppDbContext appDbContext, BroadcastHub broadcastHub)
         {
             _appDbContext = appDbContext;
+            _broadcastHub = broadcastHub;
         }
         public async Task<ChatLine> Add(ChatLine chatLine)
         {

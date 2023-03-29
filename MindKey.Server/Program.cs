@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using MindKey.Server.Authorization;
@@ -28,8 +29,10 @@ static void SetupIOC(WebApplicationBuilder builder)
     builder.Services.AddScoped<IChatLineRepository, ChatLineRepository>();
     builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
+    builder.Services.AddScoped<BroadcastHub>();
     builder.Services.AddScoped<WordCloudService>();
 
+ 
     var wordCloudGenerators = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes())
             .Where(x => typeof(IWordCloudGenerator).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
             .Select(x => x).ToList();
@@ -79,7 +82,12 @@ static void ConfigureBuilder(WebApplicationBuilder builder)
     });
     builder.Services.AddQuartzHostedService(
         q => q.WaitForJobsToComplete = true);
-
+    builder.Services.AddSignalR();
+    builder.Services.AddResponseCompression(opts =>
+    {
+        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+            new[] { "application/octet-stream" });
+    });
     builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
     builder.Environment.ContentRootPath = Path.Combine(AppContext.BaseDirectory, "WebRoot");
     builder.Environment.WebRootPath = Path.Combine(AppContext.BaseDirectory, "WebRoot");
@@ -102,6 +110,7 @@ static void ConfigureApp(WebApplication app)
             logger.LogError(ex, "An error occurred creating the DB.");
         }
     }
+
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
@@ -134,5 +143,6 @@ static void ConfigureApp(WebApplication app)
 
     app.MapRazorPages();
     app.MapControllers();
+    app.MapHub<BroadcastHub>("/broadcastHub");
     app.MapFallbackToFile("index.html");
 }
