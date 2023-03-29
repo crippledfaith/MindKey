@@ -5,9 +5,9 @@ namespace MindKey.Server.Helpers
 {
     public class BroadcastHub : Hub
     {
-        public async Task SendMessage(ChatLine chatLine)
+        public async Task SendChatMessage(ChatLine chatLine)
         {
-            await Clients.All.SendAsync("ReceiveMessage", chatLine);
+            await Clients.All.SendAsync("ReceiveChatMessage", chatLine);
         }
     }
 }

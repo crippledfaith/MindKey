@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject IUserService UserService;
 @inject IChatLinesService ChatLinesService;
+@inject EventService EventService;
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
 <h5 class="card-title"><i class="bi bi-chat-right-dots"></i> Chat</h5>
@@ -45,18 +46,7 @@
     protected override async Task OnInitializedAsync()
     {
         Chats = new List<ChatLine?>();
-        hubConnection = new HubConnectionBuilder()
-           .WithUrl(NavigationManager.ToAbsoluteUri("/broadcastHub"))
-           .Build();
-        hubConnection.On("ReceiveMessage", (ChatLine chatLine) =>
-        {
-            if (chatLine.Idea.Id == Idea.Id)
-            {
-                Chats.Add(chatLine);
-                StateHasChanged();
-            }
-        });
-        await hubConnection.StartAsync();
+  
         base.OnInitialized();
     }
 
@@ -65,7 +55,7 @@
         await JS.InvokeVoidAsync("scrollToEnd", new object[] { ChatDiv });
         await base.OnAfterRenderAsync(firstRender);
     }
-    Task SendMessage(ChatLine chatLine) => hubConnection.SendAsync("SendMessage", chatLine);
+    Task SendMessage(ChatLine chatLine) => hubConnection.SendAsync("SendChatMessage", chatLine);
 
     public async Task Send()
     {
@@ -75,11 +65,20 @@
         }
         if (!string.IsNullOrWhiteSpace(TextToSend))
         {
-            var chat = new ChatLine() { Idea = Idea, Line = TextToSend, User = UserService.User, DateTime = DateTime.UtcNow };
-            //Chats.Add(chat);
-            await ChatLinesService.Add(chat);
-            if (IsConnected) await SendMessage(chat);
-            TextToSend = "";
+            try
+            {
+                var chat = new ChatLine() { Idea = Idea, Line = TextToSend, User = UserService.User, DateTime = DateTime.UtcNow };
+                TextToSend = "";
+                await ChatLinesService.Add(chat);
+
+                if (IsConnected) await SendMessage(chat);
+            }
+            catch (Exception ex)
+            {
+                EventService.ShowMessage(ex.Message, MessageType.Error);
+            }
+
+          
         }
     }
     protected override async Task OnParametersSetAsync()
@@ -88,6 +87,16 @@
         {
             return;
         }
+        hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/broadcastHub")).Build();
+        hubConnection.On("ReceiveChatMessage", (ChatLine chatLine) =>
+        {
+            if (chatLine.Idea.Id == Idea.Id)
+            {
+                Chats.Add(chatLine);
+                StateHasChanged();
+            }
+        });
+        await hubConnection.StartAsync();
         Chats = (await ChatLinesService.GetByIdea(Idea.Id)).ToList();
         StateHasChanged();
         await base.OnParametersSetAsync();
