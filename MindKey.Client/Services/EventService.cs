@@ -1,4 +1,7 @@
-﻿using MindKey.Shared.Models.MindKey;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
+using MindKey.Shared.Models;
+using MindKey.Shared.Models.MindKey;
 
 namespace MindKey.Client.Services
 {
@@ -11,6 +14,8 @@ namespace MindKey.Client.Services
     public delegate void LoadingStatusChanagedEventHandler(bool loading);
     public delegate void ShowMessageEventHandler(string message, MessageType type);
     public delegate void AgreeDisagreeChangedEventHandler(Idea idea);
+    public delegate void ReceiveCommentUpdatedMessageEventHandler(Idea idea);
+    public delegate void ReceiveChatMessageEventHandler(ChatLine chatLine);
     public enum MessageType
     {
         Error = 0,
@@ -24,6 +29,8 @@ namespace MindKey.Client.Services
         public static bool Loading = false;
 
         public ILogger<EventService> Logger { get; }
+        private HubConnection hubConnection;
+
 
         public event LoginAndOutEventHandler? LoginAndOutEvent;
         public event EditIdeaEventHandler? EditIdeaEvent;
@@ -34,9 +41,26 @@ namespace MindKey.Client.Services
         public event LoadingStatusChanagedEventHandler? LoadingStatusChanagedEvent;
         public event ShowMessageEventHandler? ShowMessageEvent;
         public event AgreeDisagreeChangedEventHandler? AgreeDisagreeChangedEvent;
-        public EventService(ILogger<EventService> logger)
+        public event ReceiveCommentUpdatedMessageEventHandler? ReceiveCommentUpdatedMessageEvent;
+        public event ReceiveChatMessageEventHandler? ReceiveChatMessageEvent;
+
+        public EventService(ILogger<EventService> logger, NavigationManager navigationManager)
         {
             Logger = logger;
+            hubConnection = new HubConnectionBuilder().WithUrl(navigationManager.ToAbsoluteUri("/broadcastHub")).Build();
+            if (hubConnection != null)
+            {
+                hubConnection.On("ReceiveCommentUpdatedMessage", async (Idea idea) =>
+                {
+                    ReceiveCommentUpdatedMessageEvent?.Invoke(idea);
+                });
+                hubConnection.On("ReceiveChatMessage", (ChatLine chatLine) =>
+                {
+                    ReceiveChatMessageEvent?.Invoke(chatLine);
+                });
+                hubConnection.StartAsync();
+            }
+
         }
         public void ChangeLoginStatus(bool isLoggedIn)
         {
@@ -112,6 +136,16 @@ namespace MindKey.Client.Services
         {
             LastIdeaUpdatedEvent?.Invoke(idea);
         }
-
+        public async Task SendCommentUpdatedMessage(Idea Idea)
+        {
+            if (IsConnected == true)
+                await hubConnection.SendAsync("SendCommentUpdatedMessage", Idea);
+        }
+        public async Task SendChatMessage(ChatLine chatLine)
+        {
+            if (IsConnected == true)
+                await hubConnection.SendAsync("SendChatMessage", chatLine);
+        }
+        public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
     }
 }

@@ -1,8 +1,11 @@
 ﻿@inject IUserService UserService
 @inject IIdeaService IdeaService
 @inject EventService EventService
+@inject NavigationManager NavigationManager
 
+@using Microsoft.AspNetCore.SignalR.Client;
 @using MindKey.Shared.Models.MindKey
+
 <hr />
 <div class="accordion accordion-flush" id="accordionFlushExample">
 
@@ -42,7 +45,7 @@
                             </div>
                             <button type="button" class="btn btn-primary" @onclick="()=>Save(item)">Save</button>
                         </div>
-                      
+
                     </div>
                 </EditForm>
             }
@@ -92,11 +95,25 @@
     public string accordionHeaderId { get; set; }
     public int LoadedPage = 1;
     public int PageSize = 5;
-    protected override void OnInitialized()
+
+
+
+
+    protected async override Task OnInitializedAsync()
     {
         EventService.AgreeDisagreeChangedEvent += AgreeDisagreeChanged;
-        base.OnInitialized();
+        EventService.ReceiveCommentUpdatedMessageEvent += ReceiveCommentUpdated;
 
+        await base.OnInitializedAsync();
+    }
+    public async void ReceiveCommentUpdated(Idea idea)
+    {
+        if (idea.Id == Idea.Id)
+        {
+            PageSize = 10;
+            IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
+            StateHasChanged();
+        }
     }
     public async void AgreeDisagreeChanged(Idea idea)
     {
@@ -104,9 +121,11 @@
         {
             if (Idea != null && Idea.Id == idea.Id)
             {
+
                 if (FullMode)
                     PageSize = 10;
                 IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
+                await EventService.SendCommentUpdatedMessage(Idea);
                 accordionHeaderId = Idea.Id.ToString();
                 StateHasChanged();
             }
@@ -128,16 +147,18 @@
             EventService.ChangeLoadingStatus(true, "CommentComponent-OnParametersSetAsync()");
             if (Idea != null)
             {
+                accordionHeaderId = Idea.Id.ToString();
                 if (FullMode)
                     PageSize = 10;
                 IdeaUserCommentPaged = await IdeaService.GetComments(Idea, LoadedPage.ToString(), PageSize.ToString());
-                accordionHeaderId = Idea.Id.ToString();
+
             }
             EventService.ChangeLoadingStatus(false, "CommentComponent-OnParametersSetAsync()");
         }
         catch (Exception ex)
         {
-            EventService.ShowMessage(ex.Message, MessageType.Error);
+            if (ex.Message != "The operation was canceled.")
+                EventService.ShowMessage(ex.Message, MessageType.Error);
         }
 
         await base.OnParametersSetAsync();
@@ -149,11 +170,14 @@
         {
             comment.Person.Addresses = new List<Address>();
             await IdeaService.SetComment(comment);
+            await EventService.SendCommentUpdatedMessage(Idea);
             EventService.ShowMessage("Comment Saved", MessageType.Success);
         }
         catch (Exception ex)
         {
-            EventService.ShowMessage(ex.Message, MessageType.Error);
+            if (ex.Message != "The operation was canceled.")
+                EventService.ShowMessage(ex.Message, MessageType.Error);
         }
     }
+   
 }

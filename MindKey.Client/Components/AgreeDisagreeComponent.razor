@@ -1,8 +1,12 @@
-﻿@using MindKey.Shared.Models.MindKey
-@inject IUserService UserService
+﻿@inject IUserService UserService
 @inject IIdeaService IdeaService
 @inject IPersonService PersonService
 @inject EventService EventService
+@inject NavigationManager NavigationManager
+
+@using Microsoft.AspNetCore.SignalR.Client;
+@using MindKey.Shared.Models.MindKey;
+
 
 <div class="progress" style="height: 10px;"><div class="progress-bar" role="progressbar" style="width: @Width%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div></div>
 <br />
@@ -96,9 +100,28 @@ else
     public IdeaUserComment? IdeaUserComment { get; set; }
     public decimal Width { get; set; } = 0;
     public bool disable { get; set; } = true;
-    protected override void OnInitialized()
+
+
+    protected async override Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        EventService.ReceiveCommentUpdatedMessageEvent += ReceiveCommentUpdated;
+        await base.OnInitializedAsync();
+    }
+    public async void ReceiveCommentUpdated(Idea idea)
+    {
+        if (idea.Id == Idea.Id)
+        {
+            Idea = await IdeaService.GetIdea(Idea.Id);
+            if (Idea.AgainstCount == 0 && Idea.ForCount ==0)
+            {
+                Width =0;
+            }
+            else
+            {
+                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+            }
+            StateHasChanged();
+        }
     }
     protected override void OnAfterRender(bool firstRender)
     {
@@ -145,9 +168,9 @@ else
                     IdeaUserComment = await IdeaService.GetComment(ideaUserComment);
                 }
                 Idea = await IdeaService.GetIdea(Idea.Id);
-                if (Idea.AgainstCount == 0)
+                if (Idea.AgainstCount == 0 && Idea.ForCount == 0)
                 {
-                    Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(1 + Idea.ForCount)) * 100;
+                    Width = 0;
                 }
                 else
                 {
@@ -183,11 +206,14 @@ else
             if (Idea != null && Idea.Person != null)
             {
                 EventService.ChangeLoadingStatus(true, "AgreeDisagreeComponent-OnParametersSetAsync()");
-                if (Idea.AgainstCount == 0)
+                if (Idea.AgainstCount == 0 && Idea.ForCount == 0)
                 {
-                    Idea.AgainstCount = 1;
+                    Width = 0;
                 }
-                Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+                else
+                {
+                    Width = (Convert.ToDecimal(Idea.ForCount) / Convert.ToDecimal(Idea.AgainstCount + Idea.ForCount)) * 100;
+                }
                 if (UserService.User != null && Idea?.Person != null)
                     disable = (Idea.Person.User.Id == UserService.User.Id);
 
@@ -195,12 +221,13 @@ else
                     {
                         Argument = ArgumentType.Nutral,
                         Idea = Idea,
-                        Person = UserService.User != null ? await PersonService.GetPersonByUser(UserService.User.Id) :  new Person() { Addresses = new List<Address>(), User = new User() { Password = "****" } },
+                        Person = UserService.User != null ? await PersonService.GetPersonByUser(UserService.User.Id) : new Person() { Addresses = new List<Address>(), User = new User() { Password = "****" } },
                         Title = "Test Title",
                         Description = "Test Description",
                     };
                 IdeaUserComment = await IdeaService.GetComment(ideaUserComment);
                 EventService.ChangeLoadingStatus(false, "AgreeDisagreeComponent-OnParametersSetAsync()");
+ 
 
             }
             await base.OnParametersSetAsync();
@@ -208,7 +235,11 @@ else
         }
         catch (Exception ex)
         {
-            EventService.ShowMessage(ex.Message, MessageType.Error);
+            if (ex.Message != "The operation was canceled.")
+                EventService.ShowMessage(ex.Message, MessageType.Error);
         }
     }
+
+
+
 }

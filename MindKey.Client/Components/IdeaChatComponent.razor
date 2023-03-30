@@ -8,6 +8,7 @@
 @inject EventService EventService;
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
+
 <h5 class="card-title"><i class="bi bi-chat-right-dots"></i> Chat</h5>
 <hr />
 <div style="height:400px; overflow:scroll;overflow-x: hidden;" @ref=@ChatDiv>
@@ -39,15 +40,22 @@
     public string? TextToSend { get; set; }
     public List<ChatLine?>? Chats { get; set; }
     public ElementReference ChatDiv { get; set; }
-    private HubConnection hubConnection;
-    public bool IsConnected =>
-       hubConnection.State == HubConnectionState.Connected;
+
+
 
     protected override async Task OnInitializedAsync()
     {
         Chats = new List<ChatLine?>();
-  
-        base.OnInitialized();
+        EventService.ReceiveChatMessageEvent += ReceiveChatMessage;
+        await base.OnInitializedAsync();
+    }
+    public async void ReceiveChatMessage(ChatLine chatLine)
+    {
+        if (chatLine.Idea.Id == Idea.Id)
+        {
+            Chats.Add(chatLine);
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -55,7 +63,7 @@
         await JS.InvokeVoidAsync("scrollToEnd", new object[] { ChatDiv });
         await base.OnAfterRenderAsync(firstRender);
     }
-    Task SendMessage(ChatLine chatLine) => hubConnection.SendAsync("SendChatMessage", chatLine);
+
 
     public async Task Send()
     {
@@ -71,7 +79,7 @@
                 TextToSend = "";
                 await ChatLinesService.Add(chat);
 
-                if (IsConnected) await SendMessage(chat);
+               await EventService.SendChatMessage(chat);
             }
             catch (Exception ex)
             {
@@ -87,23 +95,11 @@
         {
             return;
         }
-        hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/broadcastHub")).Build();
-        hubConnection.On("ReceiveChatMessage", (ChatLine chatLine) =>
-        {
-            if (chatLine.Idea.Id == Idea.Id)
-            {
-                Chats.Add(chatLine);
-                StateHasChanged();
-            }
-        });
-        await hubConnection.StartAsync();
+
         Chats = (await ChatLinesService.GetByIdea(Idea.Id)).ToList();
         StateHasChanged();
         await base.OnParametersSetAsync();
     }
-    public void Dispose()
-    {
-        _ = hubConnection.DisposeAsync();
-    }
 
+    
 }
