@@ -7,6 +7,8 @@
 @inject NavigationManager navManager
 @inject PageHistoryState PageHistoryState
 @inject EventService EventService
+@inject IUploadService UploadService
+@inject IUserService UserService
 <div class="pagetitle">
     <h1>Data Entry</h1>
 </div>
@@ -37,7 +39,6 @@
             new Address {Street="", City="", State="", ZipCode=""}
         }
         };
-
     protected async override Task OnParametersSetAsync()
     {
         person = await PersonService.GetPerson(long.Parse(Id));
@@ -48,7 +49,6 @@
         loading = true;
         try
         {
-
             await PersonService.UpdatePerson(person);
             EventService.ShowMessage("Person updated successfully", MessageType.Info);
             if (PageHistoryState.CanGoBack())
@@ -59,6 +59,7 @@
             {
                 navManager.NavigateTo("/wall");
             }
+            await UserService.UpdateInformation();
         }
         catch (Exception ex)
         {

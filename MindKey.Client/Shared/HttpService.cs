@@ -140,10 +140,10 @@ namespace MindKey.Client.Shared
         private async Task addJwtHeader(HttpRequestMessage request)
         {
             // add jwt auth header if user is logged in and request is to the api url
-            var user = await _localStorageService.GetItem<User>("user");
+            var token = await _localStorageService.GetItem<string>("userToken");
             var isApiUrl = !request.RequestUri?.IsAbsoluteUri;
-            if (user != null && isApiUrl.HasValue && isApiUrl.Value)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+            if (token != null && isApiUrl.HasValue && isApiUrl.Value)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         private async Task handleErrors(HttpResponseMessage response)

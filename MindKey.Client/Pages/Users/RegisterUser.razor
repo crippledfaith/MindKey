@@ -3,6 +3,7 @@
 @inject IPersonService PersonService
 @inject EventService EventService
 @inject NavigationManager NavigationManager
+@inject HttpClient Http
 <div class="row justify-content-center">
     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
         <div class="card mb-3">
@@ -119,6 +120,14 @@
         loading = true;
         try
         {
+            string rootpath = AppDomain.CurrentDomain.BaseDirectory;
+            string rootpath2 = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
+            string rootpath1 = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot");
+            var path = Path.Combine(rootpath, "assets", "img", "user.jpg");
+            var stream = await Http.GetStreamAsync(path);
+            var buffer = new byte[stream.Length];
+            await stream.ReadAsync(buffer);
+            person.ProfilePicture = Convert.ToBase64String(buffer);
             user.Id = new Random().NextInt64();
             user.FirstName = person.FirstName;
             user.LastName = person.LastName;
@@ -126,8 +135,10 @@
             await UserService.AddUser(user);
             if (user == null)
                 throw new Exception("Failed to create user.");
-            //person.User = await UserService.GetUser(user.Id);
-            //await PersonService.AddPerson(person);
+            person.User = await UserService.GetUser(user.Id);
+    
+         
+            await PersonService.AddPerson(person);
             NavigationManager.NavigateTo("/user/login");
             EventService.ShowMessage("User created successfully, Please login.", MessageType.Success);
         }

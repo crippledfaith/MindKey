@@ -9,38 +9,68 @@ namespace MindKey.Client.Services
     {
         private IHttpService _httpService;
         private ILocalStorageService _localStorageService;
+        private IPersonService _personService;
         private NavigationManager _navigationManager;
         private EventService _eventService;
         private string _userKey = "user";
-
+        private string _userTokenKey = "userToken";
+        public string ProfilePicture { get; set; }
         public User? User { get; private set; }
+        public Person? CurrentPerson { get; private set; }
         public string? IdeaId { get; set; }
 
 
-        public UserService(IHttpService httpService, ILocalStorageService localStorageService, NavigationManager navigationManager, EventService eventService)
+        public UserService(IHttpService httpService, ILocalStorageService localStorageService, NavigationManager navigationManager, EventService eventService,IPersonService personService)
         {
             _httpService = httpService;
             _localStorageService = localStorageService;
             _navigationManager = navigationManager;
             _eventService = eventService;
+            _personService = personService;
             _ = Initialize();
         }
 
         public async Task Initialize()
         {
 
-            User = await _localStorageService.GetItem<User>(_userKey);
+            var userId = await _localStorageService.GetItem<long?>(_userKey);
+            if (userId != null)
+            {
+                User = await GetUser(userId.Value);
+                if (User != null)
+                {
+                    CurrentPerson = await _personService.GetPersonByUser(User.Id);
+                    ProfilePicture = $"data:image/png;base64,{CurrentPerson.ProfilePicture}";
+                }
+            }
+            _eventService.ChangeLoginStatus(User != null);
+
+        }
+        public async Task UpdateInformation()
+        {
             if (User != null)
             {
                 User = await GetUser(User.Id);
-                _eventService.ChangeLoginStatus(User != null);
+                CurrentPerson = await _personService.GetPersonByUser(User.Id);
+                ProfilePicture = $"data:image/png;base64,{CurrentPerson.ProfilePicture}";
+                _eventService.ChangeLoginStatus(true);
             }
         }
-
         public async Task Login(Login model)
         {
             User = await _httpService.Post<User>("/api/user/authenticate", model);
-            await _localStorageService.SetItem(_userKey, User);
+            await _localStorageService.SetItem(_userKey, User.Id);
+            await _localStorageService.SetItem(_userTokenKey, User.Token);
+            if (User != null)
+            {
+                User = await GetUser(User.Id);
+                if (User != null)
+                {
+                    CurrentPerson = await _personService.GetPersonByUser(User.Id);
+                    ProfilePicture = $"data:image/png;base64,{CurrentPerson.ProfilePicture}";
+                }
+            }
+            _eventService.ChangeLoginStatus(User != null);
         }
 
         public async Task Logout()
@@ -66,7 +96,7 @@ namespace MindKey.Client.Services
 
                 throw ex;
             }
-           
+
         }
 
         public async Task DeleteUser(long id)
@@ -96,6 +126,8 @@ namespace MindKey.Client.Services
                 User.FirstName = user.FirstName;
                 User.LastName = user.LastName;
                 User.Username = user.Username;
+                CurrentPerson.FirstName = user.FirstName;
+                CurrentPerson.LastName = user.LastName;
                 await _localStorageService.SetItem(_userKey, User);
             }
         }

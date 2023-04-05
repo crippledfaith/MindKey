@@ -10,5 +10,10 @@ namespace MindKey.Shared.Models
         public bool IsDeleting { get; set; } = default!;
         public User User { get; set; } = default!;
         public List<Address> Addresses { get; set; } = default!;
+        public string ProfilePicture { get; set; } = default!;
+        public Person()
+        {
+            ProfilePicture = "";
+        }
     }
 }

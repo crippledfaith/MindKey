@@ -81,12 +81,12 @@ namespace MindKey.Server.Models
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
             Console.WriteLine(user.Password + " ==> " + user.PasswordHash);
             user.Password = "**********";
-            var person = new Person();
-            person.FirstName = user.FirstName;
-            person.LastName = user.LastName;
-            person.User = user;
+            //var person = new Person();
+            //person.FirstName = user.FirstName;
+            //person.LastName = user.LastName;
+            //person.User = user;
             var result = await _appDbContext.Users.AddAsync(user);
-            await _appDbContext.People.AddAsync(person);
+            //await _appDbContext.People.AddAsync(person);
             await _appDbContext.SaveChangesAsync();
             return result.Entity;
         }

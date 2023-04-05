@@ -23,7 +23,7 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
-                                <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
+                                <img src="data:image/png;base64,@item.Person.ProfilePicture" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
                                 @item.Person.FirstName  @item.Person.LastName
                                 @if (item.Argument == ArgumentType.For)
                                 {
@@ -55,7 +55,7 @@
 
                     <h2 class="accordion-header-@accordionHeaderId" id="flush-headingOne-@accordionHeaderId">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-@item.Id-@accordionHeaderId" aria-expanded="false" aria-controls="flush-collapse-@item.Id-@accordionHeaderId">
-                            <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
+                            <img src="data:image/png;base64,@item.Person.ProfilePicture" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
                             @item.Person.FirstName  @item.Person.LastName
                             @if (item.Argument == ArgumentType.For)
                             {

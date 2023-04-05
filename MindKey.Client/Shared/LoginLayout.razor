@@ -1,9 +1,10 @@
 ﻿@inject IUserService UserService
 @inject NavigationManager navManager
+@inject EventService EventService
 @inject IUserService UserService
 @inject IPersonService PersonService
 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-    <img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+    <img src="@ImageSource" alt="Profile" class="rounded-circle">
     <span class="d-none d-md-block dropdown-toggle ps-2">@UserService.User.FirstName @UserService.User.LastName</span>
 </a><!-- End Profile Iamge Icon -->
 
@@ -38,12 +39,18 @@
 </ul><!-- End Profile Dropdown Items -->
 @code {
     public string ProfileUrl { get; set; }
+    public string ImageSource {get;set;}
     protected override async Task OnParametersSetAsync()
     {
-        base.OnInitialized();
-        var person = await PersonService.GetPersonByUser(UserService.User.Id);
-        ProfileUrl = $"person/updateperson/{person.PersonId}";
+        EventService.LoginAndOutEvent += LoginAndOut;
+        ProfileUrl = $"person/updateperson/{UserService.CurrentPerson.PersonId}";
+        ImageSource = UserService.ProfilePicture;
         await base.OnParametersSetAsync();
     }
-
+    public void LoginAndOut(bool isLoggedin)
+    {
+        ProfileUrl = $"person/updateperson/{UserService.CurrentPerson.PersonId}";
+        ImageSource = UserService.ProfilePicture;
+        StateHasChanged();
+    }
 }

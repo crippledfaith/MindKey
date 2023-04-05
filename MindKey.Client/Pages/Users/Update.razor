@@ -24,7 +24,6 @@
 
     [Parameter]
     public string Id { get; set; }
-
     User user = new User();
 
     protected async override Task OnParametersSetAsync()
@@ -37,6 +36,7 @@
         loading = true;
         try
         {
+
             await UserService.UpdateUser(user);
             AlertService.Success("User updated successfully", keepAfterRouteChange: true);
             if (PageHistoryState.CanGoBack())

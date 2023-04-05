@@ -7,6 +7,8 @@ namespace MindKey.Client.Services
     public interface IUserService
     {
         User User { get; }
+        Person CurrentPerson { get; }
+        string ProfilePicture { get; set; }
         string IdeaId { get; set; }
         Task Initialize();
         Task Login(Login model);
@@ -16,5 +18,6 @@ namespace MindKey.Client.Services
         Task DeleteUser(long id);
         Task AddUser(User user);
         Task UpdateUser(User user);
+        Task UpdateInformation();
     }
 }

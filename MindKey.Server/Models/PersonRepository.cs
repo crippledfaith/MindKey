@@ -15,6 +15,11 @@ namespace MindKey.Server.Models
 
         public async Task<Person> AddPerson(Person person)
         {
+            var user = _appDbContext.Users.FirstOrDefault(r => r.Id == person.User.Id);
+            if (user == null) {
+                throw new KeyNotFoundException("Invalid User");
+            }
+            person.User = user;
             var result = await _appDbContext.People.AddAsync(person);
             await _appDbContext.SaveChangesAsync();
             return result.Entity;

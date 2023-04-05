@@ -2,9 +2,9 @@
 @inject EventService EventService
 
 @using MindKey.Shared.Models.MindKey
-<img src="/assets/img/profile-img.jpg" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
 @if (Idea?.Person != null)
 {
+    <img src=" data:image /png;base64,@Idea?.Person.ProfilePicture" alt="Profile" class="rounded-circle" width="25" style="margin:5px">
     <span class="badge border-primary border-1 text-primary coursorpointer">Author: @Idea.Person.FirstName @Idea.Person.LastName</span>
     <span class="badge border-secondary border-1 text-secondary coursorpointer">Date: @Idea.PostDateTime.ToShortDateString() </span>
 }

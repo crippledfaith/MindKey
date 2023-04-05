@@ -6,6 +6,10 @@
 <EditForm Model="@person" OnValidSubmit="@OnValidSubmit">
     <FluentValidator TValidator="PersonValidator" />
     <div class="form-group">
+        <label for="profile-picture">Select a picture:</label>
+        <InputFile class="form-control-file" accept=".jpg,.jpeg,.png" OnChange="(e)=>HandleFileSelection(e)" />
+    </div>
+    <div class="form-group">
         <label>First Name :</label>
         <div>
             <InputText @bind-Value="@person.FirstName" class="form-control col-sm-3" />
@@ -116,5 +120,17 @@
     public void OnAddressAdd(Person person)
     {
         person.Addresses.Add(new Address { Street = "", City = "", State = "", ZipCode="" });
+    }
+
+    private async Task HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        
+        var file = e.File;
+        if (file != null)
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer); ;
+            person.ProfilePicture = Convert.ToBase64String(buffer);
+        }
     }
 }
